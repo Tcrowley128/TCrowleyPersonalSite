@@ -6,6 +6,11 @@
   --foreground: #1f2937;
 }
 
+.dark {
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,17 +45,31 @@ body {
   color: var(--foreground);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark mode scrollbar */
+.dark::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* Focus styles */
 *:focus {
-  outline: 2px solid #16a34a;
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 
 /* Selection styles */
 ::selection {
-  background-color: #16a34a;
+  background-color: #2563eb;
   color: white;
 }
 
@@ -83,7 +102,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Loading spinner */
 .spinner {
   border: 2px solid #f3f4f6;
-  border-top: 2px solid #16a34a;
+  border-top: 2px solid #2563eb;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

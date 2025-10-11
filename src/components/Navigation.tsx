@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@supabase/supabase-js';
+import ThemeToggle from './ThemeToggle';
 
 const navItems = [
   { href: '/', label: 'Home', isSection: false },
@@ -71,8 +72,8 @@ export default function Navigation() {
       animate={{ y: 0 }}
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg'
-          : 'bg-white/90 backdrop-blur-sm'
+          ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-lg'
+          : 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -82,7 +83,7 @@ export default function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="font-bold text-xl text-blue-600 hover:text-blue-700 transition-colors duration-200"
+              className="font-bold text-xl text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
             >
               Tyler Crowley
             </motion.div>
@@ -90,14 +91,14 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="ml-10 flex items-baseline space-x-6">
               {navItems.map((item, index) => (
                 <Link key={item.href} href={item.href}>
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
-                    className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200"
                   >
                     {item.label}
                   </motion.div>
@@ -128,6 +129,13 @@ export default function Navigation() {
                   </motion.button>
                 </>
               )}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * (navItems.length + (user ? 2 : 0)) }}
+              >
+                <ThemeToggle />
+              </motion.div>
             </div>
           </div>
 
@@ -135,7 +143,7 @@ export default function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-green-600 focus:outline-none"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -149,7 +157,7 @@ export default function Navigation() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t border-gray-200"
+              className="md:hidden bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-gray-700"
             >
               <div className="px-2 pt-2 pb-3 space-y-1">
                 {navItems.map((item, index) => (
@@ -191,6 +199,15 @@ export default function Navigation() {
                     </motion.button>
                   </>
                 )}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 * (navItems.length + (user ? 2 : 0)) }}
+                  className="px-3 py-2 flex items-center gap-2"
+                >
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme:</span>
+                  <ThemeToggle />
+                </motion.div>
               </div>
             </motion.div>
           )}

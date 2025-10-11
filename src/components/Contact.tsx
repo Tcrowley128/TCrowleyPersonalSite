@@ -3,11 +3,14 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef, useState } from 'react';
-import { Mail, Linkedin, Send, MapPin } from 'lucide-react';
+import { Mail, Linkedin, Send, MapPin, CheckCircle } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
+import { ToastContainer } from '@/components/Toast';
 
 export default function Contact() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const { toasts, removeToast, success, error: showError } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,14 +18,46 @@ export default function Contact() {
     message: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) return 'Name is required';
+        if (value.trim().length < 2) return 'Name must be at least 2 characters';
+        return '';
+      case 'email':
+        if (!value.trim()) return 'Email is required';
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) return 'Please enter a valid email';
+        return '';
+      case 'message':
+        if (!value.trim()) return 'Message is required';
+        if (value.trim().length < 10) return 'Message must be at least 10 characters';
+        return '';
+      default:
+        return '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate all fields
+    const newErrors: Record<string, string> = {};
+    Object.keys(formData).forEach((key) => {
+      const error = validateField(key, formData[key as keyof typeof formData]);
+      if (error) newErrors[key] = error;
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      showError('Please fix the errors in the form');
+      return;
+    }
+
     setIsSubmitting(true);
-    setSubmitStatus('idle');
-    setErrorMessage('');
+    setErrors({});
 
     try {
       const response = await fetch('/api/contact', {
@@ -36,16 +71,13 @@ export default function Contact() {
       const data = await response.json();
 
       if (response.ok) {
-        setSubmitStatus('success');
+        success('Thank you! Your message has been sent successfully.');
         setFormData({ name: '', email: '', subject: '', message: '' });
-        alert(data.message || 'Thank you for your message! I will get back to you soon.');
       } else {
-        setSubmitStatus('error');
-        setErrorMessage(data.error || 'Failed to send message. Please try again.');
+        showError(data.error || 'Failed to send message. Please try again.');
       }
     } catch (error) {
-      setSubmitStatus('error');
-      setErrorMessage('Network error. Please try again later.');
+      showError('Network error. Please try again later.');
       console.error('Contact form error:', error);
     } finally {
       setIsSubmitting(false);
@@ -53,10 +85,31 @@ export default function Contact() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+
+    // Real-time validation
+    if (errors[name]) {
+      const error = validateField(name, value);
+      if (!error) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[name];
+          return newErrors;
+        });
+      }
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    if (error) {
+      setErrors((prev) => ({ ...prev, [name]: error }));
+    }
   };
 
   const contactInfo = [
@@ -81,8 +134,10 @@ export default function Contact() {
   ];
 
   return (
-    <section id="contact" className="py-20 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+      <section id="contact" className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 60 }}
@@ -161,32 +216,54 @@ export default function Contact() {
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                   Name
                 </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200"
-                  placeholder="Your full name"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                      errors.name ? 'border-red-500' : formData.name && !errors.name ? 'border-green-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Your full name"
+                  />
+                  {formData.name && !errors.name && (
+                    <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
+                  )}
+                </div>
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                )}
               </div>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                   Email
                 </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200"
-                  placeholder="tcrowley128@gmail.com"
-                />
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    required
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                      errors.email ? 'border-red-500' : formData.email && !errors.email ? 'border-green-500' : 'border-gray-300'
+                    }`}
+                    placeholder="your.email@example.com"
+                  />
+                  {formData.email && !errors.email && (
+                    <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
+                  )}
+                </div>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                )}
               </div>
 
               <div>
@@ -213,18 +290,18 @@ export default function Contact() {
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200"
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                    errors.message ? 'border-red-500' : formData.message && !errors.message ? 'border-green-500' : 'border-gray-300'
+                  }`}
                   placeholder="Tell me about your project or just say hello..."
                 />
+                {errors.message && (
+                  <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+                )}
               </div>
-
-              {errorMessage && (
-                <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-                  {errorMessage}
-                </div>
-              )}
 
               <button
                 type="submit"
@@ -248,5 +325,6 @@ export default function Contact() {
         </div>
       </div>
     </section>
+    </>
   );
 }
