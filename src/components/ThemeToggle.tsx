@@ -14,6 +14,11 @@ export default function ThemeToggle() {
     setMounted(true);
   }, []);
 
+  const handleClick = () => {
+    console.log('ThemeToggle clicked, current theme:', theme);
+    toggleTheme();
+  };
+
   if (!mounted) {
     // Return a placeholder with same dimensions to prevent layout shift
     return (
@@ -23,7 +28,7 @@ export default function ThemeToggle() {
 
   return (
     <motion.button
-      onClick={toggleTheme}
+      onClick={handleClick}
       className="relative w-14 h-7 bg-gray-300 dark:bg-gray-600 rounded-full p-1 transition-colors duration-300"
       whileTap={{ scale: 0.95 }}
       aria-label="Toggle theme"
@@ -35,7 +40,7 @@ export default function ThemeToggle() {
         }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       >
-        {theme === 'dark' ? (
+        {theme === 'light' ? (
           <Moon size={14} className="text-gray-800" />
         ) : (
           <Sun size={14} className="text-yellow-500" />

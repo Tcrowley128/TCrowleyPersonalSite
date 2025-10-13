@@ -33,7 +33,7 @@ export default function About() {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
 
   return (
-    <section id="about" className="py-20 bg-white">
+    <section id="about" className="py-20 bg-white dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -42,10 +42,10 @@ export default function About() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
             About Me
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Leveraging digitalization to improve business, and people's lives
           </p>
         </motion.div>
@@ -57,18 +57,18 @@ export default function About() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="space-y-6"
           >
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">My Journey</h3>
-            <p className="text-gray-600 leading-relaxed">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">My Journey</h3>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               With 14+ years of experience at Bosch, I've evolved from logistics and process optimization
               to leading strategic digital transformation initiatives. My passion lies in enabling innovation
               as a creator, coach, and leader—driving 0-to-1 product launches and building high-performing teams.
             </p>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               As a passionate digitalization advocate, I champion growth hacking, agile methodologies, and
               user experience design. Whether launching Digital Ecosystem to 20,000+ users or pioneering ServiceNow
               implementations, I focus on creating sustainable business solutions that drive real impact.
             </p>
-            <p className="text-gray-600 leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
               My approach combines strategic thinking with hands-on execution, fostering a culture of
               continuous improvement and experimentation. I believe in the power of cross-functional
               collaboration and data-driven decision making to solve complex business challenges.
@@ -79,7 +79,7 @@ export default function About() {
             initial={{ opacity: 0, x: 60 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="w-80 h-80 rounded-xl overflow-hidden shadow-lg bg-gray-100 flex items-center justify-center p-4 mx-auto"
+            className="w-80 h-80 rounded-xl overflow-hidden shadow-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center p-4 mx-auto"
           >
             <img
               src="/images/tyler-photo.jpg"
@@ -94,7 +94,7 @@ export default function About() {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <h3 className="text-2xl font-bold text-gray-900 text-center mb-12">What Drives Me</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 text-center mb-12">What Drives Me</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {interests.map((interest, index) => (
               <motion.div
@@ -102,13 +102,13 @@ export default function About() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
                 transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                className="text-center p-6 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors duration-300"
+                className="text-center p-6 rounded-xl bg-gray-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors duration-300"
               >
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <interest.icon className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <interest.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">{interest.title}</h4>
-                <p className="text-gray-600 text-sm">{interest.description}</p>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">{interest.title}</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">{interest.description}</p>
               </motion.div>
             ))}
           </div>

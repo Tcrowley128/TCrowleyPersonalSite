@@ -19,11 +19,11 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center space-x-2 text-sm text-gray-600 mb-8"
+      className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-8"
     >
       <Link
         href="/"
-        className="flex items-center hover:text-blue-600 transition-colors duration-200"
+        className="flex items-center hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
       >
         <Home size={16} className="mr-1" />
         Home
@@ -31,16 +31,16 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
 
       {items.map((item, index) => (
         <div key={index} className="flex items-center space-x-2">
-          <ChevronRight size={16} className="text-gray-400" />
+          <ChevronRight size={16} className="text-gray-400 dark:text-gray-500" />
           {item.href ? (
             <Link
               href={item.href}
-              className="hover:text-blue-600 transition-colors duration-200"
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
             >
               {item.label}
             </Link>
           ) : (
-            <span className="text-gray-900 font-medium">{item.label}</span>
+            <span className="text-gray-900 dark:text-gray-100 font-medium">{item.label}</span>
           )}
         </div>
       ))}

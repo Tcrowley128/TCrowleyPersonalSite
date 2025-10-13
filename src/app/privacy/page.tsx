@@ -11,7 +11,7 @@ export default function PrivacyPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
@@ -21,10 +21,10 @@ export default function PrivacyPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               Privacy Policy
             </h1>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 dark:text-gray-300">
               Last updated: January 8, 2025
             </p>
           </motion.div>
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white rounded-xl shadow-sm p-8 md:p-12 mb-16 prose prose-lg max-w-none"
+            className="bg-white dark:bg-slate-700 rounded-xl shadow-sm p-8 md:p-12 mb-16 prose prose-lg dark:prose-invert max-w-none"
           >
             <h2>Introduction</h2>
             <p>

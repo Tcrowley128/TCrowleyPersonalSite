@@ -11,7 +11,7 @@ export default function Accomplishments() {
   const isInView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section id="accomplishments" className="py-20 bg-gray-50">
+    <section id="accomplishments" className="py-20 bg-gray-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -20,10 +20,10 @@ export default function Accomplishments() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
             Accomplishments
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Some projects and achievements I&apos;m proud of
           </p>
         </motion.div>
@@ -39,18 +39,18 @@ export default function Accomplishments() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 className={`
                   ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
-                  bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                  border border-gray-200 hover:border-blue-300 overflow-hidden group
+                  bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
+                  border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 overflow-hidden group
                 `}
               >
                 {/* Refined header with subtle styling */}
-                <div className="bg-gray-50 border-b border-gray-100 p-6">
+                <div className="bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-600 p-6">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Award className="w-5 h-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                        <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                         {accomplishment.title}
                       </h3>
                     </div>
@@ -59,7 +59,7 @@ export default function Accomplishments() {
                         href={accomplishment.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                        className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                       >
                         <ExternalLink size={20} />
                       </a>
@@ -68,16 +68,16 @@ export default function Accomplishments() {
 
                   {/* Subtle project indicator */}
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-slate-600 px-2 py-1 rounded-full">
                       Project #{accomplishment.id}
                     </span>
-                    <div className="flex-1 h-px bg-gray-200"></div>
+                    <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600"></div>
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="p-6">
-                  <p className="text-gray-600 mb-6 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                     {accomplishment.description}
                   </p>
 
@@ -86,7 +86,7 @@ export default function Accomplishments() {
                     {accomplishment.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200"
+                        className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200 dark:hover:border-blue-400"
                       >
                         {tag}
                       </span>

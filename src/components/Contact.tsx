@@ -136,7 +136,7 @@ export default function Contact() {
   return (
     <>
       <ToastContainer toasts={toasts} removeToast={removeToast} />
-      <section id="contact" className="py-20 bg-gray-50">
+      <section id="contact" className="py-20 bg-gray-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -145,10 +145,10 @@ export default function Contact() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
             Get In Touch
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Let&apos;s connect and collaborate on something amazing
           </p>
         </motion.div>
@@ -162,10 +162,10 @@ export default function Contact() {
             className="space-y-8"
           >
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                 Let&apos;s start a conversation
               </h3>
-              <p className="text-gray-600 leading-relaxed mb-8">
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
                 I&apos;m always interested in new opportunities, collaborations, and conversations
                 about technology, design, and innovation. Whether you have a project in mind,
                 want to discuss ideas, or just say hello, I&apos;d love to hear from you.
@@ -181,22 +181,22 @@ export default function Contact() {
                   transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
                   className="flex items-center space-x-4"
                 >
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <item.icon className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                    <item.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{item.label}</p>
+                    <p className="font-semibold text-gray-900 dark:text-gray-100">{item.label}</p>
                     {item.href ? (
                       <a
                         href={item.href}
                         target={item.href.startsWith('http') ? '_blank' : undefined}
                         rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="text-blue-600 hover:text-blue-700 transition-colors duration-200"
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
                       >
                         {item.value}
                       </a>
                     ) : (
-                      <p className="text-gray-600">{item.value}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{item.value}</p>
                     )}
                   </div>
                 </motion.div>
@@ -209,11 +209,11 @@ export default function Contact() {
             initial={{ opacity: 0, x: 60 }}
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-white rounded-xl p-8 shadow-lg"
+            className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg"
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Name
                 </label>
                 <div className="relative">
@@ -225,8 +225,8 @@ export default function Contact() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
-                      errors.name ? 'border-red-500' : formData.name && !errors.name ? 'border-green-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                      errors.name ? 'border-red-500' : formData.name && !errors.name ? 'border-green-500' : 'border-gray-300 dark:border-gray-600'
                     }`}
                     placeholder="Your full name"
                   />
@@ -240,7 +240,7 @@ export default function Contact() {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
                 </label>
                 <div className="relative">
@@ -252,8 +252,8 @@ export default function Contact() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     required
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
-                      errors.email ? 'border-red-500' : formData.email && !errors.email ? 'border-green-500' : 'border-gray-300'
+                    className={`w-full px-4 py-3 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                      errors.email ? 'border-red-500' : formData.email && !errors.email ? 'border-green-500' : 'border-gray-300 dark:border-gray-600'
                     }`}
                     placeholder="your.email@example.com"
                   />
@@ -267,7 +267,7 @@ export default function Contact() {
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Subject (Optional)
                 </label>
                 <input
@@ -276,13 +276,13 @@ export default function Contact() {
                   name="subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200"
                   placeholder="What's this about?"
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Message
                 </label>
                 <textarea
@@ -293,8 +293,8 @@ export default function Contact() {
                   onBlur={handleBlur}
                   required
                   rows={6}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
-                    errors.message ? 'border-red-500' : formData.message && !errors.message ? 'border-green-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 border rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all duration-200 ${
+                    errors.message ? 'border-red-500' : formData.message && !errors.message ? 'border-green-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder="Tell me about your project or just say hello..."
                 />

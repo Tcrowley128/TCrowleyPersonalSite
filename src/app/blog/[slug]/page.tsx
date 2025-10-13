@@ -86,7 +86,7 @@ export default function BlogPostPage() {
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0 }}
@@ -104,7 +104,7 @@ export default function BlogPostPage() {
   if (error || !post) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 pt-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumb items={breadcrumbItems} />
             <motion.div
@@ -112,10 +112,10 @@ export default function BlogPostPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-center py-20"
             >
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                 {error === 'Post not found' ? 'Post Not Found' : 'Error Loading Post'}
               </h1>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 dark:text-gray-300 mb-8">
                 {error === 'Post not found'
                   ? 'The blog post you are looking for does not exist or has been removed.'
                   : 'Something went wrong while loading the post. Please try again later.'
@@ -173,7 +173,7 @@ export default function BlogPostPage() {
         <meta property="twitter:image" content={pageImage} />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
@@ -185,7 +185,7 @@ export default function BlogPostPage() {
           >
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200 mb-8"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200 mb-8"
             >
               <ArrowLeft size={20} />
               Back to Blog
@@ -196,7 +196,7 @@ export default function BlogPostPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-white rounded-xl shadow-sm overflow-hidden"
+            className="bg-white dark:bg-slate-700 rounded-xl shadow-sm overflow-hidden"
           >
             {post.featured_image && (
               <div className="w-full h-64 md:h-96 overflow-hidden">
@@ -210,7 +210,7 @@ export default function BlogPostPage() {
 
             <div className="p-8 md:p-12">
               <div className="mb-6">
-                <div className="flex items-center gap-4 text-gray-500 text-sm mb-6">
+                <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm mb-6">
                   <div className="flex items-center gap-2">
                     <Calendar size={16} />
                     {post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', {
@@ -223,24 +223,24 @@ export default function BlogPostPage() {
                   <span>By {post.author.name}</span>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                   {post.title}
                 </h1>
 
                 {post.excerpt && (
-                  <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                  <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                     {post.excerpt}
                   </p>
                 )}
 
                 {post.tags.length > 0 && (
                   <div className="flex items-center gap-2 mb-8">
-                    <Tag size={16} className="text-gray-400" />
+                    <Tag size={16} className="text-gray-400 dark:text-gray-500" />
                     <div className="flex gap-2">
                       {post.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full"
                         >
                           {tag.name}
                         </span>
@@ -251,7 +251,7 @@ export default function BlogPostPage() {
               </div>
 
               <div
-                className="prose prose-lg max-w-none prose-headings:font-bold prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 prose-code:text-blue-600 prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded"
+                className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:bg-gray-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-li:text-gray-700 dark:prose-li:text-gray-300"
                 dangerouslySetInnerHTML={{ __html: post.content }}
                 style={{
                   lineHeight: '1.75'

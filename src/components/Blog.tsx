@@ -53,7 +53,7 @@ export default function Blog() {
 
   return (
     <>
-      <section id="blog" className="py-20 bg-white">
+      <section id="blog" className="py-20 bg-white dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             ref={ref}
@@ -62,10 +62,10 @@ export default function Blog() {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               Blog
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Thoughts, insights, and experiences
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -91,20 +91,20 @@ export default function Blog() {
                 initial={{ opacity: 0, y: 40 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
                 transition={{ duration: 0.6 }}
-                className="bg-gray-50 rounded-xl p-8 text-center"
+                className="bg-gray-50 dark:bg-slate-700 rounded-xl p-8 text-center"
               >
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading posts...</p>
+                <p className="text-gray-600 dark:text-gray-300">Loading posts...</p>
               </motion.div>
             ) : posts.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
                 transition={{ duration: 0.6 }}
-                className="bg-gray-50 rounded-xl p-8 text-center"
+                className="bg-gray-50 dark:bg-slate-700 rounded-xl p-8 text-center"
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Welcome to my blog!</h3>
-                <p className="text-gray-600 mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Welcome to my blog!</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
                   This is where I&apos;ll share my thoughts, insights, and experiences.
                   Visit the admin panel to create your first blog post!
                 </p>
@@ -124,7 +124,7 @@ export default function Blog() {
                     initial={{ opacity: 0, y: 60 }}
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
+                    className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
                   >
                     <div className="md:flex md:h-[320px]">
                       {post.featured_image && (
@@ -140,7 +140,7 @@ export default function Blog() {
                       )}
 
                       <div className={`p-8 flex flex-col ${post.featured_image ? 'md:w-2/3' : 'w-full'}`}>
-                        <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
+                        <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm mb-4">
                           <div className="flex items-center gap-2">
                             <Calendar size={16} />
                             {post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', {
@@ -153,7 +153,7 @@ export default function Blog() {
                           <span>By {post.author.name}</span>
                         </div>
 
-                        <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                           <Link href={`/blog/${post.slug}`}>
                             {post.title}
                           </Link>
@@ -161,13 +161,13 @@ export default function Blog() {
 
                         <div className="flex-grow">
                           {post.excerpt && (
-                            <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                            <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
                               {post.excerpt}
                             </p>
                           )}
 
                           {!post.excerpt && (
-                            <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                            <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
                               {post.content.substring(0, 200)}...
                             </p>
                           )}
@@ -178,7 +178,7 @@ export default function Blog() {
                             {post.tags.map((tag) => (
                               <span
                                 key={tag.id}
-                                className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                                className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full"
                               >
                                 {tag.name}
                               </span>
@@ -189,7 +189,7 @@ export default function Blog() {
                         <div className="mt-auto">
                           <Link
                             href={`/blog/${post.slug}`}
-                            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                            className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200"
                           >
                             Read More
                             <ExternalLink size={16} />

@@ -93,7 +93,7 @@ export default function WorkingWithMePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
@@ -103,10 +103,10 @@ export default function WorkingWithMePage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               Working with Tyler
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               A guide to understanding my leadership style, commitments, and how we can collaborate effectively
             </p>
           </motion.div>
@@ -116,33 +116,33 @@ export default function WorkingWithMePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white rounded-xl p-8 md:p-12 mb-12 shadow-sm"
+            className="bg-white dark:bg-slate-700 rounded-xl p-8 md:p-12 mb-12 shadow-sm"
           >
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🤝</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Accountability</h3>
-                <p className="text-gray-600 text-sm">Holding myself responsible for growth and collaboration</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Accountability</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Holding myself responsible for growth and collaboration</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🚀</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Partnership</h3>
-                <p className="text-gray-600 text-sm">Working together to make our collaboration more fulfilling</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Partnership</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Working together to make our collaboration more fulfilling</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">📈</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Growth</h3>
-                <p className="text-gray-600 text-sm">Continuously learning and adapting my approach</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Growth</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Continuously learning and adapting my approach</p>
               </div>
             </div>
             <div className="mt-8 text-center">
-              <p className="text-gray-600 text-lg italic">
+              <p className="text-gray-600 dark:text-gray-300 text-lg italic">
                 "Work and life are ongoing journeys—I'm glad we're on this ride together."
               </p>
             </div>
@@ -153,9 +153,9 @@ export default function WorkingWithMePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="bg-white rounded-xl p-8 md:p-12 mb-12 shadow-sm"
+            className="bg-white dark:bg-slate-700 rounded-xl p-8 md:p-12 mb-12 shadow-sm"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">My Commitments & Expectations</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">My Commitments & Expectations</h2>
             <div className="space-y-6">
               {commitments.map((commitment, index) => (
                 <motion.div
@@ -163,12 +163,12 @@ export default function WorkingWithMePage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 + index * 0.05 }}
-                  className="border-l-4 border-blue-500 pl-6 py-2"
+                  className="border-l-4 border-blue-500 dark:border-blue-400 pl-6 py-2"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     {index + 1}. {commitment.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{commitment.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{commitment.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -179,10 +179,10 @@ export default function WorkingWithMePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="bg-white rounded-xl p-8 md:p-12 mb-12 shadow-sm"
+            className="bg-white dark:bg-slate-700 rounded-xl p-8 md:p-12 mb-12 shadow-sm"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Things I'm working on</h2>
-            <p className="text-gray-600 leading-relaxed mb-8 text-lg">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Things I'm working on</h2>
+            <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-8 text-lg">
               If you notice me slipping on any of these—or see other opportunities—please let me know.
               Your feedback helps me grow, and I'll gladly return the favor.
             </p>
@@ -193,12 +193,12 @@ export default function WorkingWithMePage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 1 + index * 0.05 }}
-                  className="border-l-4 border-yellow-500 pl-6 py-2"
+                  className="border-l-4 border-yellow-500 dark:border-yellow-400 pl-6 py-2"
                 >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     {index + 1}. {item.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{item.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -209,13 +209,13 @@ export default function WorkingWithMePage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2 }}
-            className="bg-white rounded-xl p-8 md:p-12 mb-12 shadow-sm"
+            className="bg-white dark:bg-slate-700 rounded-xl p-8 md:p-12 mb-12 shadow-sm"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">Working Hours</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">Working Hours</h2>
             <div className="space-y-6">
-              <div className="bg-blue-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">My Schedule</h3>
-                <p className="text-gray-600 leading-relaxed mb-4">
+              <div className="bg-blue-50 dark:bg-slate-600 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">My Schedule</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
                   I work from home which makes an early start way easier. I'm an early riser. I usually start my work day around 7am but most mornings,
                   around 5:45am, I like to check in and do some "5 minute favor" responses while my global colleagues in Europe or Asia are still online
                   with time in their day. My goal is to get a few work things and personal priorities done before my family wakes up. With the early start,
@@ -224,9 +224,9 @@ export default function WorkingWithMePage() {
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Communication Preferences</h3>
-                  <ul className="space-y-2 text-gray-600">
+                <div className="bg-gray-50 dark:bg-slate-600 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Communication Preferences</h3>
+                  <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                     <li className="flex">
                       <span className="mr-2">•</span>
                       <span>Phone call or Teams chat for urgent matters</span>
@@ -246,9 +246,9 @@ export default function WorkingWithMePage() {
                   </ul>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Boundaries & Flexibility</h3>
-                  <ul className="space-y-2 text-gray-600">
+                <div className="bg-gray-50 dark:bg-slate-600 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Boundaries & Flexibility</h3>
+                  <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                     <li className="flex">
                       <span className="mr-2">•</span>
                       <span>May check in on weekends when inspired</span>

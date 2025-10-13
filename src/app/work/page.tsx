@@ -85,7 +85,7 @@ export default function WorkPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
@@ -95,10 +95,10 @@ export default function WorkPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               My Work
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               Professional experience, projects, and achievements that showcase my journey
             </p>
           </motion.div>
@@ -111,10 +111,10 @@ export default function WorkPage() {
             className="mb-16"
           >
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Briefcase className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Professional Experience</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Professional Experience</h2>
             </div>
 
             <div className="space-y-8">
@@ -124,24 +124,24 @@ export default function WorkPage() {
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * index }}
-                  className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300"
+                  className="bg-white dark:bg-slate-700 rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-4">
                     <div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-1">{job.title}</h3>
-                      <p className="text-blue-600 font-semibold mb-2">{job.company}</p>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-1">{job.title}</h3>
+                      <p className="text-blue-600 dark:text-blue-400 font-semibold mb-2">{job.company}</p>
                     </div>
-                    <span className="text-gray-500 font-medium">{job.period}</span>
+                    <span className="text-gray-500 dark:text-gray-400 font-medium">{job.period}</span>
                   </div>
 
-                  <p className="text-gray-600 mb-4 leading-relaxed">{job.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{job.description}</p>
 
                   <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-gray-900 mb-2">Key Achievements:</h4>
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Key Achievements:</h4>
                     <ul className="space-y-1">
                       {job.achievements.map((achievement, i) => (
-                        <li key={i} className="text-gray-600 text-sm flex items-start gap-2">
-                          <span className="w-1.5 h-1.5 bg-gray-900 rounded-full mt-2 flex-shrink-0"></span>
+                        <li key={i} className="text-gray-600 dark:text-gray-300 text-sm flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 bg-gray-900 dark:bg-gray-100 rounded-full mt-2 flex-shrink-0"></span>
                           {achievement}
                         </li>
                       ))}
@@ -152,7 +152,7 @@ export default function WorkPage() {
                     {job.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full font-medium"
+                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full font-medium"
                       >
                         {tech}
                       </span>
@@ -171,10 +171,10 @@ export default function WorkPage() {
             className="mb-16"
           >
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Award className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Featured Projects</h2>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Featured Projects</h2>
             </div>
 
             <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
@@ -188,18 +188,18 @@ export default function WorkPage() {
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                     className={`
                       ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
-                      bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                      border border-gray-200 hover:border-blue-300 overflow-hidden group
+                      bg-white dark:bg-slate-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
+                      border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 overflow-hidden group
                     `}
                   >
                     {/* Refined header with subtle styling */}
-                    <div className="bg-gray-50 border-b border-gray-100 p-6">
+                    <div className="bg-gray-50 dark:bg-slate-600 border-b border-gray-100 dark:border-gray-700 p-6">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Award className="w-5 h-5 text-blue-600" />
+                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                            <Award className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           </div>
-                          <h3 className="text-xl font-bold text-gray-900">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                             {accomplishment.title}
                           </h3>
                         </div>
@@ -208,7 +208,7 @@ export default function WorkPage() {
                             href={accomplishment.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-400 hover:text-blue-600 transition-colors duration-200"
+                            className="text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                           >
                             <ExternalLink size={20} />
                           </a>
@@ -217,16 +217,16 @@ export default function WorkPage() {
 
                       {/* Subtle project indicator */}
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded-full">
                           Project #{accomplishment.id}
                         </span>
-                        <div className="flex-1 h-px bg-gray-200"></div>
+                        <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
                       </div>
                     </div>
 
                     {/* Content */}
                     <div className="p-6">
-                      <p className="text-gray-600 mb-6 leading-relaxed">
+                      <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                         {accomplishment.description}
                       </p>
 
@@ -235,7 +235,7 @@ export default function WorkPage() {
                         {accomplishment.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200"
+                            className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
                           >
                             {tag}
                           </span>
@@ -244,7 +244,7 @@ export default function WorkPage() {
                     </div>
 
                     {/* Subtle bottom accent */}
-                    <div className="h-0.5 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                    <div className="h-0.5 bg-blue-600 dark:bg-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                   </motion.div>
                 );
               })}
@@ -258,14 +258,14 @@ export default function WorkPage() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="bg-blue-50 rounded-xl p-8 md:p-12">
+            <div className="bg-blue-50 dark:bg-slate-700 rounded-xl p-8 md:p-12">
               <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Users className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Let's Work Together</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Let's Work Together</h2>
               </div>
-              <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
                 I'm always interested in discussing new opportunities and challenging projects.
                 Let's connect and explore how we can create something amazing together.
               </p>

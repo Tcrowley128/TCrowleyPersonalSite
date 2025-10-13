@@ -26,12 +26,12 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center relative overflow-hidden">
+    <section id="home" className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 flex items-center relative overflow-hidden transition-colors duration-300">
       {/* Animated Background Elements - Following Figma Best Practices */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Primary blob shapes - organic, modern feel */}
         <motion.div
-          className="absolute -top-32 -left-32 w-80 h-96 bg-gradient-to-br from-blue-100/40 to-blue-200/20 rounded-full blur-sm"
+          className="absolute -top-32 -left-32 w-80 h-96 bg-gradient-to-br from-blue-100/40 to-blue-200/20 dark:from-blue-900/20 dark:to-blue-800/10 rounded-full blur-sm"
           animate={{
             x: [0, 30, 0],
             y: [0, 20, 0],
@@ -45,7 +45,7 @@ export default function Hero() {
         />
 
         <motion.div
-          className="absolute top-1/4 -right-40 w-96 h-80 bg-gradient-to-tl from-blue-200/30 to-blue-300/15 rounded-full blur-sm"
+          className="absolute top-1/4 -right-40 w-96 h-80 bg-gradient-to-tl from-blue-200/30 to-blue-300/15 dark:from-blue-800/15 dark:to-blue-700/8 rounded-full blur-sm"
           animate={{
             x: [0, -25, 0],
             y: [0, 35, 0],
@@ -142,17 +142,17 @@ export default function Hero() {
             className="space-y-8"
           >
             <motion.h1
-              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900"
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-gray-100"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               Hello, I&apos;m{' '}
-              <span className="text-blue-600">Tyler</span>
+              <span className="text-blue-600 dark:text-blue-400">Tyler</span>
             </motion.h1>
 
             <motion.p
-              className="text-xl sm:text-2xl text-gray-600 max-w-3xl mx-auto"
+              className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -161,7 +161,7 @@ export default function Hero() {
             </motion.p>
 
             <motion.p
-              className="text-lg text-gray-500 max-w-2xl mx-auto italic"
+              className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto italic"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
@@ -197,7 +197,7 @@ export default function Hero() {
             >
               <a
                 href="/working-with-me"
-                className="text-blue-600 hover:text-blue-700 font-medium underline decoration-2 underline-offset-4 transition-colors duration-200"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium underline decoration-2 underline-offset-4 transition-colors duration-200"
               >
                 Learn how I work and collaborate →
               </a>
@@ -211,7 +211,7 @@ export default function Hero() {
             >
               <a
                 href="https://www.linkedin.com/in/tyler-crowley-3548bb103"
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -219,7 +219,7 @@ export default function Hero() {
               </a>
               <a
                 href="mailto:tcrowley128@gmail.com"
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200"
+                className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
               >
                 <Mail size={24} />
               </a>
@@ -234,7 +234,7 @@ export default function Hero() {
           >
             <button
               onClick={scrollToNext}
-              className="text-gray-400 hover:text-blue-600 transition-colors duration-200 animate-bounce"
+              className="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 animate-bounce"
             >
               <ArrowDown size={32} />
             </button>

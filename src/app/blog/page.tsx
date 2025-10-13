@@ -74,7 +74,7 @@ export default function BlogPage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
@@ -85,10 +85,10 @@ export default function BlogPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-6">
               Blog
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
               Thoughts, insights, and experiences from my journey in technology and beyond
             </p>
 
@@ -108,23 +108,23 @@ export default function BlogPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="bg-white rounded-xl p-6 shadow-sm mb-8"
+            className="bg-white dark:bg-slate-700 rounded-xl p-6 shadow-sm mb-8"
           >
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={20} />
                 <input
                   type="text"
                   placeholder="Search posts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 />
               </div>
               <select
                 value={selectedTag}
                 onChange={(e) => setSelectedTag(e.target.value)}
-                className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent min-w-[200px]"
+                className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-600 focus:border-transparent min-w-[200px]"
               >
                 <option value="">All Categories</option>
                 {allTags.map(tag => (
@@ -134,7 +134,7 @@ export default function BlogPage() {
             </div>
 
             {(searchTerm || selectedTag) && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
+              <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <span>Showing {filteredPosts.length} of {posts.length} posts</span>
                 {(searchTerm || selectedTag) && (
                   <button
@@ -142,7 +142,7 @@ export default function BlogPage() {
                       setSearchTerm('');
                       setSelectedTag('');
                     }}
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     Clear filters
                   </button>
@@ -167,10 +167,10 @@ export default function BlogPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-12"
               >
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   {searchTerm || selectedTag ? 'No posts found' : 'No posts yet'}
                 </h3>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
                   {searchTerm || selectedTag
                     ? 'Try adjusting your search terms or filters.'
                     : 'Check back soon for new content!'
@@ -193,7 +193,7 @@ export default function BlogPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
+                  className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
                 >
                   <div className="md:flex md:h-[320px]">
                     {post.featured_image && (
@@ -209,7 +209,7 @@ export default function BlogPage() {
                     )}
 
                     <div className={`p-8 flex flex-col ${post.featured_image ? 'md:w-2/3' : 'w-full'}`}>
-                      <div className="flex items-center gap-4 text-gray-500 text-sm mb-4">
+                      <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm mb-4">
                         <div className="flex items-center gap-2">
                           <Calendar size={16} />
                           {post.created_at ? new Date(post.created_at).toLocaleDateString('en-US', {
@@ -222,7 +222,7 @@ export default function BlogPage() {
                         <span>By {post.author.name}</span>
                       </div>
 
-                      <h2 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-200">
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
                         <Link href={`/blog/${post.slug}`}>
                           {post.title}
                         </Link>
@@ -230,13 +230,13 @@ export default function BlogPage() {
 
                       <div className="flex-grow">
                         {post.excerpt && (
-                          <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                          <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
                             {post.excerpt}
                           </p>
                         )}
 
                         {!post.excerpt && (
-                          <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                          <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed line-clamp-3">
                             {post.content.substring(0, 200)}...
                           </p>
                         )}
@@ -248,7 +248,7 @@ export default function BlogPage() {
                             <button
                               key={tag.id}
                               onClick={() => setSelectedTag(tag.name)}
-                              className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full hover:bg-blue-200 transition-colors duration-200"
+                              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200"
                             >
                               {tag.name}
                             </button>
@@ -259,7 +259,7 @@ export default function BlogPage() {
                       <div className="mt-auto">
                         <Link
                           href={`/blog/${post.slug}`}
-                          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+                          className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200"
                         >
                           Read More
                           <ArrowRight size={16} />
