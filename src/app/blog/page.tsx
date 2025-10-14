@@ -189,13 +189,13 @@ export default function BlogPage() {
               </motion.div>
             ) : (
               filteredPosts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
-                >
+                <Link key={post.id} href={`/blog/${post.slug}`} className="block">
+                  <motion.article
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                  >
                   <div className="md:flex md:h-[320px]">
                     {post.featured_image && (
                       <div className="md:w-1/3 md:flex-shrink-0">
@@ -229,9 +229,7 @@ export default function BlogPage() {
                       </div>
 
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                        <Link href={`/blog/${post.slug}`}>
-                          {post.title}
-                        </Link>
+                        {post.title}
                       </h2>
 
                       <div className="flex-grow">
@@ -253,7 +251,11 @@ export default function BlogPage() {
                           {post.tags.map((tag) => (
                             <button
                               key={tag.id}
-                              onClick={() => setSelectedTag(tag.name)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setSelectedTag(tag.name);
+                              }}
                               className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full hover:bg-blue-300 dark:hover:bg-blue-800 transition-colors duration-200"
                             >
                               {tag.name}
@@ -263,17 +265,15 @@ export default function BlogPage() {
                       )}
 
                       <div className="mt-auto">
-                        <Link
-                          href={`/blog/${post.slug}`}
-                          className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200"
-                        >
+                        <span className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 font-medium transition-colors duration-200">
                           Read More
                           <ArrowRight size={16} />
-                        </Link>
+                        </span>
                       </div>
                     </div>
-                  </div>
-                </motion.article>
+                    </div>
+                  </motion.article>
+                </Link>
               ))
             )}
           </div>

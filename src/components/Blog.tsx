@@ -120,14 +120,14 @@ export default function Blog() {
             ) : (
               <>
                 {posts.slice(0, 3).map((post, index) => (
-                  <motion.article
-                    key={post.id}
-                    initial={{ opacity: 0, y: 60 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group"
-                  >
-                    <div className="md:flex md:h-[320px]">
+                  <Link key={post.id} href={`/blog/${post.slug}`} className="block">
+                    <motion.article
+                      initial={{ opacity: 0, y: 60 }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
+                      transition={{ duration: 0.6, delay: index * 0.1 }}
+                      className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    >
+                      <div className="md:flex md:h-[320px]">
                       {post.featured_image && (
                         <div className="md:w-1/3 md:flex-shrink-0">
                           <div className="h-64 md:h-[320px] overflow-hidden">
@@ -160,9 +160,7 @@ export default function Blog() {
                         </div>
 
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
-                          <Link href={`/blog/${post.slug}`}>
-                            {post.title}
-                          </Link>
+                          {post.title}
                         </h3>
 
                         <div className="flex-grow">
@@ -193,17 +191,15 @@ export default function Blog() {
                         )}
 
                         <div className="mt-auto">
-                          <Link
-                            href={`/blog/${post.slug}`}
-                            className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-200"
-                          >
+                          <span className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 font-medium transition-colors duration-200">
                             Read More
                             <ExternalLink size={16} />
-                          </Link>
+                          </span>
                         </div>
                       </div>
-                    </div>
-                  </motion.article>
+                      </div>
+                    </motion.article>
+                  </Link>
                 ))}
 
                 {posts.length > 3 && (
