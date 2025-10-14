@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, ExternalLink, ArrowRight, Search } from 'lucide-react';
+import { Calendar, ExternalLink, ArrowRight, Search, Clock } from 'lucide-react';
 import Layout from '@/components/Layout';
 import Breadcrumb from '@/components/Breadcrumb';
 import Link from 'next/link';
+import { getReadingTime } from '@/utils/readingTime';
 
 interface Post {
   id: string;
@@ -220,6 +221,11 @@ export default function BlogPage() {
                         </div>
                         <span>•</span>
                         <span>By {post.author.name}</span>
+                        <span>•</span>
+                        <div className="flex items-center gap-2">
+                          <Clock size={16} />
+                          <span>{getReadingTime(post.content)}</span>
+                        </div>
                       </div>
 
                       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">

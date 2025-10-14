@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Head from 'next/head';
 import { motion } from 'framer-motion';
-import { Calendar, ArrowLeft, Tag } from 'lucide-react';
+import { Calendar, ArrowLeft, Tag, Clock } from 'lucide-react';
 import Layout from '@/components/Layout';
 import Breadcrumb from '@/components/Breadcrumb';
 import Link from 'next/link';
 import { trackPostView } from '@/lib/analytics';
+import { getReadingTime } from '@/utils/readingTime';
 
 interface Post {
   id: string;
@@ -221,6 +222,11 @@ export default function BlogPostPage() {
                   </div>
                   <span>•</span>
                   <span>By {post.author.name}</span>
+                  <span>•</span>
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} />
+                    <span>{getReadingTime(post.content)}</span>
+                  </div>
                 </div>
 
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">

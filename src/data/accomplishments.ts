@@ -4,8 +4,8 @@ export const accomplishments: Accomplishment[] = [
   {
     id: 1,
     title: "Digital Ecosystem Product Launch",
-    description: "Lead 0-to-1 launch and growth of Digital Ecosystem, GS's smart information hub, from concept to 20,000+ users in two years, establishing OKRs & KPIs, with first non-GS (RBHU, 5,000 licenses) contract within 60 days. Secured cross-region buy-in and expanded user base by driving product-led growth with a focus on user experience, platform analytics, and CIP. Built and led agile, high-performance team across business functions and multiple countries – with a growth mindset and experimentation culture.",
-    tags: ["Product Management", "0-to-1 Launch", "Growth", "UX"],
+    description: "Lead 0-to-1 launch and growth of the Digital Ecosystem, an internal Bosch application and GS's smart information hub for all things Digitalization. Grew from concept to 20,000+ users within two years. Since launching in March 2024, we've shipped 18 releases with high-impact features like ChatGPT integration, self-service content management, and built-in platform analytics. Secured first non-GS contract (RBHU, 5,000 licenses) within 60 days. Built and led agile, high-performance team across business functions and multiple countries with a growth mindset and experimentation culture.",
+    tags: ["Product Management", "0-to-1 Launch", "Growth", "AI Integration"],
   },
   {
     id: 2,

@@ -12,7 +12,7 @@ const workExperience = [
     title: "Global Product Owner, Digital Ecosystem",
     company: "Bosch",
     period: "2022 - Present",
-    description: "Leading 0-to-1 launch and growth of Digital Ecosystem, GS's smart information hub, from concept to 20,000+ users in two years. Driving product-led growth with focus on user experience and platform analytics.",
+    description: "Leading 0-to-1 launch and growth of the Digital Ecosystem, an internal Bosch application. The Digital Ecosystem is GS's smart information hub for all things Digitalization. Within two years, it went from concept to 20,000+ users. Since launch in March 2024, we've shipped 18 releases with high-impact features like ChatGPT integration, self-service content management, and built-in platform analytics.",
     achievements: [
       "Launched Digital Ecosystem from concept to 20,000+ users in 2 years",
       "Secured first non-GS contract (RBHU, 5,000 licenses) within 60 days",
