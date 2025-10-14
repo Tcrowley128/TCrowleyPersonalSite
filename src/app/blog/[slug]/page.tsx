@@ -10,6 +10,7 @@ import Breadcrumb from '@/components/Breadcrumb';
 import Link from 'next/link';
 import { trackPostView } from '@/lib/analytics';
 import { getReadingTime } from '@/utils/readingTime';
+import ReadingProgress from '@/components/ReadingProgress';
 
 interface Post {
   id: string;
@@ -144,6 +145,7 @@ export default function BlogPostPage() {
 
   return (
     <Layout>
+      <ReadingProgress />
       <Head>
         {/* Primary Meta Tags */}
         <title>{pageTitle} | Tyler Crowley</title>
@@ -174,7 +176,7 @@ export default function BlogPostPage() {
         <meta property="twitter:image" content={pageImage} />
       </Head>
 
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
+      <div className="bg-gray-50 dark:bg-slate-800 pt-8 pb-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
