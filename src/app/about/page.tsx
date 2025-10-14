@@ -134,7 +134,7 @@ export default function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['Product Management', 'OKRs & KPIs', 'Agile Methods', 'Project Management', 'Growth Hacking'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -147,7 +147,7 @@ export default function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['Digital Transformation', 'Process Automation', 'Change Management', 'Data Analytics', 'User Experience'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -160,7 +160,7 @@ export default function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['Power BI', 'Azure DevOps', 'ServiceNow', 'M365', 'SAP'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -223,7 +223,7 @@ export default function AboutPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Analytics & Visualization</h3>
                 <div className="flex flex-wrap gap-2">
                   {['Google Analytics', 'Power BI', 'Data Visualization', 'KPIs & OKRs'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -233,7 +233,7 @@ export default function AboutPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Agile & Project Management</h3>
                 <div className="flex flex-wrap gap-2">
                   {['Agile & Scrum', 'JIRA', 'Azure DevOps', 'Product Owner', 'Change Management'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -243,7 +243,7 @@ export default function AboutPage() {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Automation & Design</h3>
                 <div className="flex flex-wrap gap-2">
                   {['RPA', 'Alteryx', 'Microsoft Power Platform', 'UX Design Thinking', 'Figma'].map((skill) => (
-                    <span key={skill} className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full">
+                    <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
                   ))}
@@ -257,7 +257,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.6 }}
-            className="bg-blue-600 text-white rounded-xl p-8 md:p-12 mb-16 text-center"
+            className="bg-blue-500 text-white rounded-xl p-8 md:p-12 mb-16 text-center"
           >
             <h2 className="text-2xl font-bold mb-4">Want to collaborate effectively?</h2>
             <p className="text-blue-100 mb-6 text-lg">

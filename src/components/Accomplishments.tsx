@@ -40,7 +40,7 @@ export default function Accomplishments() {
                 className={`
                   ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
                   bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                  border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 overflow-hidden group
+                  border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group
                 `}
               >
                 {/* Refined header with subtle styling */}
@@ -86,7 +86,7 @@ export default function Accomplishments() {
                     {accomplishment.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200 dark:hover:border-blue-400"
+                        className="bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-300 dark:hover:border-blue-400"
                       >
                         {tag}
                       </span>

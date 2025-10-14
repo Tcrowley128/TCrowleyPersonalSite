@@ -71,7 +71,7 @@ export default function Blog() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
               >
                 See All Blogs
               </Link>
@@ -110,7 +110,7 @@ export default function Blog() {
                 </p>
                 <a
                   href="/admin"
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
+                  className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-200"
                 >
                   <ExternalLink size={20} />
                   Go to Admin
@@ -178,7 +178,7 @@ export default function Blog() {
                             {post.tags.map((tag) => (
                               <span
                                 key={tag.id}
-                                className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full"
+                                className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full"
                               >
                                 {tag.name}
                               </span>
@@ -209,7 +209,7 @@ export default function Blog() {
                   >
                     <Link
                       href="/blog"
-                      className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+                      className="inline-flex items-center gap-2 bg-blue-500 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
                     >
                       See More Blogs
                     </Link>

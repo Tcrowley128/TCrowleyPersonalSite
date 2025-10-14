@@ -31,7 +31,7 @@ export default function Hero() {
       <div className="absolute inset-0 overflow-hidden">
         {/* Primary blob shapes - organic, modern feel */}
         <motion.div
-          className="absolute -top-32 -left-32 w-80 h-96 bg-gradient-to-br from-blue-100/40 to-blue-200/20 dark:from-blue-900/20 dark:to-blue-800/10 rounded-full blur-sm"
+          className="absolute -top-32 -left-32 w-80 h-96 bg-gradient-to-br from-blue-100/40 to-blue-200/20 dark:from-blue-900/20 dark:to-blue-900/10 rounded-full blur-sm"
           animate={{
             x: [0, 30, 0],
             y: [0, 20, 0],
@@ -45,7 +45,7 @@ export default function Hero() {
         />
 
         <motion.div
-          className="absolute top-1/4 -right-40 w-96 h-80 bg-gradient-to-tl from-blue-200/30 to-blue-300/15 dark:from-blue-800/15 dark:to-blue-700/8 rounded-full blur-sm"
+          className="absolute top-1/4 -right-40 w-96 h-80 bg-gradient-to-tl from-blue-200/30 to-blue-300/15 dark:from-blue-900/15 dark:to-blue-900/8 rounded-full blur-sm"
           animate={{
             x: [0, -25, 0],
             y: [0, 35, 0],
@@ -177,13 +177,13 @@ export default function Hero() {
             >
               <button
                 onClick={scrollToWork}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="bg-blue-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 View My Work
               </button>
               <button
                 onClick={scrollToContact}
-                className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 hover:text-white transition-all duration-300 transform hover:scale-105"
+                className="border-2 border-blue-500 text-blue-600 dark:text-blue-400 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-500 hover:text-white transition-all duration-300 transform hover:scale-105"
               >
                 Get In Touch
               </button>

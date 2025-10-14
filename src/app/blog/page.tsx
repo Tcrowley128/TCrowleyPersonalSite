@@ -95,7 +95,7 @@ export default function BlogPage() {
             <div className="flex justify-center mb-4">
               <a
                 href="/admin"
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all duration-300 transform hover:scale-105"
               >
                 <ExternalLink size={20} />
                 Admin Panel
@@ -179,7 +179,7 @@ export default function BlogPage() {
                 {!searchTerm && !selectedTag && (
                   <a
                     href="/admin"
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
+                    className="inline-flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors duration-200"
                   >
                     <ExternalLink size={20} />
                     Create First Post
@@ -248,7 +248,7 @@ export default function BlogPage() {
                             <button
                               key={tag.id}
                               onClick={() => setSelectedTag(tag.name)}
-                              className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors duration-200"
+                              className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full hover:bg-blue-300 dark:hover:bg-blue-800 transition-colors duration-200"
                             >
                               {tag.name}
                             </button>

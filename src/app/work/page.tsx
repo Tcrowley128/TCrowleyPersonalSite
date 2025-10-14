@@ -152,7 +152,7 @@ export default function WorkPage() {
                     {job.technologies.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm rounded-full font-medium"
+                        className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full font-medium"
                       >
                         {tech}
                       </span>
@@ -189,7 +189,7 @@ export default function WorkPage() {
                     className={`
                       ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
                       bg-white dark:bg-slate-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                      border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 overflow-hidden group
+                      border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group
                     `}
                   >
                     {/* Refined header with subtle styling */}
@@ -235,7 +235,7 @@ export default function WorkPage() {
                         {accomplishment.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-200 dark:hover:border-blue-700"
+                            className="bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105 border border-transparent hover:border-blue-300 dark:hover:border-blue-400"
                           >
                             {tag}
                           </span>
@@ -272,7 +272,7 @@ export default function WorkPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="/contact"
-                  className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="inline-flex items-center gap-2 bg-blue-500 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   Get In Touch
                 </a>
