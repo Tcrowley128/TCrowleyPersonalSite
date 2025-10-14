@@ -194,7 +194,7 @@ export default function BlogPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                    className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 rounded-xl overflow-hidden shadow-sm hover:shadow-lg dark:hover:shadow-blue-900/50 hover:bg-gray-50 dark:hover:bg-slate-600 transition-all duration-300 group cursor-pointer"
                   >
                   <div className="md:flex md:h-[320px]">
                     {post.featured_image && (
