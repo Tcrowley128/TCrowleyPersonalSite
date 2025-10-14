@@ -2,21 +2,30 @@ import { render, screen, waitFor } from '@testing-library/react';
 import Blog from './Blog';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    article: ({ children, ...props }: any) => <article {...props}>{children}</article>,
-  },
-  useInView: () => true,
-}));
+jest.mock('framer-motion', () => {
+  const MockDiv = ({ children, ...props }: any) => <div {...props}>{children}</div>;
+  MockDiv.displayName = 'motion.div';
+  const MockArticle = ({ children, ...props }: any) => <article {...props}>{children}</article>;
+  MockArticle.displayName = 'motion.article';
+
+  return {
+    motion: {
+      div: MockDiv,
+      article: MockArticle,
+    },
+    useInView: () => true,
+  };
+});
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, className }: any) => (
+  const MockLink = ({ children, href, className }: any) => (
     <a href={href} className={className}>
       {children}
     </a>
   );
+  MockLink.displayName = 'Link';
+  return MockLink;
 });
 
 // Mock the reading time utility

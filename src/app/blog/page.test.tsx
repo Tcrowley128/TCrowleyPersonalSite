@@ -2,12 +2,19 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import BlogPage from './page';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    article: ({ children, ...props }: any) => <article {...props}>{children}</article>,
-  },
-}));
+jest.mock('framer-motion', () => {
+  const MockDiv = ({ children, ...props }: any) => <div {...props}>{children}</div>;
+  MockDiv.displayName = 'motion.div';
+  const MockArticle = ({ children, ...props }: any) => <article {...props}>{children}</article>;
+  MockArticle.displayName = 'motion.article';
+
+  return {
+    motion: {
+      div: MockDiv,
+      article: MockArticle,
+    },
+  };
+});
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({
@@ -16,27 +23,33 @@ jest.mock('next/navigation', () => ({
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
-  return ({ children, href, className }: any) => (
+  const MockLink = ({ children, href, className }: any) => (
     <a href={href} className={className}>
       {children}
     </a>
   );
+  MockLink.displayName = 'Link';
+  return MockLink;
 });
 
 // Mock Layout component
 jest.mock('@/components/Layout', () => {
-  return ({ children }: any) => <div data-testid="layout">{children}</div>;
+  const MockLayout = ({ children }: any) => <div data-testid="layout">{children}</div>;
+  MockLayout.displayName = 'Layout';
+  return MockLayout;
 });
 
 // Mock Breadcrumb component
 jest.mock('@/components/Breadcrumb', () => {
-  return ({ items }: any) => (
+  const MockBreadcrumb = ({ items }: any) => (
     <nav data-testid="breadcrumb">
       {items.map((item: any, index: number) => (
         <span key={index}>{item.label}</span>
       ))}
     </nav>
   );
+  MockBreadcrumb.displayName = 'Breadcrumb';
+  return MockBreadcrumb;
 });
 
 // Mock the reading time utility
