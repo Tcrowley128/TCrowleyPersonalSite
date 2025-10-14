@@ -93,7 +93,7 @@ export default function WorkingWithMePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-800 pt-8">
+      <div className="bg-gray-50 dark:bg-slate-800 pt-8 pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Breadcrumb items={breadcrumbItems} />
 
