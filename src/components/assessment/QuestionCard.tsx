@@ -80,7 +80,7 @@ export default function QuestionCard({ question, value, onChange }: QuestionCard
           for (const part of parts) {
             if (typeof part === 'string') {
               // Process this string part
-              let partText = part;
+              const partText = part;
               let partLastIndex = 0;
               const partMatches = Array.from(partText.matchAll(regex));
 

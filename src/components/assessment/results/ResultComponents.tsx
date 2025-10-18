@@ -43,8 +43,15 @@ export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
   );
 }
 
-function StatCard({ title, value, icon: Icon, color }: any) {
-  const colors = {
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: any;
+  color: 'green' | 'blue' | 'purple' | 'orange' | 'teal';
+}
+
+function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
+  const colors: Record<'green' | 'blue' | 'purple' | 'orange' | 'teal', string> = {
     green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
     blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
     purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
