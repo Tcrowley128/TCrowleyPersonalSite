@@ -15,6 +15,7 @@ const navItems = [
   { href: '/work', label: 'Work', isSection: false },
   { href: '/working-with-me', label: 'Working with Me', isSection: false },
   { href: '/blog', label: 'Blog', isSection: false },
+  { href: '/assessment', label: 'Free Assessment', isSection: false },
   { href: '/contact', label: 'Contact', isSection: false },
 ];
 
