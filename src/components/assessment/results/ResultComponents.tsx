@@ -120,7 +120,7 @@ export function QuickWinsTab({ quickWins, existing }: any) {
 }
 
 function QuickWinCard({ win, index }: any) {
-  const difficultyColors = {
+  const difficultyColors: Record<'LOW' | 'MEDIUM' | 'HIGH', string> = {
     LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     MEDIUM: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
     HIGH: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
@@ -138,7 +138,7 @@ function QuickWinCard({ win, index }: any) {
             <p className="text-gray-600 dark:text-gray-300">{win.description}</p>
           </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[win.difficulty] || difficultyColors.MEDIUM}`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[win.difficulty as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
           {win.difficulty}
         </span>
       </div>
