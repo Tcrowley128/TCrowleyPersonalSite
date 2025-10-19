@@ -36,51 +36,16 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSuccess, setEmailSuccess] = useState(false);
   const [showSnakeGame, setShowSnakeGame] = useState(false);
-  const [pendingGeneration, setPendingGeneration] = useState(false);
   const [regenerationCount, setRegenerationCount] = useState(0);
   const [regenerationsRemaining, setRegenerationsRemaining] = useState(2);
 
   useEffect(() => {
-    checkExistingResults();
+    generateResults();
   }, [id]);
 
-  const checkExistingResults = async () => {
+  const generateResults = async () => {
     setIsLoading(true);
     setError('');
-
-    try {
-      // Check if results already exist (won't generate if they don't)
-      const response = await fetch('/api/assessment/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessment_id: id, regenerate: false })
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.results) {
-        // Results exist, load them
-        setResults(data.results);
-        setRegenerationCount(data.regeneration_count || 0);
-        setRegenerationsRemaining(2 - (data.regeneration_count || 0));
-        setPendingGeneration(false);
-      } else {
-        // No results yet, show "Get Results" button
-        setPendingGeneration(true);
-      }
-    } catch (err) {
-      console.error('Error checking results:', err);
-      // Assume no results exist, show button
-      setPendingGeneration(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const generateResults = async () => {
-    setIsGenerating(true);
-    setError('');
-    setPendingGeneration(false);
 
     try {
       const response = await fetch('/api/assessment/generate', {
@@ -101,9 +66,8 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     } catch (err) {
       console.error('Error generating results:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate results');
-      setPendingGeneration(true);
     } finally {
-      setIsGenerating(false);
+      setIsLoading(false);
     }
   };
 
@@ -801,58 +765,6 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
-          <div className="text-center">
-            <Loader2 className="w-16 h-16 animate-spin text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Loading...
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Checking for existing results
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (pendingGeneration && !isGenerating) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg text-center"
-          >
-            <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Assessment Complete!
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Your assessment has been submitted successfully. Click the button below to generate your personalized digital transformation roadmap.
-            </p>
-            <button
-              onClick={generateResults}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold text-lg hover:shadow-lg transition-all"
-            >
-              <Rocket size={24} />
-              Get My Results
-            </button>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-              This will take 1-2 minutes to generate your personalized recommendations
-            </p>
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isGenerating) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full space-y-8">
           <div className="text-center">
             <Loader2 className="w-16 h-16 animate-spin text-blue-600 mx-auto mb-4" />
@@ -909,7 +821,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
           <button
-            onClick={pendingGeneration ? generateResults : checkExistingResults}
+            onClick={generateResults}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
             Try Again
