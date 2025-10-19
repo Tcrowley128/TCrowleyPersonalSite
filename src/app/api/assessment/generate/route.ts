@@ -35,9 +35,12 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!regenerate && existingResults) {
+      // Remove project_tracking from cached results to avoid schema cache issues
+      const { project_tracking, ...resultsWithoutProjectTracking } = existingResults;
+
       return NextResponse.json({
         success: true,
-        results: existingResults,
+        results: resultsWithoutProjectTracking,
         cached: true,
         regeneration_count: existingResults.regeneration_count || 0
       });
