@@ -859,7 +859,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             Assessment Complete
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {results.company_name || 'Your'} Digital Transformation Roadmap
+            <span className="text-blue-600 dark:text-blue-400">{results.company_name || 'Your'}</span> Digital Transformation Roadmap
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
             Personalized recommendations powered by Tyler's AI
