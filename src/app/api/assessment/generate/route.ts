@@ -174,8 +174,8 @@ export async function POST(request: NextRequest) {
       },
       success_metrics: parsedResults.success_metrics || null,
 
-      // Project tracking
-      project_tracking: parsedResults.project_tracking || null,
+      // Project tracking - temporarily commented out due to schema cache issue
+      // project_tracking: parsedResults.project_tracking || null,
 
       // Long-term vision
       long_term_vision: parsedResults.long_term_vision || null,
