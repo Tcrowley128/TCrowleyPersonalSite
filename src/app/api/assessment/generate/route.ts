@@ -20,7 +20,10 @@ export async function POST(request: NextRequest) {
       keyLength: process.env.ANTHROPIC_API_KEY?.length || 0,
       nodeEnv: process.env.NODE_ENV,
       vercelEnv: process.env.VERCEL_ENV,
-      allEnvKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC'))
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC')),
+      testVar: process.env.TEST_VAR,
+      totalEnvVars: Object.keys(process.env).length,
+      sampleEnvKeys: Object.keys(process.env).slice(0, 10)
     });
 
     if (!process.env.ANTHROPIC_API_KEY) {
