@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       <li>Success metrics to track your progress</li>
     </ul>
     <p style="text-align: center;">
-      <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/assessment/results/${assessment_id}" class="cta-button">
+      <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://tylercrowley.com'}/assessment/results/${assessment_id}" class="cta-button">
         View Full Roadmap
       </a>
     </p>
