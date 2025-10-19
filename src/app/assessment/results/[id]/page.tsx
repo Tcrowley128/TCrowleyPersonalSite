@@ -858,8 +858,9 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             <CheckCircle size={16} />
             Assessment Complete
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            <span className="text-blue-600 dark:text-blue-400">{results.company_name || 'Your'}</span> Digital Transformation Roadmap
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <span className="text-gray-900 dark:text-white">{results.company_name || 'Your'}</span>{' '}
+            <span className="text-gray-600 dark:text-gray-400">Digital Transformation Roadmap</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
             Personalized recommendations powered by Tyler's AI
