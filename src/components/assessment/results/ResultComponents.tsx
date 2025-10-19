@@ -1,4 +1,4 @@
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award } from 'lucide-react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield } from 'lucide-react';
 
 // ============================================================================
 // OVERVIEW TAB - Better Executive Summary
@@ -6,6 +6,23 @@ import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, 
 export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
   return (
     <div className="space-y-6">
+      {/* Disclaimer Banner */}
+      <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-lg p-4 shadow-sm">
+        <div className="flex items-start gap-3">
+          <Shield className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
+          <div>
+            <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+              Important: Estimates Require Validation
+            </h3>
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              All time savings, cost estimates, and impact projections shown in this roadmap are approximations based on general industry patterns.
+              These recommendations should be validated with your specific business context, actual data, and operational requirements before implementation.
+              Results may vary based on your unique environment and use cases.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Stats Grid - 5 cards to emphasize People Strategy */}
       <div className="grid md:grid-cols-5 gap-4">
         <StatCard title="Quick Wins Ready" value={quickWinsCount} icon={Zap} color="green" />

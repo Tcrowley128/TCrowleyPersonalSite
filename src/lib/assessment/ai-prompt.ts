@@ -471,14 +471,16 @@ IMPORTANT GUIDELINES:
    - Recommend 3-4 project tracking tools that match their technical capability
    - Include mix of: Simple (Microsoft Planner, Trello, Asana), Mid-tier (Monday.com, ClickUp), Enterprise (Azure DevOps, JIRA, Basecamp)
    - Explain integration possibilities with their existing tools
-   - Provide real URLs and quick start resources
+   - **Provide ONLY real, verified URLs** - use official tool websites (e.g., https://trello.com, https://asana.com, https://monday.com)
+   - Include quick start resources with real, working links to documentation
    - Include best practices for tracking digital transformation initiatives
 
 4. **Change Management Tools & Methods**:
    - Recommend specific change management frameworks (Kotter, ADKAR, Prosci) with rationale
    - Suggest 4-6 practical tools for training, communication, feedback collection
    - Mix free options (Google Forms, Miro free tier) with paid (Articulate 360, TalentLMS)
-   - Include real URLs to all tools and training resources
+   - **CRITICAL: Include ONLY real, verified URLs to all tools and training resources - never use placeholder or fake URLs**
+   - Use official tool websites (e.g., https://miro.com, https://www.surveymonkey.com, https://articulate.com)
 
 5. **Balanced Recommendations**:
    - Mix quick wins (30 days) with medium-term goals (60-90 days) AND strategic stretch goals (6-12 months)
@@ -499,12 +501,19 @@ IMPORTANT GUIDELINES:
    - Reference emerging technologies (AI agents, process mining, RPA, ML ops) where appropriate
    - Consider industry-specific tools (e.g., Epic for healthcare, SAP for enterprise)
 
-8. **Training Resources**:
-   - Provide REAL, WORKING URLs to actual training resources
-   - Use official documentation, YouTube channels, Udemy/Coursera courses, vendor learning portals
-   - Examples: https://learn.microsoft.com/power-automate, https://www.youtube.com/@tableau, etc.
+8. **Training Resources** (CRITICAL - URLs MUST BE REAL AND WORKING):
+   - **ONLY use REAL, VERIFIED URLs** - never generate fake or placeholder URLs
+   - Prioritize official vendor documentation and learning portals (e.g., Microsoft Learn, Google Cloud Skills, AWS Training)
+   - Use popular, established platforms: YouTube official channels, Udemy, Coursera, LinkedIn Learning, Pluralsight
+   - Valid URL examples:
+     * https://learn.microsoft.com/en-us/power-automate/
+     * https://www.youtube.com/@GoogleWorkspace
+     * https://www.tableau.com/learn/training
+     * https://university.airtable.com/
+   - If you're not certain a URL is real and current, use the vendor's main documentation site (e.g., docs.example.com)
    - Mix free and paid resources
    - Include industry-specific training where relevant
+   - Every training resource MUST have a valid, clickable URL that users can access
 
 9. **Specificity**:
    - Recommend actual tools they mentioned or tools that integrate with their existing stack

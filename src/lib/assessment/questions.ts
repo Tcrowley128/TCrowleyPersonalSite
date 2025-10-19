@@ -171,6 +171,27 @@ export const assessmentSteps: AssessmentStep[] = [
           { value: 'outsystems', label: 'OutSystems (low-code application platform)' },
           { value: 'none', label: 'None of these' }
         ]
+      },
+      {
+        key: 'erp_system',
+        type: 'single-select',
+        question: 'What ERP system do you use (if any)?',
+        description: 'Enterprise Resource Planning system',
+        required: false,
+        options: [
+          { value: 'sap', label: 'SAP' },
+          { value: 'oracle', label: 'Oracle ERP Cloud / NetSuite' },
+          { value: 'microsoft_dynamics', label: 'Microsoft Dynamics 365' },
+          { value: 'workday', label: 'Workday' },
+          { value: 'infor', label: 'Infor' },
+          { value: 'epicor', label: 'Epicor' },
+          { value: 'ifs', label: 'IFS' },
+          { value: 'sage', label: 'Sage' },
+          { value: 'acumatica', label: 'Acumatica' },
+          { value: 'custom_erp', label: 'Custom/Legacy ERP system' },
+          { value: 'none', label: 'No ERP system' },
+          { value: 'other', label: 'Other ERP system' }
+        ]
       }
     ]
   },
