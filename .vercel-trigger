@@ -1,2 +1,3 @@
 # Trigger fresh deployment
 # Trigger deployment after env var update
+# Force redeploy with correct env vars
