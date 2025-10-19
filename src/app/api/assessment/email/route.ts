@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>🚀 Your Digital Transformation Roadmap</h1>
-    <p>Your Personalized Recommendations</p>
+  <div class="header" style="background-color: #667eea; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px;">
+    <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🚀 Your Digital Transformation Roadmap</h1>
+    <p style="color: #ffffff; margin: 10px 0 0 0;">Your Personalized Recommendations</p>
   </div>
 
   ${assessment?.company_name ? `<p style="font-size: 18px; color: #667eea; font-weight: bold;">Assessment for: ${assessment.company_name}</p>` : ''}
