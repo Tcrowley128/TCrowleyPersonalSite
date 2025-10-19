@@ -14,19 +14,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Try both variable names (fallback for local dev)
+    const apiKey = process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY;
+
     // Debug logging for Vercel
     console.log('Environment check:', {
-      hasKey: !!process.env.ANTHROPIC_API_KEY,
-      keyLength: process.env.ANTHROPIC_API_KEY?.length || 0,
+      hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
+      hasAiKey: !!process.env.AI_API_KEY,
+      usingKey: apiKey ? 'found' : 'missing',
+      keyLength: apiKey?.length || 0,
       nodeEnv: process.env.NODE_ENV,
       vercelEnv: process.env.VERCEL_ENV,
-      allEnvKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC')),
-      testVar: process.env.TEST_VAR,
       totalEnvVars: Object.keys(process.env).length,
       sampleEnvKeys: Object.keys(process.env).slice(0, 10)
     });
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!apiKey) {
       return NextResponse.json(
         { error: 'Anthropic API key not configured' },
         { status: 500 }
@@ -35,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Initialize Anthropic client inside the function
     const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
+      apiKey: apiKey,
     });
 
     const supabase = createAdminClient();
