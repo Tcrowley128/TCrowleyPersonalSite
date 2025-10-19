@@ -82,9 +82,23 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (!regenerate && existingResults) {
+      // Fetch assessment metadata for cached results too
+      const { data: assessment } = await supabase
+        .from('assessments')
+        .select('company_name, company_size, industry')
+        .eq('id', assessment_id)
+        .single();
+
+      const resultsWithMetadata = {
+        ...existingResults,
+        company_name: assessment?.company_name,
+        company_size: assessment?.company_size,
+        industry: assessment?.industry
+      };
+
       return NextResponse.json({
         success: true,
-        results: existingResults,
+        results: resultsWithMetadata,
         cached: true,
         regeneration_count: existingResults.regeneration_count || 0
       });

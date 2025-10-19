@@ -6,6 +6,15 @@ import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, 
 export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
   return (
     <div className="space-y-6">
+      {/* Stats Grid - 5 cards to emphasize People Strategy */}
+      <div className="grid md:grid-cols-5 gap-4">
+        <StatCard title="Quick Wins Ready" value={quickWinsCount} icon={Zap} color="green" />
+        <StatCard title="Data Maturity" value={`${maturity?.data_strategy?.score || 0}/5`} icon={Target} color="blue" />
+        <StatCard title="Automation" value={`${maturity?.automation_strategy?.score || 0}/5`} icon={TrendingUp} color="purple" />
+        <StatCard title="AI Readiness" value={`${maturity?.ai_strategy?.score || 0}/5`} icon={Star} color="orange" />
+        <StatCard title="People & Change" value={`${maturity?.people_strategy?.score || 0}/5`} icon={Users} color="teal" />
+      </div>
+
       {/* Executive Summary - Clean Design */}
       <div className="bg-white dark:bg-slate-700 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
@@ -29,15 +38,6 @@ export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
             <p className="text-gray-900 dark:text-white">{priority?.recommended_starting_point}</p>
           </div>
         </div>
-      </div>
-
-      {/* Stats Grid - 5 cards to emphasize People Strategy */}
-      <div className="grid md:grid-cols-5 gap-4">
-        <StatCard title="Quick Wins Ready" value={quickWinsCount} icon={Zap} color="green" />
-        <StatCard title="Data Maturity" value={`${maturity?.data_strategy?.score || 0}/5`} icon={Target} color="blue" />
-        <StatCard title="Automation" value={`${maturity?.automation_strategy?.score || 0}/5`} icon={TrendingUp} color="purple" />
-        <StatCard title="AI Readiness" value={`${maturity?.ai_strategy?.score || 0}/5`} icon={Star} color="orange" />
-        <StatCard title="People & Change" value={`${maturity?.people_strategy?.score || 0}/5`} icon={Users} color="teal" />
       </div>
     </div>
   );

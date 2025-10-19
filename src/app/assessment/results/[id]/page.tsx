@@ -847,7 +847,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -859,10 +859,10 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             Assessment Complete
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Your Digital Transformation Roadmap
+            {results.company_name || 'Your'} Digital Transformation Roadmap
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
-            Personalized recommendations powered by Claude AI
+            Personalized recommendations powered by Tyler's AI
           </p>
 
           {/* Error Message */}
@@ -907,7 +907,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         {/* Tabs */}
         <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8 overflow-x-hidden">
           <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-hidden">
-            <div className="flex overflow-x-auto">
+            <div className="flex overflow-x-auto justify-center">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
