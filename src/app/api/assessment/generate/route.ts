@@ -28,19 +28,51 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
 
     // Check if results already exist
+    // Note: We explicitly list all columns EXCEPT project_tracking to avoid schema cache issues
     const { data: existingResults } = await supabase
       .from('assessment_results')
-      .select('*')
+      .select(`
+        id,
+        assessment_id,
+        company_name,
+        company_size,
+        industry,
+        data_strategy,
+        automation_strategy,
+        ai_strategy,
+        people_strategy,
+        agile_framework,
+        tier1_citizen_led,
+        tier2_hybrid,
+        tier3_technical,
+        quick_wins,
+        roadmap,
+        pilot_recommendations,
+        technology_recommendations,
+        existing_tool_opportunities,
+        maturity_assessment,
+        priority_matrix,
+        risk_considerations,
+        change_management_plan,
+        training_recommendations,
+        success_metrics,
+        long_term_vision,
+        regeneration_count,
+        generated_by,
+        model_version,
+        prompt_tokens,
+        completion_tokens,
+        generated_at,
+        created_at,
+        updated_at
+      `)
       .eq('assessment_id', assessment_id)
       .single();
 
     if (!regenerate && existingResults) {
-      // Remove project_tracking from cached results to avoid schema cache issues
-      const { project_tracking, ...resultsWithoutProjectTracking } = existingResults;
-
       return NextResponse.json({
         success: true,
-        results: resultsWithoutProjectTracking,
+        results: existingResults,
         cached: true,
         regeneration_count: existingResults.regeneration_count || 0
       });
