@@ -231,9 +231,17 @@ export async function POST(request: NextRequest) {
       throw saveError;
     }
 
+    // Add assessment metadata to results for frontend/PDF use
+    const resultsWithMetadata = {
+      ...savedResults,
+      company_name: assessment.company_name,
+      company_size: assessment.company_size,
+      industry: assessment.industry
+    };
+
     return NextResponse.json({
       success: true,
-      results: savedResults,
+      results: resultsWithMetadata,
       cached: false,
       regeneration_count: newRegenerationCount,
       regenerations_remaining: 2 - newRegenerationCount,
