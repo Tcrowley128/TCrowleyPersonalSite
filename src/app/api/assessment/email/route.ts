@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
   </div>
 
   <div class="footer">
-    <p>This assessment was generated using Claude AI based on your specific business context.</p>
+    <p>This assessment was generated using Tyler's AI based on your specific business context.</p>
     <p>Questions? Ready to discuss implementation? Let's connect!</p>
   </div>
 </body>
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: process.env.FROM_EMAIL || 'onboarding@resend.dev',
+      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
       to: recipient_email,
       subject: '🚀 Your Digital Transformation Roadmap is Ready',
       html: emailHtml,
