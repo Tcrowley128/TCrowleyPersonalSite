@@ -906,13 +906,13 @@ function TierSection({ title, subtitle, tools, tierColor }: any) {
 }
 
 function ToolCard({ tool, tierColor }: any) {
-  const tierColors = {
+  const tierColors: Record<'green' | 'blue' | 'purple', string> = {
     green: 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10',
     blue: 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10',
     purple: 'border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/10'
   };
 
-  const costIcons = {
+  const costIcons: Record<string, string> = {
     FREE: '🆓',
     '$': '💵',
     '$$': '💰',
@@ -921,7 +921,7 @@ function ToolCard({ tool, tierColor }: any) {
   };
 
   return (
-    <div className={`border-2 rounded-lg p-6 ${tierColors[tierColor] || tierColors.blue}`}>
+    <div className={`border-2 rounded-lg p-6 ${tierColors[tierColor as keyof typeof tierColors] || tierColors.blue}`}>
       <div className="flex items-start justify-between mb-3">
         <h4 className="text-lg font-bold text-gray-900 dark:text-white">{tool.name}</h4>
         <span className="text-2xl">{costIcons[tool.cost] || '💰'}</span>
