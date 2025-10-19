@@ -3,10 +3,6 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import Anthropic from '@anthropic-ai/sdk';
 import { buildAssessmentPrompt } from '@/lib/assessment/ai-prompt';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
-
 export async function POST(request: NextRequest) {
   try {
     const { assessment_id, regenerate = false } = await request.json();
@@ -23,7 +19,8 @@ export async function POST(request: NextRequest) {
       hasKey: !!process.env.ANTHROPIC_API_KEY,
       keyLength: process.env.ANTHROPIC_API_KEY?.length || 0,
       nodeEnv: process.env.NODE_ENV,
-      vercelEnv: process.env.VERCEL_ENV
+      vercelEnv: process.env.VERCEL_ENV,
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('ANTHROPIC'))
     });
 
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -32,6 +29,11 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // Initialize Anthropic client inside the function
+    const anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
 
     const supabase = createAdminClient();
 
