@@ -28,15 +28,12 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
 
     // Check if results already exist
-    // Note: We explicitly list all columns EXCEPT project_tracking to avoid schema cache issues
+    // Note: We explicitly list columns to avoid schema cache issues
     const { data: existingResults } = await supabase
       .from('assessment_results')
       .select(`
         id,
         assessment_id,
-        company_name,
-        company_size,
-        industry,
         data_strategy,
         automation_strategy,
         ai_strategy,
@@ -57,14 +54,13 @@ export async function POST(request: NextRequest) {
         training_recommendations,
         success_metrics,
         long_term_vision,
+        project_tracking,
         regeneration_count,
         generated_by,
         model_version,
         prompt_tokens,
         completion_tokens,
-        generated_at,
-        created_at,
-        updated_at
+        generated_at
       `)
       .eq('assessment_id', assessment_id)
       .single();
@@ -158,14 +154,9 @@ export async function POST(request: NextRequest) {
       ? (existingResults.regeneration_count || 0) + 1
       : 0;
 
-    // Save results to database (including assessment metadata for reference)
+    // Save results to database
     const resultsData = {
       assessment_id,
-
-      // Assessment metadata
-      company_name: assessment.company_name,
-      company_size: assessment.company_size,
-      industry: assessment.industry,
 
       // Strategic recommendations
       data_strategy: parsedResults.maturity_assessment?.data_strategy || null,
@@ -209,8 +200,8 @@ export async function POST(request: NextRequest) {
       },
       success_metrics: parsedResults.success_metrics || null,
 
-      // Project tracking - temporarily commented out due to schema cache issue
-      // project_tracking: parsedResults.project_tracking || null,
+      // Project tracking
+      project_tracking: parsedResults.project_tracking || null,
 
       // Long-term vision
       long_term_vision: parsedResults.long_term_vision || null,
