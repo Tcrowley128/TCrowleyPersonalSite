@@ -785,9 +785,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Change Management Frameworks */}
       {changeMgmt?.recommended_frameworks && changeMgmt.recommended_frameworks.length > 0 && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="text-indigo-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Recommended Change Management Frameworks</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <BookOpen className="text-indigo-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Recommended Change Management Frameworks</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`Can you explain these change management frameworks in more detail? Which one would be best for my organization and how do I get started?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Proven methodologies to guide your transformation</p>
 
@@ -830,9 +838,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Change Management Tools */}
       {changeMgmt?.recommended_tools && changeMgmt.recommended_tools.length > 0 && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="text-purple-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Recommended Change Management Tools</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Target className="text-purple-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Recommended Change Management Tools</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`Tell me more about these change management tools. How do I choose between them and what's the implementation process?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Practical tools to support training, communication, and feedback</p>
 
