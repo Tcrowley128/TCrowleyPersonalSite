@@ -74,6 +74,10 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
       openWithMessage: (message: string) => {
         setIsOpen(true);
         setIsExpanded(true); // Always open in expanded view
+        // Start a new conversation when opening with a message
+        setConversationId(null);
+        setMessages([]);
+        setError("");
         setInputMessage(message);
         // Auto-send after a brief delay to allow UI to open
         setTimeout(() => {
