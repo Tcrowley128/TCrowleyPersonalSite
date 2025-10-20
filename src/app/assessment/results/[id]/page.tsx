@@ -19,6 +19,8 @@ import {
 } from '@/components/assessment/results/ResultComponents';
 import SnakeGame from '@/components/assessment/SnakeGame';
 import AssessmentChat, { AssessmentChatHandle } from '@/components/assessment/AssessmentChat';
+import AssessmentAnswersEditor from '@/components/assessment/AssessmentAnswersEditor';
+import VersionSelector from '@/components/assessment/VersionSelector';
 
 interface ResultsPageProps {
   params: Promise<{ id: string }>;
@@ -905,6 +907,21 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
               Email Me
             </button>
           </div>
+        </motion.div>
+
+        {/* Version Selector & Assessment Editor */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <VersionSelector assessmentId={id} />
+          <AssessmentAnswersEditor
+            assessmentId={id}
+            onRegenerateComplete={() => {
+              window.location.reload();
+            }}
+          />
         </motion.div>
 
         {/* Tabs */}
