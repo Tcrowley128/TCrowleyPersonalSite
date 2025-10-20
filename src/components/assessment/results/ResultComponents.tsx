@@ -1,4 +1,20 @@
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield } from 'lucide-react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles } from 'lucide-react';
+
+// ============================================================================
+// ASK AI BUTTON - Reusable component for contextual AI chat
+// ============================================================================
+function AskAIButton({ onClick, label = "Ask AI" }: { onClick: () => void; label?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-semibold rounded-lg transition-all hover:shadow-md"
+      title={label}
+    >
+      <Sparkles size={14} />
+      <span>{label}</span>
+    </button>
+  );
+}
 
 // ============================================================================
 // OVERVIEW TAB - Better Executive Summary
@@ -90,7 +106,7 @@ function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
 // ============================================================================
 // QUICK WINS TAB
 // ============================================================================
-export function QuickWinsTab({ quickWins, existing }: any) {
+export function QuickWinsTab({ quickWins, existing, onAskAI }: any) {
   return (
     <div className="space-y-8">
       {/* Quick Wins Section */}
@@ -106,7 +122,7 @@ export function QuickWinsTab({ quickWins, existing }: any) {
         <div className="grid gap-4">
           {quickWins && quickWins.length > 0 ? (
             quickWins.map((win: any, index: number) => (
-              <QuickWinCard key={index} win={win} index={index} />
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} />
             ))
           ) : (
             <p className="text-gray-500">No quick wins available</p>
@@ -136,7 +152,7 @@ export function QuickWinsTab({ quickWins, existing }: any) {
   );
 }
 
-function QuickWinCard({ win, index }: any) {
+function QuickWinCard({ win, index, onAskAI }: any) {
   const difficultyColors: Record<'LOW' | 'MEDIUM' | 'HIGH', string> = {
     LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     MEDIUM: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
@@ -146,7 +162,7 @@ function QuickWinCard({ win, index }: any) {
   return (
     <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3 flex-1">
           <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">
             {index + 1}
           </div>
@@ -155,9 +171,17 @@ function QuickWinCard({ win, index }: any) {
             <p className="text-gray-600 dark:text-gray-300">{win.description}</p>
           </div>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[win.difficulty as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
-          {win.difficulty}
-        </span>
+        <div className="flex items-start gap-2 flex-shrink-0 ml-3">
+          {onAskAI && (
+            <AskAIButton
+              onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
+              label="Ask AI"
+            />
+          )}
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[win.difficulty as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
+            {win.difficulty}
+          </span>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
@@ -260,7 +284,7 @@ function ExistingToolCard({ opportunity }: any) {
 // ============================================================================
 // RECOMMENDATIONS TAB
 // ============================================================================
-export function RecommendationsTab({ tier1, tier2, tier3 }: any) {
+export function RecommendationsTab({ tier1, tier2, tier3, onAskAI }: any) {
   return (
     <div className="space-y-8">
       {/* Tier 1: Citizen-Led */}
@@ -270,6 +294,7 @@ export function RecommendationsTab({ tier1, tier2, tier3 }: any) {
           subtitle="No IT required - business users can implement these"
           tools={tier1}
           tierColor="green"
+          onAskAI={onAskAI}
         />
       )}
 
@@ -280,6 +305,7 @@ export function RecommendationsTab({ tier1, tier2, tier3 }: any) {
           subtitle="Business + IT collaboration"
           tools={tier2}
           tierColor="blue"
+          onAskAI={onAskAI}
         />
       )}
 
@@ -290,6 +316,7 @@ export function RecommendationsTab({ tier1, tier2, tier3 }: any) {
           subtitle="Requires development resources or IT implementation"
           tools={tier3}
           tierColor="purple"
+          onAskAI={onAskAI}
         />
       )}
     </div>
@@ -455,7 +482,7 @@ function RoadmapPhase({ month, index }: any) {
 // ============================================================================
 // MATURITY TAB
 // ============================================================================
-export function MaturityTab({ maturity }: any) {
+export function MaturityTab({ maturity, onAskAI }: any) {
   const pillars = [
     { key: 'data_strategy', title: 'Data Strategy', icon: TrendingUp, color: 'blue', data: maturity?.data_strategy },
     { key: 'automation_strategy', title: 'Automation Strategy', icon: Zap, color: 'purple', data: maturity?.automation_strategy },
@@ -472,14 +499,14 @@ export function MaturityTab({ maturity }: any) {
 
       <div className="grid md:grid-cols-2 gap-6">
         {pillars.map((pillar) => (
-          <MaturityPillar key={pillar.key} pillar={pillar} />
+          <MaturityPillar key={pillar.key} pillar={pillar} onAskAI={onAskAI} />
         ))}
       </div>
     </div>
   );
 }
 
-function MaturityPillar({ pillar }: any) {
+function MaturityPillar({ pillar, onAskAI }: any) {
   const Icon = pillar.icon;
   const score = pillar.data?.score || 0;
 
@@ -492,11 +519,11 @@ function MaturityPillar({ pillar }: any) {
 
   return (
     <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <div className={`w-12 h-12 rounded-lg ${colorClasses[pillar.color as keyof typeof colorClasses]} flex items-center justify-center`}>
+      <div className="flex items-start gap-3 mb-4">
+        <div className={`w-12 h-12 rounded-lg ${colorClasses[pillar.color as keyof typeof colorClasses]} flex items-center justify-center flex-shrink-0`}>
           <Icon size={24} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h4 className="text-lg font-bold text-gray-900 dark:text-white">{pillar.title}</h4>
           <div className="flex items-center gap-2 mt-1">
             <div className="flex gap-1">
@@ -514,6 +541,14 @@ function MaturityPillar({ pillar }: any) {
             <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{score}/5</span>
           </div>
         </div>
+        {onAskAI && (
+          <div className="flex-shrink-0">
+            <AskAIButton
+              onClick={() => onAskAI(`How can I improve my ${pillar.title} score from ${score}/5? What are the most important steps to take and what quick wins should I prioritize?`)}
+              label="Ask AI"
+            />
+          </div>
+        )}
       </div>
 
       {pillar.data?.gap_analysis && (
@@ -682,7 +717,7 @@ export function LongTermVisionTab({ vision }: any) {
 // ============================================================================
 // CHANGE MANAGEMENT TAB
 // ============================================================================
-export function ChangeManagementTab({ changeMgmt, successMetrics, projectTracking }: any) {
+export function ChangeManagementTab({ changeMgmt, successMetrics, projectTracking, onAskAI }: any) {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -693,9 +728,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Communication Strategy */}
       {changeMgmt?.communication_strategy && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Target className="text-blue-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Communication Strategy</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Target className="text-blue-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Communication Strategy</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`Can you provide specific examples and templates for my communication strategy? What are the best practices for communicating digital transformation to different stakeholder groups?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-gray-700 dark:text-gray-300">{changeMgmt.communication_strategy}</p>
         </div>
@@ -704,9 +747,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Stakeholder Engagement */}
       {changeMgmt?.stakeholder_engagement && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Users className="text-purple-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Stakeholder Engagement</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Users className="text-purple-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Stakeholder Engagement</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`How do I identify and engage key stakeholders for my transformation? Can you provide a stakeholder mapping framework and engagement tactics?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-gray-700 dark:text-gray-300">{changeMgmt.stakeholder_engagement}</p>
         </div>
@@ -715,9 +766,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Training Approach */}
       {changeMgmt?.training_approach && (
         <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-200 dark:border-green-800 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <CheckCircle2 className="text-green-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Training Approach</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="text-green-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Training Approach</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`What specific training programs and materials should I create? How do I measure training effectiveness and ensure knowledge retention?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-gray-700 dark:text-gray-300">{changeMgmt.training_approach}</p>
         </div>
@@ -788,9 +847,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Pilot Recommendations */}
       {changeMgmt?.pilot_recommendations && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap className="text-yellow-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Pilot Recommendations</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Zap className="text-yellow-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Pilot Recommendations</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`Help me design a pilot program for my transformation. What metrics should I track, how do I select the pilot group, and what's the ideal timeline?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
           <p className="text-gray-700 dark:text-gray-300">{changeMgmt.pilot_recommendations}</p>
         </div>
@@ -905,7 +972,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
   );
 }
 
-function TierSection({ title, subtitle, tools, tierColor }: any) {
+function TierSection({ title, subtitle, tools, tierColor, onAskAI }: any) {
   return (
     <div>
       <div className="mb-6">
@@ -915,14 +982,14 @@ function TierSection({ title, subtitle, tools, tierColor }: any) {
 
       <div className="grid md:grid-cols-2 gap-4">
         {tools.map((tool: any, index: number) => (
-          <ToolCard key={index} tool={tool} tierColor={tierColor} />
+          <ToolCard key={index} tool={tool} tierColor={tierColor} onAskAI={onAskAI} />
         ))}
       </div>
     </div>
   );
 }
 
-function ToolCard({ tool, tierColor }: any) {
+function ToolCard({ tool, tierColor, onAskAI }: any) {
   const tierColors: Record<'green' | 'blue' | 'purple', string> = {
     green: 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10',
     blue: 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/10',
@@ -940,8 +1007,16 @@ function ToolCard({ tool, tierColor }: any) {
   return (
     <div className={`border-2 rounded-lg p-6 ${tierColors[tierColor as keyof typeof tierColors] || tierColors.blue}`}>
       <div className="flex items-start justify-between mb-3">
-        <h4 className="text-lg font-bold text-gray-900 dark:text-white">{tool.name}</h4>
-        <span className="text-2xl">{costIcons[tool.cost] || '💰'}</span>
+        <h4 className="text-lg font-bold text-gray-900 dark:text-white flex-1">{tool.name}</h4>
+        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+          {onAskAI && (
+            <AskAIButton
+              onClick={() => onAskAI(`Why was ${tool.name} recommended for my company? Can you explain the implementation steps, costs, and expected ROI in detail?`)}
+              label="Ask AI"
+            />
+          )}
+          <span className="text-2xl">{costIcons[tool.cost] || '💰'}</span>
+        </div>
       </div>
 
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{tool.description}</p>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { use } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,6 +18,7 @@ import {
   ChangeManagementTab
 } from '@/components/assessment/results/ResultComponents';
 import SnakeGame from '@/components/assessment/SnakeGame';
+import AssessmentChat, { AssessmentChatHandle } from '@/components/assessment/AssessmentChat';
 
 interface ResultsPageProps {
   params: Promise<{ id: string }>;
@@ -38,12 +39,9 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showSnakeGame, setShowSnakeGame] = useState(false);
   const [regenerationCount, setRegenerationCount] = useState(0);
   const [regenerationsRemaining, setRegenerationsRemaining] = useState(2);
+  const chatRef = useRef<AssessmentChatHandle>(null);
 
-  useEffect(() => {
-    generateResults();
-  }, [id]);
-
-  const generateResults = async () => {
+  const generateResults = useCallback(async () => {
     setIsLoading(true);
     setError('');
 
@@ -69,7 +67,11 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    generateResults();
+  }, [generateResults]);
 
   const handleRegenerate = async () => {
     if (regenerationCount >= 2) {
@@ -944,13 +946,22 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'quick-wins' && (
                 <TabContent key="quick-wins">
-                  <QuickWinsTab quickWins={quickWins} existing={existingOpportunities} />
+                  <QuickWinsTab
+                    quickWins={quickWins}
+                    existing={existingOpportunities}
+                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                  />
                 </TabContent>
               )}
 
               {activeTab === 'recommendations' && (
                 <TabContent key="recommendations">
-                  <RecommendationsTab tier1={tier1} tier2={tier2} tier3={tier3} />
+                  <RecommendationsTab
+                    tier1={tier1}
+                    tier2={tier2}
+                    tier3={tier3}
+                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                  />
                 </TabContent>
               )}
 
@@ -962,7 +973,10 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'maturity' && (
                 <TabContent key="maturity">
-                  <MaturityTab maturity={maturityData} />
+                  <MaturityTab
+                    maturity={maturityData}
+                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                  />
                 </TabContent>
               )}
 
@@ -974,12 +988,20 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'change-mgmt' && (
                 <TabContent key="change-mgmt">
-                  <ChangeManagementTab changeMgmt={changeMgmt} successMetrics={results.success_metrics} projectTracking={projectTracking} />
+                  <ChangeManagementTab
+                    changeMgmt={changeMgmt}
+                    successMetrics={results.success_metrics}
+                    projectTracking={projectTracking}
+                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                  />
                 </TabContent>
               )}
             </AnimatePresence>
           </div>
         </div>
+
+        {/* AI Chat Assistant */}
+        <AssessmentChat ref={chatRef} assessmentId={id} />
 
         {/* Email Modal */}
         {showEmailModal && (
