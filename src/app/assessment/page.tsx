@@ -14,6 +14,7 @@ import {
   Shield,
   Lightbulb
 } from 'lucide-react';
+import BetaBadge from '@/components/BetaBadge';
 
 const benefits = [
   {
@@ -95,6 +96,7 @@ export default function AssessmentLanding() {
           >
             <Sparkles size={16} />
             Free Digital Transformation Assessment
+            <BetaBadge size="sm" />
           </motion.div>
 
           <motion.h1
