@@ -100,7 +100,7 @@ export default function Navigation() {
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
-                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors duration-200 whitespace-nowrap relative inline-flex items-center"
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-base font-medium transition-colors duration-200 whitespace-nowrap relative inline-flex items-center"
                   >
                     {item.label}
                     {item.label === 'Free Assessment' && (
@@ -174,7 +174,7 @@ export default function Navigation() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.05 * index }}
                       onClick={handleNavigation}
-                      className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium transition-colors duration-200 whitespace-nowrap relative inline-flex items-center"
+                      className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-lg font-medium transition-colors duration-200 whitespace-nowrap relative inline-flex items-center"
                     >
                       {item.label}
                       {item.label === 'Free Assessment' && (

@@ -892,14 +892,14 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             <button
               onClick={handleDownloadPDF}
               disabled={isDownloadingPDF}
-              className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:border-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className={isDownloadingPDF ? 'animate-bounce' : ''} size={20} />
               {isDownloadingPDF ? 'Generating...' : 'Download PDF'}
             </button>
             <button
               onClick={() => setShowEmailModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors"
+              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:border-blue-600 transition-colors"
             >
               <Mail size={20} />
               Email Me
@@ -949,7 +949,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                   <QuickWinsTab
                     quickWins={quickWins}
                     existing={existingOpportunities}
-                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                    onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                   />
                 </TabContent>
               )}
@@ -960,7 +960,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     tier1={tier1}
                     tier2={tier2}
                     tier3={tier3}
-                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                    onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                   />
                 </TabContent>
               )}
@@ -975,7 +975,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                 <TabContent key="maturity">
                   <MaturityTab
                     maturity={maturityData}
-                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                    onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                   />
                 </TabContent>
               )}
@@ -992,7 +992,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     changeMgmt={changeMgmt}
                     successMetrics={results.success_metrics}
                     projectTracking={projectTracking}
-                    onAskAI={(message) => chatRef.current?.openWithMessage(message)}
+                    onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                   />
                 </TabContent>
               )}
