@@ -271,7 +271,7 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                          className={`max-w-[80%] rounded-2xl px-4 py-2 break-words overflow-wrap-anywhere ${
                             msg.role === 'user'
                               ? 'bg-blue-600 text-white'
                               : 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white'
@@ -286,9 +286,9 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
                             </div>
                           )}
                           {msg.role === 'user' ? (
-                            <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                            <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
                           ) : (
-                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5">
+                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-p:break-words prose-li:break-words prose-code:break-words">
                               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                 {msg.content}
                               </ReactMarkdown>
