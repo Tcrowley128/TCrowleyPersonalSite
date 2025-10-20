@@ -6,11 +6,11 @@ import Anthropic from '@anthropic-ai/sdk';
 // Regenerate assessment results with updated responses
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: assessmentId } = params;
+    const { id: assessmentId } = await params;
     const body = await request.json();
 
     const { changesSummary } = body; // Optional: description of what changed

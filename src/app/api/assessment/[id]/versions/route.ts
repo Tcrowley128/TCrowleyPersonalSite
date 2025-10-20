@@ -5,11 +5,11 @@ import { createClient } from '@/lib/supabase/server';
 // List all versions of an assessment
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: assessmentId } = params;
+    const { id: assessmentId } = await params;
 
     // Fetch all versions
     const { data: versions, error } = await supabase
@@ -42,11 +42,11 @@ export async function GET(
 // Restore a specific version
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: assessmentId } = params;
+    const { id: assessmentId } = await params;
     const body = await request.json();
 
     const { version_number } = body;

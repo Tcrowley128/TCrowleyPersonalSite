@@ -5,11 +5,11 @@ import { createClient } from '@/lib/supabase/server';
 // Fetch all assessment responses for display and editing
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: assessmentId } = params;
+    const { id: assessmentId } = await params;
 
     // Fetch all responses ordered by step and question
     const { data: responses, error } = await supabase
@@ -59,11 +59,11 @@ export async function GET(
 // Update specific assessment responses
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { id: assessmentId } = params;
+    const { id: assessmentId } = await params;
     const body = await request.json();
 
     const { updates } = body; // Array of { question_key, answer_value }
