@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, Loader2, Sparkles } from 'lucide-react';
+import { MessageCircle, X, Send, Loader2, Sparkles, Maximize2, Minimize2, AlertCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -20,6 +22,7 @@ export interface AssessmentChatHandle {
 
 const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ assessmentId }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -153,6 +156,11 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
     "Can you explain this recommendation in more detail?"
   ];
 
+  // Dynamic styles based on expanded state
+  const chatPanelStyles = isExpanded
+    ? "fixed inset-4 md:inset-8 z-50 max-w-6xl max-h-[90vh] mx-auto my-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+    : "fixed bottom-6 right-6 z-50 w-[450px] h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden";
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -190,26 +198,43 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
 
             {/* Chat Panel */}
             <motion.div
-              initial={{ opacity: 0, x: 100, y: 100 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              exit={{ opacity: 0, x: 100, y: 100 }}
-              className="fixed bottom-6 right-6 z-50 w-[450px] h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+              initial={{ opacity: 0, x: isExpanded ? 0 : 100, y: isExpanded ? 0 : 100, scale: isExpanded ? 0.9 : 1 }}
+              animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+              exit={{ opacity: 0, x: isExpanded ? 0 : 100, y: isExpanded ? 0 : 100, scale: isExpanded ? 0.9 : 1 }}
+              className={chatPanelStyles}
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  <div>
+              <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <Sparkles className="w-5 h-5 flex-shrink-0" />
+                  <div className="min-w-0">
                     <h3 className="font-bold text-lg">Tyler's AI Assistant</h3>
                     <p className="text-xs text-blue-100">Ask me anything about your assessment</p>
                   </div>
                 </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="hover:bg-white/20 p-2 rounded-lg transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                    title={isExpanded ? "Minimize" : "Expand"}
+                  >
+                    {isExpanded ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+                  </button>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Disclaimer */}
+              <div className="bg-amber-50 dark:bg-amber-900/20 border-b border-amber-200 dark:border-amber-800 px-4 py-2 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-800 dark:text-amber-200">
+                  <strong>AI-Generated Content:</strong> Responses may contain errors. Always verify important information and consult with professionals for critical decisions.
+                </p>
               </div>
 
               {/* Messages Area */}
@@ -223,7 +248,7 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                       I have full context of your assessment results. Ask me anything!
                     </p>
-                    <div className="space-y-2 w-full">
+                    <div className="space-y-2 w-full max-w-md">
                       <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
                         Try asking:
                       </p>
@@ -260,7 +285,15 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
                               </span>
                             </div>
                           )}
-                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                          {msg.role === 'user' ? (
+                            <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                          ) : (
+                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {msg.content}
+                              </ReactMarkdown>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -283,13 +316,13 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(({ 
 
               {/* Error Message */}
               {error && (
-                <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800">
+                <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800 flex-shrink-0">
                   <p className="text-xs text-red-800 dark:text-red-200">{error}</p>
                 </div>
               )}
 
               {/* Input Area */}
-              <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+              <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
                 <div className="flex gap-2">
                   <textarea
                     ref={inputRef}

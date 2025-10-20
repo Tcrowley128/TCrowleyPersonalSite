@@ -866,9 +866,17 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Project Tracking */}
       {projectTracking && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <CheckCircle2 className="text-blue-600" size={24} />
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white">Project Tracking & Management</h4>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="text-blue-600" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Project Tracking & Management</h4>
+            </div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`What project tracking tools and methodologies would work best for my organization? Can you provide guidance on implementing these recommendations?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
 
           {projectTracking.recommended_approach && (
