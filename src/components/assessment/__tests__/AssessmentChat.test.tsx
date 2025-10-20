@@ -7,15 +7,17 @@ import AssessmentChat from '../AssessmentChat';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: React.ComponentProps<'button'>) => <button {...props}>{children}</button>,
+    div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
   },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
+  AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock react-markdown
 jest.mock('react-markdown', () => {
-  return ({ children }: any) => <div>{children}</div>;
+  const MockMarkdown = ({ children }: { children: React.ReactNode }) => <div>{children}</div>;
+  MockMarkdown.displayName = 'ReactMarkdown';
+  return MockMarkdown;
 });
 
 // Mock remark-gfm
