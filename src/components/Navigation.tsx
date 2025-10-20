@@ -85,7 +85,7 @@ export default function Navigation() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="font-bold text-xl text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200"
+              className="font-bold text-xl text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 whitespace-nowrap"
             >
               Tyler Crowley
             </motion.div>
@@ -104,7 +104,7 @@ export default function Navigation() {
                   >
                     {item.label}
                     {item.label === 'Free Assessment' && (
-                      <span className="ml-[-4px] relative z-10">
+                      <span className="ml-1 relative z-10">
                         <BetaBadge size="sm" />
                       </span>
                     )}
@@ -178,7 +178,7 @@ export default function Navigation() {
                     >
                       {item.label}
                       {item.label === 'Free Assessment' && (
-                        <span className="ml-[-4px] relative z-10">
+                        <span className="ml-1 relative z-10">
                           <BetaBadge size="sm" />
                         </span>
                       )}
