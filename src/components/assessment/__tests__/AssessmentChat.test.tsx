@@ -7,8 +7,8 @@ import AssessmentChat from '../AssessmentChat';
 // Mock framer-motion
 jest.mock('framer-motion', () => ({
   motion: {
-    button: ({ children, ...props }: React.ComponentProps<'button'>) => <button {...props}>{children}</button>,
-    div: ({ children, ...props }: React.ComponentProps<'div'>) => <div {...props}>{children}</div>,
+    button: ({ children, whileHover, whileTap, initial, animate, exit, ...props }: React.ComponentProps<'button'> & Record<string, unknown>) => <button {...props}>{children}</button>,
+    div: ({ children, whileHover, whileTap, initial, animate, exit, ...props }: React.ComponentProps<'div'> & Record<string, unknown>) => <div {...props}>{children}</div>,
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -35,6 +35,9 @@ describe('AssessmentChat', () => {
       ok: true,
       json: async () => ({ conversations: [] }),
     });
+
+    // Mock scrollIntoView
+    Element.prototype.scrollIntoView = jest.fn();
   });
 
   describe('Floating Button', () => {
@@ -218,14 +221,13 @@ describe('AssessmentChat', () => {
       const button = screen.getByText('Ask Tyler\'s AI');
       fireEvent.click(button);
 
-      await waitFor(async () => {
-        const input = screen.getByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
-        fireEvent.change(input, { target: { value: 'Test question' } });
+      // Wait for modal to open and input to be available
+      const input = await screen.findByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: 'Test question' } });
 
-        const sendButtons = screen.getAllByRole('button');
-        const sendButton = sendButtons[sendButtons.length - 1];
-        fireEvent.click(sendButton);
-      });
+      const sendButtons = screen.getAllByRole('button');
+      const sendButton = sendButtons[sendButtons.length - 1];
+      fireEvent.click(sendButton);
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
@@ -271,14 +273,13 @@ describe('AssessmentChat', () => {
       const button = screen.getByText('Ask Tyler\'s AI');
       fireEvent.click(button);
 
-      await waitFor(async () => {
-        const input = screen.getByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
-        fireEvent.change(input, { target: { value: 'Test question' } });
+      // Wait for modal to open and input to be available
+      const input = await screen.findByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: 'Test question' } });
 
-        const sendButtons = screen.getAllByRole('button');
-        const sendButton = sendButtons[sendButtons.length - 1];
-        fireEvent.click(sendButton);
-      });
+      const sendButtons = screen.getAllByRole('button');
+      const sendButton = sendButtons[sendButtons.length - 1];
+      fireEvent.click(sendButton);
 
       await waitFor(() => {
         expect(screen.getByText(/Tyler's AI is thinking/)).toBeInTheDocument();
@@ -299,14 +300,13 @@ describe('AssessmentChat', () => {
       const button = screen.getByText('Ask Tyler\'s AI');
       fireEvent.click(button);
 
-      await waitFor(async () => {
-        const input = screen.getByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
-        fireEvent.change(input, { target: { value: 'Test question' } });
+      // Wait for modal to open and input to be available
+      const input = await screen.findByPlaceholderText('Ask about your assessment...') as HTMLTextAreaElement;
+      fireEvent.change(input, { target: { value: 'Test question' } });
 
-        const sendButtons = screen.getAllByRole('button');
-        const sendButton = sendButtons[sendButtons.length - 1];
-        fireEvent.click(sendButton);
-      });
+      const sendButtons = screen.getAllByRole('button');
+      const sendButton = sendButtons[sendButtons.length - 1];
+      fireEvent.click(sendButton);
 
       await waitFor(() => {
         expect(screen.getByText(/Failed to send message/)).toBeInTheDocument();

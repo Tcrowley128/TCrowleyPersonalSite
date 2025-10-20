@@ -46,7 +46,8 @@ describe('BetaBadge', () => {
   it('has correct rotation style', () => {
     render(<BetaBadge />);
     const badge = screen.getByText('beta');
-    expect(badge).toHaveStyle({ transform: 'rotate(-8deg)' });
+    // Check that transform includes rotate(-8deg) - may also include scale from animation
+    expect(badge.style.transform).toContain('rotate(-8deg)');
   });
 
   it('has gradient background', () => {
