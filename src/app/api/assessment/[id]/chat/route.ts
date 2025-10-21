@@ -18,16 +18,9 @@ export async function POST(
       );
     }
 
-    // Check authentication
+    // Get user if authenticated (but don't require it for shared assessments)
     const userSupabase = await createClient();
     const { data: { user } } = await userSupabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const apiKey = process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
@@ -68,7 +61,7 @@ export async function POST(
         .from('assessment_conversations')
         .insert({
           assessment_id,
-          user_id: user.id,
+          user_id: user?.id || null, // Allow anonymous conversations
           title: message.substring(0, 100) // Use first 100 chars of message as title
         })
         .select()
@@ -171,21 +164,15 @@ export async function GET(
   try {
     const { id: assessment_id } = await params;
 
-    // Check authentication
+    // Get user if authenticated (optional for shared assessments)
     const userSupabase = await createClient();
     const { data: { user } } = await userSupabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
 
     const supabase = createAdminClient();
 
     // Get conversations for this assessment
-    const { data: conversations, error: convError } = await supabase
+    // If user is authenticated, get all conversations; if not, get only anonymous conversations
+    let query = supabase
       .from('assessment_conversations')
       .select(`
         id,
@@ -193,8 +180,16 @@ export async function GET(
         created_at,
         updated_at
       `)
-      .eq('assessment_id', assessment_id)
-      .order('updated_at', { ascending: false });
+      .eq('assessment_id', assessment_id);
+
+    // Only filter by user if authenticated
+    if (user) {
+      query = query.or(`user_id.eq.${user.id},user_id.is.null`);
+    } else {
+      query = query.is('user_id', null);
+    }
+
+    const { data: conversations, error: convError } = await query.order('updated_at', { ascending: false });
 
     if (convError) {
       throw convError;
