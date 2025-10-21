@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2 } from 'lucide-react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
 import QuickResultEditor from '../QuickResultEditor';
 
 // ============================================================================
@@ -22,35 +22,35 @@ function AskAIButton({ onClick, label = "Ask AI" }: { onClick: () => void; label
 // OVERVIEW TAB - Better Executive Summary
 // ============================================================================
 export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }: any) {
-  const [showDisclaimer, setShowDisclaimer] = useState(true);
+  const [isDisclaimerExpanded, setIsDisclaimerExpanded] = useState(true);
 
   return (
     <div className="space-y-6">
       {/* Disclaimer Banner */}
-      {showDisclaimer && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-lg p-4 shadow-sm">
-          <div className="flex items-start gap-3">
-            <Shield className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
-            <div className="flex-1">
-              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                Important: Estimates Require Validation
-              </h3>
+      <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-lg shadow-sm">
+        <div className="flex items-start gap-3 p-4">
+          <Shield className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
+          <div className="flex-1">
+            <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+              Important: Estimates Require Validation
+            </h3>
+            {isDisclaimerExpanded && (
               <p className="text-sm text-amber-800 dark:text-amber-200">
                 All time savings, cost estimates, and impact projections shown in this roadmap are approximations based on general industry patterns.
                 These recommendations should be validated with your specific business context, actual data, and operational requirements before implementation.
                 Results may vary based on your unique environment and use cases.
               </p>
-            </div>
-            <button
-              onClick={() => setShowDisclaimer(false)}
-              className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors p-1"
-              title="Dismiss"
-            >
-              <X size={20} />
-            </button>
+            )}
           </div>
+          <button
+            onClick={() => setIsDisclaimerExpanded(!isDisclaimerExpanded)}
+            className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors p-1"
+            title={isDisclaimerExpanded ? "Minimize" : "Expand"}
+          >
+            {isDisclaimerExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          </button>
         </div>
-      )}
+      </div>
 
       {/* Stats Grid - 5 cards to emphasize People Strategy */}
       <div className="grid md:grid-cols-5 gap-4">
