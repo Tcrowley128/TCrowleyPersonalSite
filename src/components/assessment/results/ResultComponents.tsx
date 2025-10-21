@@ -210,67 +210,68 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6 hover:shadow-lg transition-shadow">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-start gap-3 flex-1 min-w-0">
-          <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">
-            {index + 1}
-          </div>
-          <div className="flex-1 min-w-0">
-            {onQuickEdit && isEditing ? (
-              <>
+    <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4 sm:p-6 hover:shadow-lg transition-shadow">
+      {/* Header with number and title */}
+      <div className="flex items-start gap-3 mb-3">
+        <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">
+          {index + 1}
+        </div>
+        <div className="flex-1 min-w-0">
+          {onQuickEdit && isEditing ? (
+            <>
+              <QuickResultEditor
+                fieldName="quick_wins"
+                value={win.title}
+                onSave={async (newValue) => {
+                  await onQuickEdit('quick_wins', newValue, `items[${index}].title`);
+                }}
+                label="Quick Win Title"
+              />
+              <div className="mt-2">
                 <QuickResultEditor
                   fieldName="quick_wins"
-                  value={win.title}
+                  value={win.description}
                   onSave={async (newValue) => {
-                    await onQuickEdit('quick_wins', newValue, `items[${index}].title`);
+                    await onQuickEdit('quick_wins', newValue, `items[${index}].description`);
                   }}
-                  label="Quick Win Title"
+                  label="Quick Win Description"
+                  multiline
                 />
-                <div className="mt-2">
-                  <QuickResultEditor
-                    fieldName="quick_wins"
-                    value={win.description}
-                    onSave={async (newValue) => {
-                      await onQuickEdit('quick_wins', newValue, `items[${index}].description`);
-                    }}
-                    label="Quick Win Description"
-                    multiline
-                  />
-                </div>
-              </>
+              </div>
+            </>
+          ) : (
+            <>
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 break-words">{win.title}</h4>
+              <p className="text-gray-600 dark:text-gray-300 break-words">{win.description}</p>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Actions row - stacks on mobile */}
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${difficultyColors[win.difficulty as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
+          {win.difficulty}
+        </span>
+        {onAskAI && (
+          <AskAIButton
+            onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
+            label="Ask AI"
+          />
+        )}
+        {onQuickEdit && (
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+            title={isEditing ? "Done editing" : "Edit quick win"}
+          >
+            {isEditing ? (
+              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
             ) : (
-              <>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 break-words">{win.title}</h4>
-                <p className="text-gray-600 dark:text-gray-300 break-words">{win.description}</p>
-              </>
+              <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             )}
-          </div>
-        </div>
-        <div className="flex items-start gap-2 flex-shrink-0 ml-3">
-          {onQuickEdit && (
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
-              title={isEditing ? "Done editing" : "Edit quick win"}
-            >
-              {isEditing ? (
-                <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-              ) : (
-                <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              )}
-            </button>
-          )}
-          {onAskAI && (
-            <AskAIButton
-              onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
-              label="Ask AI"
-            />
-          )}
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${difficultyColors[win.difficulty as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
-            {win.difficulty}
-          </span>
-        </div>
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
