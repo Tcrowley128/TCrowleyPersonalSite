@@ -860,7 +860,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
   const borderColor = borderColorClasses[pillar.color as keyof typeof borderColorClasses] || borderColorClasses.blue;
 
   return (
-    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${borderColor} rounded-lg p-4 sm:p-6`}>
+    <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 sm:p-6">
       <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
         <div className={`w-12 h-12 rounded-lg ${colorClasses[pillar.color as keyof typeof colorClasses]} flex items-center justify-center flex-shrink-0`}>
           <Icon size={24} />
@@ -907,7 +907,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Detailed Breakdown:</p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {pillar.data.sub_categories.map((subCat: any, index: number) => (
-              <div key={index} className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+              <div key={index} className={`bg-gray-100 dark:bg-slate-800 rounded-lg p-4 border-l-4 ${borderColor}`}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
                   <h5 className="font-semibold text-gray-900 dark:text-white text-sm break-words min-w-0">{subCat.name}</h5>
                   <div className="flex items-center gap-2 flex-shrink-0">
