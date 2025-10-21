@@ -461,7 +461,7 @@ function TrainingResourceLink({ resource }: any) {
 
 function ExistingToolCard({ opportunity }: any) {
   return (
-    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
+    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-emerald-500 rounded-lg p-4">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
         <div className="flex-1 min-w-0">
