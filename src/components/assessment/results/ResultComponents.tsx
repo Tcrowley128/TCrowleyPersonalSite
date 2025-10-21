@@ -1926,7 +1926,7 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
+    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
       <div className="flex items-center justify-between mb-3 gap-2">
         <h4 className="text-lg font-bold text-gray-900 dark:text-white flex-1 min-w-0 break-words">{tool.name}</h4>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -1942,7 +1942,7 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
 
       <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 break-words">{tool.description}</p>
 
-      <div className="bg-white dark:bg-slate-800 rounded-lg p-3 mb-3">
+      <div className="bg-gray-50 dark:bg-slate-700 rounded-lg p-3 mb-3">
         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Why recommended:</p>
         <p className="text-sm text-gray-600 dark:text-gray-400 break-words">{tool.why_recommended}</p>
       </div>
@@ -1952,7 +1952,7 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Use cases:</p>
           <div className="flex flex-wrap gap-2">
             {tool.use_cases.map((useCase: string, i: number) => (
-              <span key={i} className="bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs border border-gray-200 dark:border-gray-600 break-words">
+              <span key={i} className="bg-gray-50 dark:bg-slate-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs break-words">
                 {useCase}
               </span>
             ))}
