@@ -331,7 +331,6 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               )}
             </button>
           )}
-        </div>
       </div>
 
       {/* Compact badges and metrics row */}
