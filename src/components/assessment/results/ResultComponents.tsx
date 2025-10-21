@@ -857,8 +857,10 @@ function MaturityPillar({ pillar, onAskAI }: any) {
     green: 'border-green-500'
   };
 
+  const borderColor = borderColorClasses[pillar.color as keyof typeof borderColorClasses] || borderColorClasses.blue;
+
   return (
-    <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-4 sm:p-6">
+    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${borderColor} rounded-lg p-4 sm:p-6`}>
       <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
         <div className={`w-12 h-12 rounded-lg ${colorClasses[pillar.color as keyof typeof colorClasses]} flex items-center justify-center flex-shrink-0`}>
           <Icon size={24} />
