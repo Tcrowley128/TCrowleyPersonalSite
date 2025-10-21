@@ -212,11 +212,11 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
   return (
     <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-start gap-3 flex-1">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
           <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0">
             {index + 1}
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {onQuickEdit && isEditing ? (
               <>
                 <QuickResultEditor
@@ -241,8 +241,8 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               </>
             ) : (
               <>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{win.title}</h4>
-                <p className="text-gray-600 dark:text-gray-300">{win.description}</p>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 break-words">{win.title}</h4>
+                <p className="text-gray-600 dark:text-gray-300 break-words">{win.description}</p>
               </>
             )}
           </div>
@@ -273,8 +273,8 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-        <div className="flex items-center gap-2 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+        <div className="flex items-center gap-2 text-sm min-w-0">
           <Clock className="text-blue-600 flex-shrink-0" size={16} />
           {onQuickEdit && isEditing ? (
             <QuickResultEditor
@@ -286,10 +286,10 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               label="Time to Implement"
             />
           ) : (
-            <span className="text-gray-600 dark:text-gray-400">{win.time_to_implement}</span>
+            <span className="text-gray-600 dark:text-gray-400 break-words">{win.time_to_implement}</span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm min-w-0">
           <TrendingUp className="text-green-600 flex-shrink-0" size={16} />
           {onQuickEdit && isEditing ? (
             <QuickResultEditor
@@ -301,10 +301,10 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               label="Time Saved"
             />
           ) : (
-            <span className="text-gray-600 dark:text-gray-400">{win.estimated_time_saved}</span>
+            <span className="text-gray-600 dark:text-gray-400 break-words">{win.estimated_time_saved}</span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm min-w-0">
           <Target className="text-purple-600 flex-shrink-0" size={16} />
           {onQuickEdit && isEditing ? (
             <QuickResultEditor
@@ -316,7 +316,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               label="Success Metric"
             />
           ) : (
-            <span className="text-gray-600 dark:text-gray-400">{win.success_metric}</span>
+            <span className="text-gray-600 dark:text-gray-400 break-words">{win.success_metric}</span>
           )}
         </div>
       </div>
@@ -326,7 +326,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Required:</p>
           <div className="flex flex-wrap gap-2">
             {win.required_resources.map((resource: string, i: number) => (
-              <span key={i} className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs">
+              <span key={i} className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs break-words">
                 {resource}
               </span>
             ))}
@@ -380,22 +380,22 @@ function ExistingToolCard({ opportunity }: any) {
     <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-200 dark:border-green-800 rounded-lg p-6">
       <div className="flex items-start gap-3">
         <CheckCircle2 className="text-green-600 flex-shrink-0" size={24} />
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white">{opportunity.tool}</h4>
-            <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">Already Owned</span>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <h4 className="text-lg font-semibold text-gray-900 dark:text-white break-words">{opportunity.tool}</h4>
+            <span className="text-xs bg-green-600 text-white px-2 py-1 rounded whitespace-nowrap">Already Owned</span>
           </div>
-          <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-2">{opportunity.feature}</p>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">{opportunity.use_case}</p>
+          <p className="text-sm font-medium text-green-700 dark:text-green-400 mb-2 break-words">{opportunity.feature}</p>
+          <p className="text-gray-700 dark:text-gray-300 mb-3 break-words">{opportunity.use_case}</p>
 
           <div className="bg-white dark:bg-slate-800 rounded-lg p-4 mt-3">
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">How to get started:</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">{opportunity.implementation}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 break-words">{opportunity.implementation}</p>
           </div>
 
-          <div className="mt-3 flex items-center gap-2">
-            <TrendingUp className="text-green-600" size={16} />
-            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Expected Impact: {opportunity.impact}</p>
+          <div className="mt-3 flex items-start gap-2">
+            <TrendingUp className="text-green-600 flex-shrink-0" size={16} />
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 break-words">Expected Impact: {opportunity.impact}</p>
           </div>
         </div>
       </div>
@@ -614,13 +614,13 @@ function RoadmapPhase({ month, index, onQuickEdit }: any) {
                       />
                     </div>
                   ) : (
-                    <p className="font-semibold text-gray-900 dark:text-white mb-2">{action.action}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white mb-2 break-words">{action.action}</p>
                   )}
-                  <div className="grid md:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Users size={14} className="text-gray-500 flex-shrink-0" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-2 text-sm min-w-0">
+                      <Users size={14} className="text-gray-500 flex-shrink-0 mt-0.5" />
                       {onQuickEdit && isEditing ? (
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <span className="font-medium text-gray-600 dark:text-gray-400">Owner: </span>
                           <QuickResultEditor
                             fieldName="roadmap"
@@ -632,15 +632,15 @@ function RoadmapPhase({ month, index, onQuickEdit }: any) {
                           />
                         </div>
                       ) : (
-                        <span className="text-gray-600 dark:text-gray-400">
+                        <span className="text-gray-600 dark:text-gray-400 break-words">
                           <span className="font-medium">Owner:</span> {action.owner}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 size={14} className="text-gray-500 flex-shrink-0" />
+                    <div className="flex items-start gap-2 text-sm min-w-0">
+                      <CheckCircle2 size={14} className="text-gray-500 flex-shrink-0 mt-0.5" />
                       {onQuickEdit && isEditing ? (
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <span className="font-medium text-gray-600 dark:text-gray-400">Outcome: </span>
                           <QuickResultEditor
                             fieldName="roadmap"
@@ -652,7 +652,7 @@ function RoadmapPhase({ month, index, onQuickEdit }: any) {
                           />
                         </div>
                       ) : (
-                        <span className="text-gray-600 dark:text-gray-400">
+                        <span className="text-gray-600 dark:text-gray-400 break-words">
                           <span className="font-medium">Outcome:</span> {action.outcome}
                         </span>
                       )}
@@ -686,7 +686,7 @@ export function MaturityTab({ maturity, onAskAI }: any) {
         <p className="text-gray-600 dark:text-gray-400">Where you are today and where you're heading</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {pillars.map((pillar) => (
           <MaturityPillar key={pillar.key} pillar={pillar} onAskAI={onAskAI} />
         ))}
@@ -707,19 +707,19 @@ function MaturityPillar({ pillar, onAskAI }: any) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-      <div className="flex items-start gap-3 mb-4">
+    <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row items-start gap-3 mb-4">
         <div className={`w-12 h-12 rounded-lg ${colorClasses[pillar.color as keyof typeof colorClasses]} flex items-center justify-center flex-shrink-0`}>
           <Icon size={24} />
         </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-lg font-bold text-gray-900 dark:text-white">{pillar.title}</h4>
+        <div className="flex-1 min-w-0 w-full">
+          <h4 className="text-lg font-bold text-gray-900 dark:text-white break-words">{pillar.title}</h4>
           <div className="flex items-center gap-2 mt-1">
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-shrink-0">
               {[1, 2, 3, 4, 5].map((level) => (
                 <div
                   key={level}
-                  className={`w-8 h-2 rounded-full ${
+                  className={`w-6 sm:w-8 h-2 rounded-full ${
                     level <= score
                       ? 'bg-blue-600'
                       : 'bg-gray-200 dark:bg-gray-600'
@@ -727,11 +727,11 @@ function MaturityPillar({ pillar, onAskAI }: any) {
                 />
               ))}
             </div>
-            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{score}/5</span>
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">{score}/5</span>
           </div>
         </div>
         {onAskAI && (
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 w-full sm:w-auto">
             <AskAIButton
               onClick={() => onAskAI(`How can I improve my ${pillar.title} score from ${score}/5? What are the most important steps to take and what quick wins should I prioritize?`)}
               label="Ask AI"
@@ -743,7 +743,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
       {pillar.data?.gap_analysis && (
         <div className="mb-4">
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Current Gaps:</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">{pillar.data.gap_analysis}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 break-words">{pillar.data.gap_analysis}</p>
         </div>
       )}
 
@@ -752,15 +752,15 @@ function MaturityPillar({ pillar, onAskAI }: any) {
         <div className="mt-4 space-y-3">
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Detailed Breakdown:</p>
           {pillar.data.sub_categories.map((subCat: any, index: number) => (
-            <div key={index} className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-              <div className="flex items-center justify-between mb-2">
-                <h5 className="font-semibold text-gray-900 dark:text-white text-sm">{subCat.name}</h5>
-                <div className="flex items-center gap-2">
+            <div key={index} className="bg-gray-50 dark:bg-slate-800 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-600">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                <h5 className="font-semibold text-gray-900 dark:text-white text-sm break-words min-w-0">{subCat.name}</h5>
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <div className="flex gap-0.5">
                     {[1, 2, 3, 4, 5].map((level) => (
                       <div
                         key={level}
-                        className={`w-4 h-1.5 rounded-full ${
+                        className={`w-3 sm:w-4 h-1.5 rounded-full ${
                           level <= (subCat.score || 0)
                             ? 'bg-blue-600'
                             : 'bg-gray-300 dark:bg-gray-600'
@@ -768,12 +768,12 @@ function MaturityPillar({ pillar, onAskAI }: any) {
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{subCat.score || 0}/5</span>
+                  <span className="text-xs font-bold text-gray-600 dark:text-gray-400 whitespace-nowrap">{subCat.score || 0}/5</span>
                 </div>
               </div>
 
               {subCat.current_state && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 break-words">
                   <span className="font-medium">Current:</span> {subCat.current_state}
                 </p>
               )}
@@ -781,14 +781,14 @@ function MaturityPillar({ pillar, onAskAI }: any) {
               {subCat.best_practices && (
                 <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-2 mb-2">
                   <p className="text-xs font-medium text-blue-900 dark:text-blue-300 mb-1">Best Practices:</p>
-                  <p className="text-xs text-blue-800 dark:text-blue-200">{subCat.best_practices}</p>
+                  <p className="text-xs text-blue-800 dark:text-blue-200 break-words">{subCat.best_practices}</p>
                 </div>
               )}
 
               {subCat.quick_win && (
                 <div className="bg-green-50 dark:bg-green-900/20 rounded p-2">
                   <p className="text-xs font-medium text-green-900 dark:text-green-300 mb-1">Quick Win:</p>
-                  <p className="text-xs text-green-800 dark:text-green-200">{subCat.quick_win}</p>
+                  <p className="text-xs text-green-800 dark:text-green-200 break-words">{subCat.quick_win}</p>
                 </div>
               )}
             </div>
@@ -799,7 +799,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
       {pillar.data?.target && (
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800 mt-4">
           <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">90-Day Target:</p>
-          <p className="text-sm text-blue-800 dark:text-blue-200">{pillar.data.target}</p>
+          <p className="text-sm text-blue-800 dark:text-blue-200 break-words">{pillar.data.target}</p>
         </div>
       )}
     </div>
@@ -845,14 +845,14 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
             )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(vision.year_1_goals).map(([pillar, goal]: [string, any]) => (
               <div key={pillar} className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2 capitalize flex items-center gap-2">
-                  {pillar === 'data' && <TrendingUp className="text-blue-600" size={20} />}
-                  {pillar === 'automation' && <Zap className="text-purple-600" size={20} />}
-                  {pillar === 'ai' && <Star className="text-orange-600" size={20} />}
-                  {pillar === 'people' && <Users className="text-green-600" size={20} />}
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2 capitalize flex items-center gap-2 break-words">
+                  {pillar === 'data' && <TrendingUp className="text-blue-600 flex-shrink-0" size={20} />}
+                  {pillar === 'automation' && <Zap className="text-purple-600 flex-shrink-0" size={20} />}
+                  {pillar === 'ai' && <Star className="text-orange-600 flex-shrink-0" size={20} />}
+                  {pillar === 'people' && <Users className="text-green-600 flex-shrink-0" size={20} />}
                   {pillar}
                 </h4>
                 {onQuickEdit && isEditingYear1 ? (
@@ -866,7 +866,7 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
                     multiline
                   />
                 ) : (
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">{goal}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm break-words">{goal}</p>
                 )}
               </div>
             ))}
@@ -895,14 +895,14 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
             )}
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(vision.year_2_3_aspirations).map(([pillar, aspiration]: [string, any]) => (
               <div key={pillar} className="bg-white dark:bg-slate-800 rounded-lg p-4 shadow-sm">
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2 capitalize flex items-center gap-2">
-                  {pillar === 'data' && <TrendingUp className="text-blue-600" size={20} />}
-                  {pillar === 'automation' && <Zap className="text-purple-600" size={20} />}
-                  {pillar === 'ai' && <Star className="text-orange-600" size={20} />}
-                  {pillar === 'people' && <Users className="text-green-600" size={20} />}
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2 capitalize flex items-center gap-2 break-words">
+                  {pillar === 'data' && <TrendingUp className="text-blue-600 flex-shrink-0" size={20} />}
+                  {pillar === 'automation' && <Zap className="text-purple-600 flex-shrink-0" size={20} />}
+                  {pillar === 'ai' && <Star className="text-orange-600 flex-shrink-0" size={20} />}
+                  {pillar === 'people' && <Users className="text-green-600 flex-shrink-0" size={20} />}
                   {pillar}
                 </h4>
                 {onQuickEdit && isEditingYear23 ? (
@@ -916,7 +916,7 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
                     multiline
                   />
                 ) : (
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">{aspiration}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-sm break-words">{aspiration}</p>
                 )}
               </div>
             ))}
@@ -935,7 +935,7 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
             {vision.competitive_advantages.map((advantage: string, i: number) => (
               <div key={i} className="flex items-start gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <CheckCircle2 className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
-                <p className="text-gray-700 dark:text-gray-300">{advantage}</p>
+                <p className="text-gray-700 dark:text-gray-300 break-words">{advantage}</p>
               </div>
             ))}
           </div>
@@ -1009,7 +1009,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               multiline
             />
           ) : (
-            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.communication_strategy}</p>
+            <p className="text-gray-700 dark:text-gray-300 break-words">{changeMgmt.communication_strategy}</p>
           )}
         </div>
       )}
@@ -1017,16 +1017,18 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Stakeholder Engagement */}
       {changeMgmt?.stakeholder_engagement && (
         <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <Users className="text-purple-600" size={24} />
-              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Stakeholder Engagement</h4>
+              <Users className="text-purple-600 flex-shrink-0" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white break-words">Stakeholder Engagement</h4>
             </div>
             {onAskAI && (
-              <AskAIButton
-                onClick={() => onAskAI(`How do I identify and engage key stakeholders for my transformation? Can you provide a stakeholder mapping framework and engagement tactics?`)}
-                label="Ask AI"
-              />
+              <div className="flex-shrink-0">
+                <AskAIButton
+                  onClick={() => onAskAI(`How do I identify and engage key stakeholders for my transformation? Can you provide a stakeholder mapping framework and engagement tactics?`)}
+                  label="Ask AI"
+                />
+              </div>
             )}
           </div>
           {onQuickEdit ? (
@@ -1040,7 +1042,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               multiline
             />
           ) : (
-            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.stakeholder_engagement}</p>
+            <p className="text-gray-700 dark:text-gray-300 break-words">{changeMgmt.stakeholder_engagement}</p>
           )}
         </div>
       )}
@@ -1048,16 +1050,18 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
       {/* Training Approach */}
       {changeMgmt?.training_approach && (
         <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-200 dark:border-green-800 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="text-green-600" size={24} />
-              <h4 className="text-xl font-bold text-gray-900 dark:text-white">Training Approach</h4>
+              <CheckCircle2 className="text-green-600 flex-shrink-0" size={24} />
+              <h4 className="text-xl font-bold text-gray-900 dark:text-white break-words">Training Approach</h4>
             </div>
             {onAskAI && (
-              <AskAIButton
-                onClick={() => onAskAI(`What specific training programs and materials should I create? How do I measure training effectiveness and ensure knowledge retention?`)}
-                label="Ask AI"
-              />
+              <div className="flex-shrink-0">
+                <AskAIButton
+                  onClick={() => onAskAI(`What specific training programs and materials should I create? How do I measure training effectiveness and ensure knowledge retention?`)}
+                  label="Ask AI"
+                />
+              </div>
             )}
           </div>
           {onQuickEdit ? (
@@ -1071,7 +1075,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               multiline
             />
           ) : (
-            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.training_approach}</p>
+            <p className="text-gray-700 dark:text-gray-300 break-words">{changeMgmt.training_approach}</p>
           )}
         </div>
       )}
@@ -1096,20 +1100,20 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           <div className="space-y-4">
             {changeMgmt.recommended_frameworks.map((framework: any, index: number) => (
               <div key={index} className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-800 rounded-lg p-4">
-                <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{framework.name}</h5>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{framework.description}</p>
+                <h5 className="text-lg font-bold text-gray-900 dark:text-white mb-2 break-words">{framework.name}</h5>
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 break-words">{framework.description}</p>
 
                 {framework.why_recommended && (
                   <div className="bg-white dark:bg-slate-800 rounded p-3 mb-3">
                     <p className="text-xs font-semibold text-indigo-900 dark:text-indigo-300 mb-1">Why This Framework:</p>
-                    <p className="text-xs text-gray-700 dark:text-gray-300">{framework.why_recommended}</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300 break-words">{framework.why_recommended}</p>
                   </div>
                 )}
 
                 {framework.getting_started && (
                   <div className="bg-green-50 dark:bg-green-900/20 rounded p-3 mb-3">
                     <p className="text-xs font-semibold text-green-900 dark:text-green-300 mb-1">Getting Started:</p>
-                    <p className="text-xs text-green-800 dark:text-green-200">{framework.getting_started}</p>
+                    <p className="text-xs text-green-800 dark:text-green-200 break-words">{framework.getting_started}</p>
                   </div>
                 )}
 
@@ -1146,7 +1150,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Practical tools to support training, communication, and feedback</p>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {changeMgmt.recommended_tools.map((tool: any, index: number) => (
               <ChangeManagementToolCard key={index} tool={tool} />
             ))}
@@ -1192,14 +1196,14 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           {projectTracking.recommended_approach && (
             <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
               <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">Recommended Approach:</p>
-              <p className="text-sm text-gray-700 dark:text-gray-300">{projectTracking.recommended_approach}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 break-words">{projectTracking.recommended_approach}</p>
             </div>
           )}
 
           {projectTracking.tools && projectTracking.tools.length > 0 && (
             <>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Recommended tools to track your transformation initiatives:</p>
-              <div className="grid md:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {projectTracking.tools.map((tool: any, index: number) => (
                   <ProjectTrackingToolCard key={index} tool={tool} />
                 ))}
@@ -1214,7 +1218,7 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                 {projectTracking.best_practices.map((practice: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <CheckCircle2 className="text-green-600 flex-shrink-0 mt-0.5" size={16} />
-                    <span>{practice}</span>
+                    <span className="break-words">{practice}</span>
                   </li>
                 ))}
               </ul>
@@ -1332,8 +1336,8 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           <div className="space-y-4">
             {changeMgmt.common_objections.map((item: any, i: number) => (
               <div key={i} className="border-l-4 border-orange-400 pl-4">
-                <p className="font-semibold text-gray-900 dark:text-white mb-2">"{item.objection}"</p>
-                <p className="text-gray-700 dark:text-gray-300">{item.response}</p>
+                <p className="font-semibold text-gray-900 dark:text-white mb-2 break-words">"{item.objection}"</p>
+                <p className="text-gray-700 dark:text-gray-300 break-words">{item.response}</p>
               </div>
             ))}
           </div>
@@ -1351,7 +1355,7 @@ function TierSection({ title, subtitle, tools, tierColor, onAskAI }: any) {
         <p className="text-gray-600 dark:text-gray-400">{subtitle}</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {tools.map((tool: any, index: number) => (
           <ToolCard key={index} tool={tool} tierColor={tierColor} onAskAI={onAskAI} />
         ))}
@@ -1377,9 +1381,9 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
 
   return (
     <div className={`border-2 rounded-lg p-6 ${tierColors[tierColor as keyof typeof tierColors] || tierColors.blue}`}>
-      <div className="flex items-start justify-between mb-3">
-        <h4 className="text-lg font-bold text-gray-900 dark:text-white flex-1">{tool.name}</h4>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+      <div className="flex items-start justify-between mb-3 gap-2">
+        <h4 className="text-lg font-bold text-gray-900 dark:text-white flex-1 min-w-0 break-words">{tool.name}</h4>
+        <div className="flex items-center gap-2 flex-shrink-0">
           {onAskAI && (
             <AskAIButton
               onClick={() => onAskAI(`Why was ${tool.name} recommended for my company? Can you explain the implementation steps, costs, and expected ROI in detail?`)}
@@ -1390,11 +1394,11 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{tool.description}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 break-words">{tool.description}</p>
 
       <div className="bg-white dark:bg-slate-800 rounded-lg p-3 mb-3">
         <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Why recommended:</p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{tool.why_recommended}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 break-words">{tool.why_recommended}</p>
       </div>
 
       {tool.use_cases && tool.use_cases.length > 0 && (
@@ -1402,7 +1406,7 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Use cases:</p>
           <div className="flex flex-wrap gap-2">
             {tool.use_cases.map((useCase: string, i: number) => (
-              <span key={i} className="bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs border border-gray-200 dark:border-gray-600">
+              <span key={i} className="bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs border border-gray-200 dark:border-gray-600 break-words">
                 {useCase}
               </span>
             ))}
@@ -1452,18 +1456,18 @@ function ChangeManagementToolCard({ tool }: any) {
 
   return (
     <div className={`border rounded-lg p-4 ${categoryColors[tool.category as keyof typeof categoryColors] || 'bg-gray-50 dark:bg-gray-900/10 border-gray-200 dark:border-gray-800'}`}>
-      <div className="flex items-start justify-between mb-2">
-        <h5 className="font-bold text-gray-900 dark:text-white text-sm">{tool.name}</h5>
-        <span className="text-xl">{costIcons[tool.cost as keyof typeof costIcons] || '💰'}</span>
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h5 className="font-bold text-gray-900 dark:text-white text-sm break-words flex-1 min-w-0">{tool.name}</h5>
+        <span className="text-xl flex-shrink-0">{costIcons[tool.cost as keyof typeof costIcons] || '💰'}</span>
       </div>
 
       <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase font-semibold">{tool.category?.replace('_', ' ')}</p>
-      <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{tool.description}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 break-words">{tool.description}</p>
 
       {tool.use_case && (
         <div className="bg-white dark:bg-slate-800 rounded p-2 mb-2">
           <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Use Case:</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400">{tool.use_case}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 break-words">{tool.use_case}</p>
         </div>
       )}
 
@@ -1499,32 +1503,32 @@ function ProjectTrackingToolCard({ tool }: any) {
 
   return (
     <div className={`border-2 rounded-lg p-4 ${tierColors[tool.tier as keyof typeof tierColors] || 'bg-gray-50 dark:bg-gray-900/10 border-gray-200 dark:border-gray-800'}`}>
-      <div className="flex items-start justify-between mb-2">
-        <h5 className="font-bold text-gray-900 dark:text-white">{tool.name}</h5>
-        <span className="text-2xl">{costIcons[tool.cost as keyof typeof costIcons] || '💰'}</span>
+      <div className="flex items-start justify-between gap-2 mb-2">
+        <h5 className="font-bold text-gray-900 dark:text-white break-words flex-1 min-w-0">{tool.name}</h5>
+        <span className="text-2xl flex-shrink-0">{costIcons[tool.cost as keyof typeof costIcons] || '💰'}</span>
       </div>
 
       <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 uppercase font-semibold">{tool.tier} TIER</p>
-      <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{tool.description}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 break-words">{tool.description}</p>
 
       {tool.why_recommended && (
         <div className="bg-white dark:bg-slate-800 rounded p-3 mb-3">
           <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Why Recommended:</p>
-          <p className="text-xs text-gray-600 dark:text-gray-400">{tool.why_recommended}</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 break-words">{tool.why_recommended}</p>
         </div>
       )}
 
       {tool.integration_with_existing && (
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded p-2 mb-3">
           <p className="text-xs font-semibold text-blue-900 dark:text-blue-300 mb-1">Integration:</p>
-          <p className="text-xs text-blue-800 dark:text-blue-200">{tool.integration_with_existing}</p>
+          <p className="text-xs text-blue-800 dark:text-blue-200 break-words">{tool.integration_with_existing}</p>
         </div>
       )}
 
       {tool.getting_started && (
         <div className="bg-green-50 dark:bg-green-900/20 rounded p-2 mb-3">
           <p className="text-xs font-semibold text-green-900 dark:text-green-300 mb-1">Getting Started:</p>
-          <p className="text-xs text-green-800 dark:text-green-200">{tool.getting_started}</p>
+          <p className="text-xs text-green-800 dark:text-green-200 break-words">{tool.getting_started}</p>
         </div>
       )}
 

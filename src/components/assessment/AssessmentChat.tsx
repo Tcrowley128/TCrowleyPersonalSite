@@ -263,6 +263,7 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
                   y: isExpanded ? 0 : 100,
                   scale: isExpanded ? 0.9 : 1,
                 }}
+                onClick={(e) => e.stopPropagation()}
                 className={chatPanelStyles}
               >
                 {/* Header */}
