@@ -273,12 +273,12 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
 
   return (
     <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-yellow-500 rounded-lg p-4">
-      {/* Header with number, title, and action buttons */}
+      {/* Header with number and title/description */}
       <div className="flex items-start gap-3 mb-3">
         <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
           {index + 1}
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1">
           {onQuickEdit && isEditing ? (
             <>
               <QuickResultEditor
@@ -303,24 +303,26 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
             </>
           ) : (
             <>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 break-words">{win.title}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300 break-words">{win.description}</p>
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{win.title}</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-300">{win.description}</p>
             </>
           )}
         </div>
-        {/* Action buttons in top right */}
-        <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
-          {onAskAI && (
-            <AskAIButton
-              onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
-              label="Ask AI"
-            />
-          )}
-          {onQuickEdit && (
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
-              title={isEditing ? "Done editing" : "Edit quick win"}
+      </div>
+
+      {/* Action buttons below title/description */}
+      <div className="flex items-center gap-2 mb-3 ml-11">
+        {onAskAI && (
+          <AskAIButton
+            onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
+            label="Ask AI"
+          />
+        )}
+        {onQuickEdit && (
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+            title={isEditing ? "Done editing" : "Edit quick win"}
             >
               {isEditing ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
