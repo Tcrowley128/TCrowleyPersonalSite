@@ -207,8 +207,8 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
 
     // Dynamic styles based on expanded state
     const chatPanelStyles = isExpanded
-      ? "fixed inset-4 md:inset-8 z-50 max-w-6xl max-h-[90vh] mx-auto my-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-      : "fixed bottom-6 right-6 z-50 w-[450px] h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden";
+      ? "fixed inset-2 sm:inset-4 md:inset-8 z-50 max-w-6xl max-h-[95vh] sm:max-h-[90vh] mx-auto my-auto bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+      : "fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[450px] max-w-[450px] h-[70vh] sm:h-[600px] max-h-[600px] bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden";
 
     return (
       <>
@@ -225,10 +225,10 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
                 setIsOpen(true);
                 setIsExpanded(true);
               }}
-              className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2 group"
+              className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2 group"
             >
-              <Sparkles className="w-6 h-6" />
-              <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-semibold">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="max-w-0 overflow-hidden sm:group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-semibold text-sm sm:text-base">
                 Ask Tyler's AI
               </span>
             </motion.button>
@@ -266,35 +266,35 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
                 className={chatPanelStyles}
               >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between flex-shrink-0">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <Sparkles className="w-5 h-5 flex-shrink-0" />
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <div className="min-w-0">
-                      <h3 className="font-bold text-lg">
+                      <h3 className="font-bold text-base sm:text-lg truncate">
                         Tyler's AI Assistant
                       </h3>
-                      <p className="text-xs text-blue-100">
+                      <p className="text-xs text-blue-100 hidden sm:block">
                         Ask me anything about your assessment
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <button
                       onClick={() => setIsExpanded(!isExpanded)}
-                      className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                      className="hover:bg-white/20 p-1.5 sm:p-2 rounded-lg transition-colors"
                       title={isExpanded ? "Minimize" : "Expand"}
                     >
                       {isExpanded ? (
-                        <Minimize2 className="w-5 h-5" />
+                        <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" />
                       ) : (
-                        <Maximize2 className="w-5 h-5" />
+                        <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
                       )}
                     </button>
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="hover:bg-white/20 p-2 rounded-lg transition-colors"
+                      className="hover:bg-white/20 p-1.5 sm:p-2 rounded-lg transition-colors"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>
@@ -311,8 +311,8 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
 
                 {/* Main Content Area */}
                 <div className="flex-1 flex overflow-hidden">
-                  {/* Conversation History Sidebar */}
-                  <div className="w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col bg-gray-50 dark:bg-slate-900">
+                  {/* Conversation History Sidebar - Hidden on mobile */}
+                  <div className="hidden md:flex w-64 border-r border-gray-200 dark:border-gray-700 flex-col bg-gray-50 dark:bg-slate-900">
                     {/* New Conversation Button */}
                     <div className="p-3 border-b border-gray-200 dark:border-gray-700">
                       <button

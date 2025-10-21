@@ -993,9 +993,25 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         </motion.div>
 
         {/* Tabs */}
-        <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8 overflow-x-hidden">
-          <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-hidden">
-            <div className="flex overflow-x-auto justify-center">
+        <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8">
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            {/* Mobile: Dropdown selector */}
+            <div className="md:hidden px-4 py-3">
+              <select
+                value={activeTab}
+                onChange={(e) => setActiveTab(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                {tabs.map((tab) => (
+                  <option key={tab.id} value={tab.id}>
+                    {tab.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Desktop: Horizontal tabs */}
+            <div className="hidden md:flex overflow-x-auto">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -1017,7 +1033,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
           </div>
 
           {/* Tab Content */}
-          <div className="p-6 overflow-x-hidden max-w-full">
+          <div className="p-4 sm:p-6 overflow-x-hidden max-w-full">
             <AnimatePresence mode="wait">
               {activeTab === 'overview' && (
                 <TabContent key="overview">
