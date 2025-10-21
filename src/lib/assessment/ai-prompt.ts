@@ -3,7 +3,7 @@
 // Now supports prompt caching for cost optimization
 
 interface PromptParts {
-  systemInstructions: Array<{ type: string; text: string; cache_control?: { type: string } }>;
+  systemInstructions: Array<{ type: 'text'; text: string; cache_control?: { type: 'ephemeral' } }>;
   userMessage: string;
 }
 

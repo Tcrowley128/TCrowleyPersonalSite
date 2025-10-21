@@ -218,7 +218,7 @@ export async function POST(request: NextRequest) {
     let parsedResults;
     try {
       // Remove markdown code blocks if present
-      let cleanedText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+      const cleanedText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
 
       // Try to extract JSON object
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
