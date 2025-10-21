@@ -371,8 +371,8 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
           </span>
         )}
         {win.expected_outcome && (
-          <span className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-            <Target className="text-purple-600 flex-shrink-0" size={14} />
+          <span className="flex items-start gap-1 text-xs text-gray-600 dark:text-gray-400">
+            <Target className="text-purple-600 flex-shrink-0 mt-0.5" size={14} />
             {onQuickEdit && isEditing ? (
               <QuickResultEditor
                 fieldName="quick_wins"
@@ -383,7 +383,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
                 label="Expected Outcome"
               />
             ) : (
-              <span className="truncate max-w-xs">{win.expected_outcome}</span>
+              <span className="break-words">{win.expected_outcome}</span>
             )}
           </span>
         )}
