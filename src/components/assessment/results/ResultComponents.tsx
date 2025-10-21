@@ -1925,8 +1925,16 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
     '$$$$': '🏦'
   };
 
+  const tierBorderColors: Record<'green' | 'blue' | 'purple', string> = {
+    green: 'border-green-500',
+    blue: 'border-blue-500',
+    purple: 'border-purple-500'
+  };
+
+  const borderColor = tierBorderColors[tierColor as keyof typeof tierBorderColors] || tierBorderColors.blue;
+
   return (
-    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
+    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${borderColor} rounded-lg p-4`}>
       <div className="flex items-center justify-between mb-3 gap-2">
         <h4 className="text-lg font-bold text-gray-900 dark:text-white flex-1 min-w-0 break-words">{tool.name}</h4>
         <div className="flex items-center gap-2 flex-shrink-0">
