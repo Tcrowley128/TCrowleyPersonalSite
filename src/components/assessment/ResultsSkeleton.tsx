@@ -2,7 +2,11 @@
 
 import { motion } from 'framer-motion';
 
-export default function ResultsSkeleton() {
+interface ResultsSkeletonProps {
+  isRegenerating?: boolean;
+}
+
+export default function ResultsSkeleton({ isRegenerating = false }: ResultsSkeletonProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,13 +28,19 @@ export default function ResultsSkeleton() {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Analyzing Your Assessment...
+              {isRegenerating ? 'Regenerating Your Assessment...' : 'Analyzing Your Assessment...'}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">
-              Claude is generating your personalized roadmap. This may take a few minutes.
+              {isRegenerating
+                ? 'Claude is creating a fresh analysis with new insights. This may take a few minutes.'
+                : 'Claude is generating your personalized roadmap. This may take a few minutes.'
+              }
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500 italic">
-              While you wait, our AI is analyzing your responses across 5 strategic pillars to create custom recommendations tailored to your business needs.
+              {isRegenerating
+                ? 'Your updated roadmap will include the latest recommendations and strategies tailored to your business.'
+                : 'While you wait, our AI is analyzing your responses across 5 strategic pillars to create custom recommendations tailored to your business needs.'
+              }
             </p>
           </div>
         </motion.div>

@@ -870,10 +870,10 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     { id: 'change-mgmt', label: 'Change Management', icon: Users }
   ];
 
-  if (isLoading) {
+  if (isLoading || isGenerating) {
     return (
       <>
-        <ResultsSkeleton />
+        <ResultsSkeleton isRegenerating={isGenerating} />
         {/* Snake game overlay - optional */}
         {showSnakeGame && (
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -892,7 +892,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
           </div>
         )}
         {/* Show snake button - fixed position */}
-        {!showSnakeGame && (
+        {!showSnakeGame && !isGenerating && (
           <button
             onClick={() => setShowSnakeGame(true)}
             className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-lg hover:shadow-xl"
