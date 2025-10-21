@@ -1,4 +1,6 @@
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2 } from 'lucide-react';
+import QuickResultEditor from '../QuickResultEditor';
 
 // ============================================================================
 // ASK AI BUTTON - Reusable component for contextual AI chat
@@ -19,25 +21,36 @@ function AskAIButton({ onClick, label = "Ask AI" }: { onClick: () => void; label
 // ============================================================================
 // OVERVIEW TAB - Better Executive Summary
 // ============================================================================
-export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
+export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }: any) {
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
+
   return (
     <div className="space-y-6">
       {/* Disclaimer Banner */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-lg p-4 shadow-sm">
-        <div className="flex items-start gap-3">
-          <Shield className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
-          <div>
-            <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-              Important: Estimates Require Validation
-            </h3>
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              All time savings, cost estimates, and impact projections shown in this roadmap are approximations based on general industry patterns.
-              These recommendations should be validated with your specific business context, actual data, and operational requirements before implementation.
-              Results may vary based on your unique environment and use cases.
-            </p>
+      {showDisclaimer && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-lg p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <Shield className="text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" size={20} />
+            <div className="flex-1">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
+                Important: Estimates Require Validation
+              </h3>
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                All time savings, cost estimates, and impact projections shown in this roadmap are approximations based on general industry patterns.
+                These recommendations should be validated with your specific business context, actual data, and operational requirements before implementation.
+                Results may vary based on your unique environment and use cases.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDisclaimer(false)}
+              className="text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 transition-colors p-1"
+              title="Dismiss"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Stats Grid - 5 cards to emphasize People Strategy */}
       <div className="grid md:grid-cols-5 gap-4">
@@ -58,17 +71,53 @@ export function OverviewTab({ maturity, priority, quickWinsCount }: any) {
         <div className="space-y-4">
           <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">📊 Current State:</p>
-            <p className="text-gray-900 dark:text-white">{priority?.current_state}</p>
+            {onQuickEdit ? (
+              <QuickResultEditor
+                fieldName="priority_matrix"
+                value={priority?.current_state || ''}
+                onSave={async (newValue) => {
+                  await onQuickEdit('priority_matrix', newValue, 'current_state');
+                }}
+                label="Current State"
+                multiline
+              />
+            ) : (
+              <p className="text-gray-900 dark:text-white">{priority?.current_state}</p>
+            )}
           </div>
 
           <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">🎯 Key Opportunity:</p>
-            <p className="text-gray-900 dark:text-white">{priority?.key_opportunity}</p>
+            {onQuickEdit ? (
+              <QuickResultEditor
+                fieldName="priority_matrix"
+                value={priority?.key_opportunity || ''}
+                onSave={async (newValue) => {
+                  await onQuickEdit('priority_matrix', newValue, 'key_opportunity');
+                }}
+                label="Key Opportunity"
+                multiline
+              />
+            ) : (
+              <p className="text-gray-900 dark:text-white">{priority?.key_opportunity}</p>
+            )}
           </div>
 
           <div>
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">🚀 Recommended Starting Point:</p>
-            <p className="text-gray-900 dark:text-white">{priority?.recommended_starting_point}</p>
+            {onQuickEdit ? (
+              <QuickResultEditor
+                fieldName="priority_matrix"
+                value={priority?.recommended_starting_point || ''}
+                onSave={async (newValue) => {
+                  await onQuickEdit('priority_matrix', newValue, 'recommended_starting_point');
+                }}
+                label="Recommended Starting Point"
+                multiline
+              />
+            ) : (
+              <p className="text-gray-900 dark:text-white">{priority?.recommended_starting_point}</p>
+            )}
           </div>
         </div>
       </div>
@@ -106,7 +155,7 @@ function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
 // ============================================================================
 // QUICK WINS TAB
 // ============================================================================
-export function QuickWinsTab({ quickWins, existing, onAskAI }: any) {
+export function QuickWinsTab({ quickWins, existing, onAskAI, onQuickEdit }: any) {
   return (
     <div className="space-y-8">
       {/* Quick Wins Section */}
@@ -122,7 +171,7 @@ export function QuickWinsTab({ quickWins, existing, onAskAI }: any) {
         <div className="grid gap-4">
           {quickWins && quickWins.length > 0 ? (
             quickWins.map((win: any, index: number) => (
-              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} />
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
             ))
           ) : (
             <p className="text-gray-500">No quick wins available</p>
@@ -152,7 +201,8 @@ export function QuickWinsTab({ quickWins, existing, onAskAI }: any) {
   );
 }
 
-function QuickWinCard({ win, index, onAskAI }: any) {
+function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
+  const [isEditing, setIsEditing] = useState(false);
   const difficultyColors: Record<'LOW' | 'MEDIUM' | 'HIGH', string> = {
     LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
     MEDIUM: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
@@ -167,11 +217,50 @@ function QuickWinCard({ win, index, onAskAI }: any) {
             {index + 1}
           </div>
           <div className="flex-1">
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{win.title}</h4>
-            <p className="text-gray-600 dark:text-gray-300">{win.description}</p>
+            {onQuickEdit && isEditing ? (
+              <>
+                <QuickResultEditor
+                  fieldName="quick_wins"
+                  value={win.title}
+                  onSave={async (newValue) => {
+                    await onQuickEdit('quick_wins', newValue, `items[${index}].title`);
+                  }}
+                  label="Quick Win Title"
+                />
+                <div className="mt-2">
+                  <QuickResultEditor
+                    fieldName="quick_wins"
+                    value={win.description}
+                    onSave={async (newValue) => {
+                      await onQuickEdit('quick_wins', newValue, `items[${index}].description`);
+                    }}
+                    label="Quick Win Description"
+                    multiline
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{win.title}</h4>
+                <p className="text-gray-600 dark:text-gray-300">{win.description}</p>
+              </>
+            )}
           </div>
         </div>
         <div className="flex items-start gap-2 flex-shrink-0 ml-3">
+          {onQuickEdit && (
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+              title={isEditing ? "Done editing" : "Edit quick win"}
+            >
+              {isEditing ? (
+                <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+              ) : (
+                <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              )}
+            </button>
+          )}
           {onAskAI && (
             <AskAIButton
               onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
@@ -186,16 +275,49 @@ function QuickWinCard({ win, index, onAskAI }: any) {
 
       <div className="grid md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
         <div className="flex items-center gap-2 text-sm">
-          <Clock className="text-blue-600" size={16} />
-          <span className="text-gray-600 dark:text-gray-400">{win.time_to_implement}</span>
+          <Clock className="text-blue-600 flex-shrink-0" size={16} />
+          {onQuickEdit && isEditing ? (
+            <QuickResultEditor
+              fieldName="quick_wins"
+              value={win.time_to_implement}
+              onSave={async (newValue) => {
+                await onQuickEdit('quick_wins', newValue, `items[${index}].time_to_implement`);
+              }}
+              label="Time to Implement"
+            />
+          ) : (
+            <span className="text-gray-600 dark:text-gray-400">{win.time_to_implement}</span>
+          )}
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <TrendingUp className="text-green-600" size={16} />
-          <span className="text-gray-600 dark:text-gray-400">{win.estimated_time_saved}</span>
+          <TrendingUp className="text-green-600 flex-shrink-0" size={16} />
+          {onQuickEdit && isEditing ? (
+            <QuickResultEditor
+              fieldName="quick_wins"
+              value={win.estimated_time_saved}
+              onSave={async (newValue) => {
+                await onQuickEdit('quick_wins', newValue, `items[${index}].estimated_time_saved`);
+              }}
+              label="Time Saved"
+            />
+          ) : (
+            <span className="text-gray-600 dark:text-gray-400">{win.estimated_time_saved}</span>
+          )}
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <Target className="text-purple-600" size={16} />
-          <span className="text-gray-600 dark:text-gray-400">{win.success_metric}</span>
+          <Target className="text-purple-600 flex-shrink-0" size={16} />
+          {onQuickEdit && isEditing ? (
+            <QuickResultEditor
+              fieldName="quick_wins"
+              value={win.success_metric}
+              onSave={async (newValue) => {
+                await onQuickEdit('quick_wins', newValue, `items[${index}].success_metric`);
+              }}
+              label="Success Metric"
+            />
+          ) : (
+            <span className="text-gray-600 dark:text-gray-400">{win.success_metric}</span>
+          )}
         </div>
       </div>
 
@@ -326,7 +448,7 @@ export function RecommendationsTab({ tier1, tier2, tier3, onAskAI }: any) {
 // ============================================================================
 // ROADMAP TAB - TIMELINE/GANTT STYLE
 // ============================================================================
-export function RoadmapTab({ roadmap }: any) {
+export function RoadmapTab({ roadmap, onQuickEdit }: any) {
   const months = [
     { key: 'month_1', title: 'Days 1-30', label: 'Foundation', color: 'blue', data: roadmap?.month_1, days: [0, 30] },
     { key: 'month_2', title: 'Days 31-60', label: 'Scale', color: 'purple', data: roadmap?.month_2, days: [30, 60] },
@@ -392,14 +514,15 @@ export function RoadmapTab({ roadmap }: any) {
       {/* Detailed Actions by Phase */}
       <div className="space-y-6">
         {months.map((month, index) => (
-          <RoadmapPhase key={month.key} month={month} index={index} />
+          <RoadmapPhase key={month.key} month={month} index={index} onQuickEdit={onQuickEdit} />
         ))}
       </div>
     </div>
   );
 }
 
-function RoadmapPhase({ month, index }: any) {
+function RoadmapPhase({ month, index, onQuickEdit }: any) {
+  const [isEditing, setIsEditing] = useState(false);
   const colorClasses = {
     blue: {
       bg: 'bg-blue-50 dark:bg-blue-900/10',
@@ -433,6 +556,19 @@ function RoadmapPhase({ month, index }: any) {
           <h4 className={`text-xl font-bold ${colors.text}`}>{month.label}</h4>
           <p className="text-sm text-gray-600 dark:text-gray-400">{month.title}</p>
         </div>
+        {onQuickEdit && (
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg border border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+            title={isEditing ? "Done editing" : "Edit this month"}
+          >
+            {isEditing ? (
+              <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+            ) : (
+              <Edit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+            )}
+          </button>
+        )}
       </div>
 
       {month.data?.focus && (
@@ -441,7 +577,19 @@ function RoadmapPhase({ month, index }: any) {
             <Target size={16} className={colors.text} />
             Primary Focus:
           </p>
-          <p className="text-gray-900 dark:text-white">{month.data.focus}</p>
+          {onQuickEdit && isEditing ? (
+            <QuickResultEditor
+              fieldName="roadmap"
+              value={month.data.focus}
+              onSave={async (newValue) => {
+                await onQuickEdit('roadmap', newValue, `${month.key}.focus`);
+              }}
+              label="Primary Focus"
+              multiline
+            />
+          ) : (
+            <p className="text-gray-900 dark:text-white">{month.data.focus}</p>
+          )}
         </div>
       )}
 
@@ -454,19 +602,60 @@ function RoadmapPhase({ month, index }: any) {
                   Week {action.week}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900 dark:text-white mb-2">{action.action}</p>
+                  {onQuickEdit && isEditing ? (
+                    <div className="mb-2">
+                      <QuickResultEditor
+                        fieldName="roadmap"
+                        value={action.action}
+                        onSave={async (newValue) => {
+                          await onQuickEdit('roadmap', newValue, `${month.key}.actions[${idx}].action`);
+                        }}
+                        label="Action"
+                      />
+                    </div>
+                  ) : (
+                    <p className="font-semibold text-gray-900 dark:text-white mb-2">{action.action}</p>
+                  )}
                   <div className="grid md:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2 text-sm">
                       <Users size={14} className="text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-600 dark:text-gray-400">
-                        <span className="font-medium">Owner:</span> {action.owner}
-                      </span>
+                      {onQuickEdit && isEditing ? (
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-600 dark:text-gray-400">Owner: </span>
+                          <QuickResultEditor
+                            fieldName="roadmap"
+                            value={action.owner}
+                            onSave={async (newValue) => {
+                              await onQuickEdit('roadmap', newValue, `${month.key}.actions[${idx}].owner`);
+                            }}
+                            label="Owner"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Owner:</span> {action.owner}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <CheckCircle2 size={14} className="text-gray-500 flex-shrink-0" />
-                      <span className="text-gray-600 dark:text-gray-400">
-                        <span className="font-medium">Outcome:</span> {action.outcome}
-                      </span>
+                      {onQuickEdit && isEditing ? (
+                        <div className="flex-1">
+                          <span className="font-medium text-gray-600 dark:text-gray-400">Outcome: </span>
+                          <QuickResultEditor
+                            fieldName="roadmap"
+                            value={action.outcome}
+                            onSave={async (newValue) => {
+                              await onQuickEdit('roadmap', newValue, `${month.key}.actions[${idx}].outcome`);
+                            }}
+                            label="Outcome"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-gray-600 dark:text-gray-400">
+                          <span className="font-medium">Outcome:</span> {action.outcome}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -620,7 +809,10 @@ function MaturityPillar({ pillar, onAskAI }: any) {
 // ============================================================================
 // LONG-TERM VISION TAB
 // ============================================================================
-export function LongTermVisionTab({ vision }: any) {
+export function LongTermVisionTab({ vision, onQuickEdit }: any) {
+  const [isEditingYear1, setIsEditingYear1] = useState(false);
+  const [isEditingYear23, setIsEditingYear23] = useState(false);
+
   if (!vision) {
     return <div className="text-center text-gray-600 dark:text-gray-400">No long-term vision data available</div>;
   }
@@ -638,6 +830,19 @@ export function LongTermVisionTab({ vision }: any) {
           <div className="flex items-center gap-2 mb-6">
             <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">Year 1</span>
             <div className="h-1 flex-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded"></div>
+            {onQuickEdit && (
+              <button
+                onClick={() => setIsEditingYear1(!isEditingYear1)}
+                className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                title={isEditingYear1 ? "Done editing" : "Edit Year 1"}
+              >
+                {isEditingYear1 ? (
+                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                )}
+              </button>
+            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -650,7 +855,19 @@ export function LongTermVisionTab({ vision }: any) {
                   {pillar === 'people' && <Users className="text-green-600" size={20} />}
                   {pillar}
                 </h4>
-                <p className="text-gray-700 dark:text-gray-300 text-sm">{goal}</p>
+                {onQuickEdit && isEditingYear1 ? (
+                  <QuickResultEditor
+                    fieldName="long_term_vision"
+                    value={goal}
+                    onSave={async (newValue) => {
+                      await onQuickEdit('long_term_vision', newValue, `year_1_goals.${pillar}`);
+                    }}
+                    label={`Year 1 ${pillar}`}
+                    multiline
+                  />
+                ) : (
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{goal}</p>
+                )}
               </div>
             ))}
           </div>
@@ -663,6 +880,19 @@ export function LongTermVisionTab({ vision }: any) {
           <div className="flex items-center gap-2 mb-6">
             <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">Years 2-3</span>
             <div className="h-1 flex-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded"></div>
+            {onQuickEdit && (
+              <button
+                onClick={() => setIsEditingYear23(!isEditingYear23)}
+                className="p-1.5 hover:bg-purple-100 dark:hover:bg-purple-800/50 rounded-lg border border-transparent hover:border-purple-300 dark:hover:border-purple-700 transition-colors"
+                title={isEditingYear23 ? "Done editing" : "Edit Years 2-3"}
+              >
+                {isEditingYear23 ? (
+                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Edit2 className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                )}
+              </button>
+            )}
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
@@ -675,7 +905,19 @@ export function LongTermVisionTab({ vision }: any) {
                   {pillar === 'people' && <Users className="text-green-600" size={20} />}
                   {pillar}
                 </h4>
-                <p className="text-gray-700 dark:text-gray-300 text-sm">{aspiration}</p>
+                {onQuickEdit && isEditingYear23 ? (
+                  <QuickResultEditor
+                    fieldName="long_term_vision"
+                    value={aspiration}
+                    onSave={async (newValue) => {
+                      await onQuickEdit('long_term_vision', newValue, `year_2_3_aspirations.${pillar}`);
+                    }}
+                    label={`Years 2-3 ${pillar}`}
+                    multiline
+                  />
+                ) : (
+                  <p className="text-gray-700 dark:text-gray-300 text-sm">{aspiration}</p>
+                )}
               </div>
             ))}
           </div>
@@ -707,7 +949,21 @@ export function LongTermVisionTab({ vision }: any) {
             <Star />
             Industry Leadership Position
           </h4>
-          <p className="text-blue-100 text-lg">{vision.industry_benchmarks}</p>
+          {onQuickEdit ? (
+            <div className="[&_.group]:bg-blue-500/30 [&_.group]:hover:bg-blue-500/50 [&_button]:border-blue-300">
+              <QuickResultEditor
+                fieldName="long_term_vision"
+                value={vision.industry_benchmarks}
+                onSave={async (newValue) => {
+                  await onQuickEdit('long_term_vision', newValue, 'industry_benchmarks');
+                }}
+                label="Industry Benchmarks"
+                multiline
+              />
+            </div>
+          ) : (
+            <p className="text-blue-100 text-lg">{vision.industry_benchmarks}</p>
+          )}
         </div>
       )}
     </div>
@@ -717,7 +973,9 @@ export function LongTermVisionTab({ vision }: any) {
 // ============================================================================
 // CHANGE MANAGEMENT TAB
 // ============================================================================
-export function ChangeManagementTab({ changeMgmt, successMetrics, projectTracking, onAskAI }: any) {
+export function ChangeManagementTab({ changeMgmt, successMetrics, projectTracking, onAskAI, onQuickEdit }: any) {
+  const [isEditingMetrics, setIsEditingMetrics] = useState(false);
+
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
@@ -740,7 +998,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               />
             )}
           </div>
-          <p className="text-gray-700 dark:text-gray-300">{changeMgmt.communication_strategy}</p>
+          {onQuickEdit ? (
+            <QuickResultEditor
+              fieldName="change_management_plan"
+              value={changeMgmt.communication_strategy}
+              onSave={async (newValue) => {
+                await onQuickEdit('change_management_plan', newValue, 'communication_strategy');
+              }}
+              label="Communication Strategy"
+              multiline
+            />
+          ) : (
+            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.communication_strategy}</p>
+          )}
         </div>
       )}
 
@@ -759,7 +1029,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               />
             )}
           </div>
-          <p className="text-gray-700 dark:text-gray-300">{changeMgmt.stakeholder_engagement}</p>
+          {onQuickEdit ? (
+            <QuickResultEditor
+              fieldName="change_management_plan"
+              value={changeMgmt.stakeholder_engagement}
+              onSave={async (newValue) => {
+                await onQuickEdit('change_management_plan', newValue, 'stakeholder_engagement');
+              }}
+              label="Stakeholder Engagement"
+              multiline
+            />
+          ) : (
+            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.stakeholder_engagement}</p>
+          )}
         </div>
       )}
 
@@ -778,7 +1060,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               />
             )}
           </div>
-          <p className="text-gray-700 dark:text-gray-300">{changeMgmt.training_approach}</p>
+          {onQuickEdit ? (
+            <QuickResultEditor
+              fieldName="change_management_plan"
+              value={changeMgmt.training_approach}
+              onSave={async (newValue) => {
+                await onQuickEdit('change_management_plan', newValue, 'training_approach');
+              }}
+              label="Training Approach"
+              multiline
+            />
+          ) : (
+            <p className="text-gray-700 dark:text-gray-300">{changeMgmt.training_approach}</p>
+          )}
         </div>
       )}
 
@@ -935,6 +1229,20 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           <div className="flex items-center gap-2 mb-4">
             <TrendingUp className="text-blue-600" size={24} />
             <h4 className="text-xl font-bold text-gray-900 dark:text-white">Success Metrics</h4>
+            <div className="flex-1"></div>
+            {onQuickEdit && (
+              <button
+                onClick={() => setIsEditingMetrics(!isEditingMetrics)}
+                className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                title={isEditingMetrics ? "Done editing" : "Edit success metrics"}
+              >
+                {isEditingMetrics ? (
+                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                ) : (
+                  <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                )}
+              </button>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -943,7 +1251,20 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                 <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">30-Day KPIs:</p>
                 <ul className="list-disc list-inside space-y-1">
                   {successMetrics['30_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-600 dark:text-gray-400">{kpi}</li>
+                    <li key={i} className="text-gray-600 dark:text-gray-400">
+                      {onQuickEdit && isEditingMetrics ? (
+                        <QuickResultEditor
+                          fieldName="success_metrics"
+                          value={kpi}
+                          onSave={async (newValue) => {
+                            await onQuickEdit('success_metrics', newValue, `30_day_kpis[${i}]`);
+                          }}
+                          label={`30-Day KPI ${i + 1}`}
+                        />
+                      ) : (
+                        kpi
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -954,7 +1275,20 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                 <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">60-Day KPIs:</p>
                 <ul className="list-disc list-inside space-y-1">
                   {successMetrics['60_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-600 dark:text-gray-400">{kpi}</li>
+                    <li key={i} className="text-gray-600 dark:text-gray-400">
+                      {onQuickEdit && isEditingMetrics ? (
+                        <QuickResultEditor
+                          fieldName="success_metrics"
+                          value={kpi}
+                          onSave={async (newValue) => {
+                            await onQuickEdit('success_metrics', newValue, `60_day_kpis[${i}]`);
+                          }}
+                          label={`60-Day KPI ${i + 1}`}
+                        />
+                      ) : (
+                        kpi
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -965,7 +1299,20 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                 <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">90-Day KPIs:</p>
                 <ul className="list-disc list-inside space-y-1">
                   {successMetrics['90_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-600 dark:text-gray-400">{kpi}</li>
+                    <li key={i} className="text-gray-600 dark:text-gray-400">
+                      {onQuickEdit && isEditingMetrics ? (
+                        <QuickResultEditor
+                          fieldName="success_metrics"
+                          value={kpi}
+                          onSave={async (newValue) => {
+                            await onQuickEdit('success_metrics', newValue, `90_day_kpis[${i}]`);
+                          }}
+                          label={`90-Day KPI ${i + 1}`}
+                        />
+                      ) : (
+                        kpi
+                      )}
+                    </li>
                   ))}
                 </ul>
               </div>

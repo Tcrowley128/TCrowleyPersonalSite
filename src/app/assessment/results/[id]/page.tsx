@@ -756,6 +756,74 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     }
   };
 
+  // Handler for quick result editing (hybrid approach)
+  const handleQuickEdit = async (field: string, value: string, path?: string) => {
+    try {
+      const response = await fetch(`/api/assessment/${id}/results`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field, value, path })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save edit');
+      }
+
+      // Update local state to reflect the change
+      setResults((prev: any) => {
+        if (!prev) return prev;
+
+        // Deep clone to avoid mutation
+        const newResults = JSON.parse(JSON.stringify(prev));
+
+        if (path) {
+          // Handle nested updates starting from the field
+          // e.g., field="priority_matrix", path="current_state"
+          // or field="quick_wins", path="items[0].title"
+          if (!newResults[field]) {
+            console.error('Field not found in results:', field);
+            return prev;
+          }
+
+          const keys = path.split('.');
+          let current: any = newResults[field];
+
+          for (let i = 0; i < keys.length - 1; i++) {
+            const key = keys[i];
+            // Handle array indices like items[0]
+            const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
+            if (arrayMatch) {
+              const arrayKey = arrayMatch[1];
+              const index = parseInt(arrayMatch[2]);
+              current = current[arrayKey][index];
+            } else {
+              current = current[key];
+            }
+          }
+
+          // Set the final value
+          const lastKey = keys[keys.length - 1];
+          const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/);
+          if (arrayMatch) {
+            const arrayKey = arrayMatch[1];
+            const index = parseInt(arrayMatch[2]);
+            current[arrayKey][index] = value;
+          } else {
+            current[lastKey] = value;
+          }
+        } else {
+          // Simple field update
+          newResults[field] = value;
+        }
+        return newResults;
+      });
+    } catch (err) {
+      console.error('Error saving edit:', err);
+      setError('Failed to save your edit. Please try again.');
+      throw err;
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Target },
     { id: 'quick-wins', label: 'Quick Wins', icon: Zap },
@@ -957,6 +1025,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     maturity={maturityData}
                     priority={results.priority_matrix}
                     quickWinsCount={quickWins.length}
+                    onQuickEdit={handleQuickEdit}
                   />
                 </TabContent>
               )}
@@ -967,6 +1036,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     quickWins={quickWins}
                     existing={existingOpportunities}
                     onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
+                    onQuickEdit={handleQuickEdit}
                   />
                 </TabContent>
               )}
@@ -984,7 +1054,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'roadmap' && (
                 <TabContent key="roadmap">
-                  <RoadmapTab roadmap={roadmap} />
+                  <RoadmapTab roadmap={roadmap} onQuickEdit={handleQuickEdit} />
                 </TabContent>
               )}
 
@@ -999,7 +1069,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'long-term' && (
                 <TabContent key="long-term">
-                  <LongTermVisionTab vision={results.long_term_vision} />
+                  <LongTermVisionTab vision={results.long_term_vision} onQuickEdit={handleQuickEdit} />
                 </TabContent>
               )}
 
@@ -1010,6 +1080,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     successMetrics={results.success_metrics}
                     projectTracking={projectTracking}
                     onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
+                    onQuickEdit={handleQuickEdit}
                   />
                 </TabContent>
               )}

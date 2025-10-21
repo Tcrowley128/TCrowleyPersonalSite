@@ -218,6 +218,15 @@ export default function AssessmentAnswersEditor({ assessmentId, onRegenerateComp
                   <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
                   <span className="ml-2 text-gray-600 dark:text-gray-400">Loading answers...</span>
                 </div>
+              ) : responses.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    This assessment was created before detailed response tracking was enabled.
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-500">
+                    You can still regenerate results, but individual answer editing is not available for this assessment.
+                  </p>
+                </div>
               ) : (
                 <>
                   {Object.entries(groupedResponses).map(([step, stepResponses]) => (
