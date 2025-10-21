@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2, ChevronDown, ChevronUp, Palette } from 'lucide-react';
 import QuickResultEditor from '../QuickResultEditor';
 
 // ============================================================================
@@ -52,12 +52,12 @@ export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }:
         </div>
       </div>
 
-      {/* Stats Grid - 5 cards to emphasize People Strategy */}
-      <div className="grid md:grid-cols-5 gap-4">
-        <StatCard title="Quick Wins Ready" value={quickWinsCount} icon={Zap} color="green" />
+      {/* Stats Grid - 5 Maturity Scores */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <StatCard title="Data Maturity" value={`${maturity?.data_strategy?.score || 0}/5`} icon={Target} color="blue" />
         <StatCard title="Automation" value={`${maturity?.automation_strategy?.score || 0}/5`} icon={TrendingUp} color="purple" />
         <StatCard title="AI Readiness" value={`${maturity?.ai_strategy?.score || 0}/5`} icon={Star} color="orange" />
+        <StatCard title="UX & Design" value={`${maturity?.ux_strategy?.score || 0}/5`} icon={Palette} color="pink" />
         <StatCard title="People & Change" value={`${maturity?.people_strategy?.score || 0}/5`} icon={Users} color="teal" />
       </div>
 
@@ -69,6 +69,14 @@ export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }:
         </h3>
 
         <div className="space-y-4">
+          <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
+            <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+              <Zap className="text-green-600" size={18} />
+              Quick Wins Ready: {quickWinsCount}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Immediate opportunities you can implement in the next 30 days</p>
+          </div>
+
           <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2">📊 Current State:</p>
             {onQuickEdit ? (
@@ -129,16 +137,17 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: any;
-  color: 'green' | 'blue' | 'purple' | 'orange' | 'teal';
+  color: 'green' | 'blue' | 'purple' | 'orange' | 'teal' | 'pink';
 }
 
 function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
-  const colors: Record<'green' | 'blue' | 'purple' | 'orange' | 'teal', string> = {
+  const colors: Record<'green' | 'blue' | 'purple' | 'orange' | 'teal' | 'pink', string> = {
     green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
     blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
     purple: 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400',
     orange: 'bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400',
-    teal: 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400'
+    teal: 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400',
+    pink: 'bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400'
   };
 
   return (
@@ -677,6 +686,7 @@ export function MaturityTab({ maturity, onAskAI }: any) {
     { key: 'data_strategy', title: 'Data Strategy', icon: TrendingUp, color: 'blue', data: maturity?.data_strategy },
     { key: 'automation_strategy', title: 'Automation Strategy', icon: Zap, color: 'purple', data: maturity?.automation_strategy },
     { key: 'ai_strategy', title: 'AI Strategy', icon: Star, color: 'orange', data: maturity?.ai_strategy },
+    { key: 'ux_strategy', title: 'UX & Design Strategy', icon: Palette, color: 'pink', data: maturity?.ux_strategy },
     { key: 'people_strategy', title: 'People & Change', icon: Users, color: 'green', data: maturity?.people_strategy }
   ];
 
@@ -703,6 +713,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
   const colorClasses = {
     blue: 'text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30',
     purple: 'text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/30',
+    pink: 'text-pink-600 dark:text-pink-400 bg-pink-100 dark:bg-pink-900/30',
     orange: 'text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30',
     green: 'text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30'
   };

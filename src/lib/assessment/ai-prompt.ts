@@ -174,6 +174,41 @@ Generate a comprehensive digital transformation roadmap in VALID JSON format wit
         }
       ]
     },
+    "ux_strategy": {
+      "score": 1-5,
+      "gap_analysis": "what's missing",
+      "target": "where they should be in 90 days",
+      "sub_categories": [
+        {
+          "name": "User Research & Testing",
+          "score": 1-5,
+          "current_state": "Where they are now",
+          "best_practices": "Industry best practices to target",
+          "quick_win": "One actionable improvement"
+        },
+        {
+          "name": "Interface Design & Usability",
+          "score": 1-5,
+          "current_state": "Where they are now",
+          "best_practices": "Industry best practices to target",
+          "quick_win": "One actionable improvement"
+        },
+        {
+          "name": "Design Systems & Consistency",
+          "score": 1-5,
+          "current_state": "Where they are now",
+          "best_practices": "Industry best practices to target",
+          "quick_win": "One actionable improvement"
+        },
+        {
+          "name": "Accessibility & Inclusive Design",
+          "score": 1-5,
+          "current_state": "Where they are now",
+          "best_practices": "Industry best practices to target",
+          "quick_win": "One actionable improvement"
+        }
+      ]
+    },
     "people_strategy": {
       "score": 1-5,
       "gap_analysis": "what's missing",

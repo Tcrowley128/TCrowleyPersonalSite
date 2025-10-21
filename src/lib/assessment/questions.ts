@@ -354,6 +354,16 @@ export const assessmentSteps: AssessmentStep[] = [
         required: true
       },
       {
+        key: 'ux_maturity',
+        type: 'slider',
+        question: 'User Experience & Design',
+        min: 1,
+        max: 5,
+        minLabel: 'No UX focus, clunky interfaces',
+        maxLabel: 'User-centered design, intuitive tools',
+        required: true
+      },
+      {
         key: 'change_readiness',
         type: 'single-select',
         question: 'How receptive is your team to new tools/processes?',
