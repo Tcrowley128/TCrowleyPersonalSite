@@ -272,7 +272,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
+    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-yellow-500 rounded-lg p-4">
       {/* Header with number, title, and action buttons */}
       <div className="flex items-start gap-3 mb-3">
         <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
