@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, Target, Zap, TrendingUp, Users, Shield,
   Calendar, Download, Mail, RefreshCw, CheckCircle,
-  Lightbulb, BarChart3, Rocket
+  Lightbulb, BarChart3, Rocket, X, Edit2, MoreVertical
 } from 'lucide-react';
 import {
   OverviewTab,
@@ -21,6 +21,8 @@ import SnakeGame from '@/components/assessment/SnakeGame';
 import AssessmentChat, { AssessmentChatHandle } from '@/components/assessment/AssessmentChat';
 import AssessmentAnswersEditor from '@/components/assessment/AssessmentAnswersEditor';
 import VersionSelector from '@/components/assessment/VersionSelector';
+import ResultsSkeleton from '@/components/assessment/ResultsSkeleton';
+import Confetti from '@/components/assessment/Confetti';
 
 interface ResultsPageProps {
   params: Promise<{ id: string }>;
@@ -41,7 +43,12 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showSnakeGame, setShowSnakeGame] = useState(false);
   const [regenerationCount, setRegenerationCount] = useState(0);
   const [regenerationsRemaining, setRegenerationsRemaining] = useState(2);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [showMenuTip, setShowMenuTip] = useState(true);
   const chatRef = useRef<AssessmentChatHandle>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const generateResults = useCallback(async () => {
     setIsLoading(true);
@@ -63,6 +70,10 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
       setResults(data.results);
       setRegenerationCount(data.regeneration_count || 0);
       setRegenerationsRemaining(data.regenerations_remaining ?? 2);
+
+      // Show confetti on first load
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
     } catch (err) {
       console.error('Error generating results:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate results');
@@ -74,6 +85,27 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   useEffect(() => {
     generateResults();
   }, [generateResults]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowActionsMenu(false);
+      }
+    }
+
+    if (showActionsMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showActionsMenu]);
+
+  // Hide menu tip when menu is opened
+  useEffect(() => {
+    if (showActionsMenu) {
+      setShowMenuTip(false);
+    }
+  }, [showActionsMenu]);
 
   const handleRegenerate = async () => {
     if (regenerationCount >= 2) {
@@ -663,7 +695,11 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             yPos += 6;
             pdf.setFont('helvetica', 'normal');
             pdf.setFontSize(9);
-            const sectionLines = pdf.splitTextToSize(changeMgmt[section.key], maxWidth);
+            // Convert to string if it's an object
+            const sectionText = typeof changeMgmt[section.key] === 'string'
+              ? changeMgmt[section.key]
+              : JSON.stringify(changeMgmt[section.key], null, 2);
+            const sectionLines = pdf.splitTextToSize(sectionText, maxWidth);
             pdf.text(sectionLines, margin, yPos);
             yPos += sectionLines.length * 4 + 6;
           }
@@ -827,7 +863,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Target },
     { id: 'quick-wins', label: 'Quick Wins', icon: Zap },
-    { id: 'recommendations', label: 'Recommendations', icon: Lightbulb },
+    { id: 'recommendations', label: 'Tech Recommendations', icon: Lightbulb },
     { id: 'roadmap', label: 'Roadmap', icon: Calendar },
     { id: 'maturity', label: 'Maturity', icon: BarChart3 },
     { id: 'long-term', label: 'Long-term Vision', icon: Rocket },
@@ -836,56 +872,42 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
-        <div className="max-w-2xl w-full space-y-8">
-          <div className="text-center">
-            <Loader2 className="w-16 h-16 animate-spin text-blue-600 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Analyzing Your Assessment...
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Claude is generating your personalized roadmap. This may take a few minutes.
-            </p>
-
-            {/* Button to show snake game */}
-            {!showSnakeGame ? (
-              <button
-                onClick={() => setShowSnakeGame(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-sm hover:shadow-md"
-              >
-                <span>🎮</span>
-                <span>Play Snake While You Wait</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowSnakeGame(false)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-all text-sm"
-              >
-                <span>Hide Game</span>
-              </button>
-            )}
-          </div>
-
-          {/* Snake game - only shown when button is clicked */}
-          {showSnakeGame && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
-              className="flex justify-center"
-            >
+      <>
+        <ResultsSkeleton />
+        {/* Snake game overlay - optional */}
+        {showSnakeGame && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Play While You Wait 🎮</h3>
+                <button
+                  onClick={() => setShowSnakeGame(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  <X size={20} />
+                </button>
+              </div>
               <SnakeGame />
-            </motion.div>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        )}
+        {/* Show snake button - fixed position */}
+        {!showSnakeGame && (
+          <button
+            onClick={() => setShowSnakeGame(true)}
+            className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-lg hover:shadow-xl"
+          >
+            <span>🎮</span>
+            <span>Play Snake</span>
+          </button>
+        )}
+      </>
     );
   }
 
   if (error && !results) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center p-4">
         <div className="bg-white dark:bg-slate-800 rounded-xl p-8 shadow-lg max-w-md text-center">
           <div className="text-red-600 text-6xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -918,23 +940,103 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const projectTracking = results.project_tracking || null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12 overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-slate-900 py-12 overflow-x-hidden">
+      {showConfetti && <Confetti />}
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="mb-8"
         >
-          <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <CheckCircle size={16} />
-            Assessment Complete
+          <div className="text-center mb-4">
+            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium">
+              <CheckCircle size={16} />
+              Assessment Complete
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            <span className="text-gray-900 dark:text-white">{results.company_name || 'Your'}</span>{' '}
-            <span className="text-gray-600 dark:text-gray-400">Digital Transformation Roadmap</span>
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+
+          <div className="relative">
+            <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
+              <span className="text-gray-900 dark:text-white">{results.company_name || 'Your'}</span>{' '}
+              <span className="text-gray-600 dark:text-gray-400">Digital Transformation Roadmap</span>
+            </h1>
+
+            {/* Three-Dot Menu - Positioned in top right, vertically centered with title */}
+            <div className="absolute top-1/2 -translate-y-1/2 right-0 flex-shrink-0" ref={menuRef}>
+              <div className="relative">
+                {/* Pulsing Tip Icon */}
+                {showMenuTip && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-600 rounded-full animate-pulse z-10"></div>
+                )}
+
+                <button
+                  onClick={() => setShowActionsMenu(!showActionsMenu)}
+                  className="flex items-center justify-center w-10 h-10 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-600 transition-colors"
+                  title="More actions"
+                >
+                  <MoreVertical size={20} />
+                </button>
+              </div>
+
+              {/* Dropdown Menu */}
+              {showActionsMenu && (
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50">
+                  <div className="py-1">
+                    <button
+                      onClick={() => {
+                        handleDownloadPDF();
+                        setShowActionsMenu(false);
+                      }}
+                      disabled={isDownloadingPDF}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Download className={isDownloadingPDF ? 'animate-bounce' : ''} size={18} />
+                      <span className="font-medium">{isDownloadingPDF ? 'Generating...' : 'Download PDF'}</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowEditModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Edit2 size={18} />
+                      <span className="font-medium">Edit Original Answers</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleRegenerate();
+                        setShowActionsMenu(false);
+                      }}
+                      disabled={isGenerating || regenerationCount >= 2}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <RefreshCw className={isGenerating ? 'animate-spin' : ''} size={18} />
+                      <div className="flex-1">
+                        <div className="font-medium">Regenerate Results</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {isGenerating ? 'Regenerating...' : regenerationCount >= 2 ? 'Limit reached' : `${regenerationsRemaining} remaining`}
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowEmailModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Mail size={18} />
+                      <span className="font-medium">Email Me Results</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 text-center">
             Personalized recommendations powered by Tyler's AI
           </p>
 
@@ -949,51 +1051,29 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             </motion.div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-4 justify-center">
-            <button
-              onClick={handleRegenerate}
-              disabled={isGenerating || regenerationCount >= 2}
-              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:border-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <RefreshCw className={isGenerating ? 'animate-spin' : ''} size={20} />
-              {isGenerating ? 'Regenerating...' : regenerationCount >= 2 ? 'Regeneration Limit Reached' : `Regenerate (${regenerationsRemaining} left)`}
-            </button>
-            <button
-              onClick={handleDownloadPDF}
-              disabled={isDownloadingPDF}
-              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:border-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download className={isDownloadingPDF ? 'animate-bounce' : ''} size={20} />
-              {isDownloadingPDF ? 'Generating...' : 'Download PDF'}
-            </button>
-            <button
-              onClick={() => setShowEmailModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-semibold hover:border-blue-600 transition-colors"
-            >
-              <Mail size={20} />
-              Email Me
-            </button>
-          </div>
         </motion.div>
 
-        {/* Version Selector & Assessment Editor */}
+        {/* Version Selector */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <VersionSelector assessmentId={id} />
-          <AssessmentAnswersEditor
-            assessmentId={id}
-            onRegenerateComplete={() => {
-              window.location.reload();
-            }}
-          />
         </motion.div>
 
+        {/* Assessment Editor Modal */}
+        <AssessmentAnswersEditor
+          assessmentId={id}
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onRegenerateComplete={() => {
+            window.location.reload();
+          }}
+        />
+
         {/* Tabs */}
-        <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden mb-8">
+        <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
           <div className="border-b border-gray-200 dark:border-gray-700">
             {/* Mobile: Dropdown selector */}
             <div className="md:hidden px-4 py-3">
@@ -1011,17 +1091,17 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             </div>
 
             {/* Desktop: Horizontal tabs */}
-            <div className="hidden md:flex overflow-x-auto">
+            <div className="hidden md:flex overflow-x-auto justify-center">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold whitespace-nowrap transition-colors ${
+                    className={`flex items-center gap-2 px-6 py-4 font-semibold whitespace-nowrap transition-colors outline-none focus:outline-none ${
                       activeTab === tab.id
                         ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border-b-2 border-transparent'
                     }`}
                   >
                     <Icon size={20} />

@@ -181,16 +181,8 @@ export default function SnakeGame() {
         {/* Food */}
         <motion.div
           key={`${food.x}-${food.y}`}
-          initial={{ scale: 0, rotate: 0 }}
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 10, -10, 0]
-          }}
-          transition={{
-            duration: 0.5,
-            repeat: Infinity,
-            repeatType: 'reverse'
-          }}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
           className="absolute bg-gradient-to-br from-red-500 to-red-600 rounded-full"
           style={{
             left: food.x * CELL_SIZE,

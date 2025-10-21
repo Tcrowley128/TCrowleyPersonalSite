@@ -129,11 +129,13 @@ export default function QuestionCard({ question, value, onChange }: QuestionCard
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
       className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-slate-700"
+      role="group"
+      aria-labelledby={`question-${question.key}`}
     >
       {/* Question Text */}
-      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+      <h3 id={`question-${question.key}`} className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
         {renderTextWithTooltips(question.question)}
-        {question.required && <span className="text-red-500 ml-1">*</span>}
+        {question.required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
       </h3>
 
       {/* Description */}
@@ -147,15 +149,31 @@ export default function QuestionCard({ question, value, onChange }: QuestionCard
       <div className="mt-4">
         {/* Single Select */}
         {question.type === 'single-select' && (
-          <div className="space-y-3">
-            {question.options?.map((option) => (
+          <div className="space-y-3" role="radiogroup" aria-labelledby={`question-${question.key}`}>
+            {question.options?.map((option, index) => (
               <label
                 key={option.value}
-                className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 ${
                   value === option.value
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
                     : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
                 }`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onChange(option.value);
+                  } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const nextIndex = (index + 1) % (question.options?.length || 1);
+                    const nextValue = question.options?.[nextIndex]?.value;
+                    if (nextValue) onChange(nextValue);
+                  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    const prevIndex = index === 0 ? (question.options?.length || 1) - 1 : index - 1;
+                    const prevValue = question.options?.[prevIndex]?.value;
+                    if (prevValue) onChange(prevValue);
+                  }
+                }}
               >
                 <input
                   type="radio"
@@ -164,13 +182,14 @@ export default function QuestionCard({ question, value, onChange }: QuestionCard
                   checked={value === option.value}
                   onChange={(e) => onChange(e.target.value)}
                   className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
+                  aria-describedby={option.description ? `${question.key}-${option.value}-desc` : undefined}
                 />
                 <div className="flex-1">
                   <span className="font-medium text-gray-900 dark:text-white">
                     {option.label}
                   </span>
                   {option.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p id={`${question.key}-${option.value}-desc`} className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {option.description}
                     </p>
                   )}

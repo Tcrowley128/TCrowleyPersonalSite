@@ -74,10 +74,10 @@ export default function FloatingContactButton() {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={option.action}
-                    className={`${option.color} text-white p-4 rounded-full shadow-lg transition-all duration-300 flex items-center gap-3 group min-w-[60px]`}
+                    className={`${option.color} text-white px-5 py-4 rounded-full shadow-lg transition-all duration-300 flex items-center gap-3 group hover:scale-105`}
                   >
                     <option.icon size={24} />
-                    <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+                    <span className="font-medium whitespace-nowrap">
                       {option.label}
                     </span>
                   </motion.button>

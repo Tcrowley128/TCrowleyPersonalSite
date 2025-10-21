@@ -404,48 +404,224 @@ export const assessmentSteps: AssessmentStep[] = [
   },
 
   // ============================================================================
-  // STEP 4: Goals & Constraints
+  // STEP 4: UX & Design Strategy
   // ============================================================================
   {
     id: 4,
-    title: 'Your Goals & Constraints',
-    subtitle: 'What matters most to you',
+    title: 'User Experience & Design',
+    subtitle: 'Let\'s assess your UX maturity and design capabilities',
+    questions: [
+      {
+        key: 'current_design_approach',
+        type: 'single-select',
+        question: 'How does your organization currently approach UX design?',
+        required: true,
+        options: [
+          { value: 'no_ux_process', label: 'No formal UX process', description: 'Design happens ad-hoc or not at all' },
+          { value: 'developer_driven', label: 'Developer-driven design', description: 'Developers make design decisions' },
+          { value: 'stakeholder_feedback', label: 'Based on stakeholder feedback', description: 'Design by committee' },
+          { value: 'basic_ux', label: 'Basic UX principles applied', description: 'Some consideration for user needs' },
+          { value: 'dedicated_designer', label: 'Have dedicated UX/UI designer(s)', description: 'Professional design resources' },
+          { value: 'ux_research_team', label: 'UX research & design team', description: 'Formal UX practice with research' }
+        ]
+      },
+      {
+        key: 'user_research_frequency',
+        type: 'single-select',
+        question: 'How often do you conduct user research?',
+        description: 'User interviews, surveys, usability testing, etc.',
+        required: true,
+        options: [
+          { value: 'never', label: 'Never / Rarely' },
+          { value: 'once_year', label: 'Once or twice a year' },
+          { value: 'quarterly', label: 'Quarterly' },
+          { value: 'monthly', label: 'Monthly' },
+          { value: 'ongoing', label: 'Ongoing / Continuous research' }
+        ]
+      },
+      {
+        key: 'design_tools',
+        type: 'multi-select',
+        question: 'What design tools does your team use?',
+        description: 'Select all that apply',
+        options: [
+          { value: 'figma', label: 'Figma' },
+          { value: 'sketch', label: 'Sketch' },
+          { value: 'adobe_xd', label: 'Adobe XD' },
+          { value: 'canva', label: 'Canva' },
+          { value: 'powerpoint', label: 'PowerPoint / Google Slides' },
+          { value: 'miro', label: 'Miro / FigJam / Whiteboarding tools' },
+          { value: 'none', label: 'No design tools' }
+        ]
+      },
+      {
+        key: 'design_system',
+        type: 'single-select',
+        question: 'Do you have a design system or component library?',
+        required: true,
+        options: [
+          { value: 'no_system', label: 'No, we don\'t have one' },
+          { value: 'informal', label: 'Informal guidelines', description: 'Inconsistent patterns across products' },
+          { value: 'basic_brand', label: 'Basic brand guidelines', description: 'Colors, logos, fonts' },
+          { value: 'developing', label: 'Currently developing one' },
+          { value: 'established', label: 'Established design system', description: 'Documented components and patterns' },
+          { value: 'mature', label: 'Mature system with governance', description: 'Living system with regular updates' }
+        ],
+        tooltips: [
+          {
+            term: 'design system',
+            explanation: 'A collection of reusable UI components, patterns, and guidelines that ensure consistency across all digital products'
+          }
+        ]
+      },
+      {
+        key: 'mobile_strategy',
+        type: 'single-select',
+        question: 'What is your mobile strategy?',
+        required: true,
+        options: [
+          { value: 'no_mobile', label: 'No mobile presence' },
+          { value: 'mobile_web_only', label: 'Mobile-responsive website only' },
+          { value: 'web_app', label: 'Progressive web app (PWA)' },
+          { value: 'native_app', label: 'Native mobile apps (iOS/Android)' },
+          { value: 'hybrid_app', label: 'Hybrid mobile app (React Native, Flutter)' },
+          { value: 'not_needed', label: 'Not needed for our business' }
+        ],
+        tooltips: [
+          {
+            term: 'Progressive web app',
+            explanation: 'A website that behaves like a native app, works offline, and can be installed on mobile devices'
+          }
+        ]
+      },
+      {
+        key: 'accessibility_maturity',
+        type: 'single-select',
+        question: 'How do you handle digital accessibility (WCAG compliance)?',
+        required: true,
+        options: [
+          { value: 'not_considered', label: 'Not currently considered' },
+          { value: 'aware_not_implemented', label: 'Aware but not implemented' },
+          { value: 'basic_compliance', label: 'Basic compliance efforts', description: 'Some WCAG A level compliance' },
+          { value: 'wcag_aa', label: 'WCAG AA compliant', description: 'Meet standard accessibility requirements' },
+          { value: 'wcag_aaa', label: 'WCAG AAA compliant', description: 'Enhanced accessibility' },
+          { value: 'accessibility_first', label: 'Accessibility-first approach', description: 'Built into design process' }
+        ],
+        tooltips: [
+          {
+            term: 'WCAG',
+            explanation: 'Web Content Accessibility Guidelines - international standards for making digital content accessible to people with disabilities'
+          }
+        ]
+      },
+      {
+        key: 'ux_metrics',
+        type: 'multi-select',
+        question: 'What UX metrics do you track?',
+        description: 'Select all that apply',
+        options: [
+          { value: 'none', label: 'We don\'t track UX metrics' },
+          { value: 'google_analytics', label: 'Google Analytics / Web analytics' },
+          { value: 'heatmaps', label: 'Heatmaps / Session recordings' },
+          { value: 'nps', label: 'Net Promoter Score (NPS)' },
+          { value: 'csat', label: 'Customer Satisfaction Score (CSAT)' },
+          { value: 'task_completion', label: 'Task completion rates' },
+          { value: 'time_on_task', label: 'Time on task' },
+          { value: 'error_rates', label: 'Error rates / Failed interactions' },
+          { value: 'sus', label: 'System Usability Scale (SUS)' }
+        ]
+      },
+      {
+        key: 'ux_challenges',
+        type: 'multi-select',
+        question: 'What UX challenges does your organization face?',
+        description: 'Select all that apply',
+        options: [
+          { value: 'inconsistent_ui', label: 'Inconsistent UI across products' },
+          { value: 'poor_feedback', label: 'User complaints about usability' },
+          { value: 'low_adoption', label: 'Low adoption of new features' },
+          { value: 'high_support', label: 'High support ticket volume for "how to" questions' },
+          { value: 'slow_design', label: 'Slow design process / bottleneck' },
+          { value: 'design_dev_disconnect', label: 'Disconnect between design and development' },
+          { value: 'no_mobile_optimized', label: 'Not optimized for mobile' },
+          { value: 'accessibility_issues', label: 'Accessibility issues' },
+          { value: 'legacy_ui', label: 'Outdated/legacy UI that needs modernization' }
+        ]
+      },
+      {
+        key: 'ux_priorities',
+        type: 'ranking',
+        question: 'Rank your top 3 UX priorities',
+        description: 'Select up to 3 in order of priority',
+        maxSelection: 3,
+        options: [
+          { value: 'improve_existing', label: 'Improve existing product UX' },
+          { value: 'design_system', label: 'Build design system' },
+          { value: 'user_research', label: 'Establish user research practice' },
+          { value: 'accessibility', label: 'Improve accessibility' },
+          { value: 'mobile_experience', label: 'Better mobile experience' },
+          { value: 'faster_design', label: 'Speed up design process' },
+          { value: 'hire_designers', label: 'Hire/grow design team' },
+          { value: 'design_ops', label: 'Improve design operations' }
+        ]
+      },
+      {
+        key: 'ux_detail',
+        type: 'textarea',
+        question: 'UX & Design Pain Points (Optional)',
+        description: 'Share any specific UX challenges or opportunities',
+        placeholder: 'Example: Our internal tools have inconsistent interfaces and our team struggles to learn new systems. We\'ve also received feedback that our customer portal is difficult to navigate on mobile devices...',
+        required: false
+      }
+    ]
+  },
+
+  // ============================================================================
+  // STEP 5: Goals & Constraints
+  // ============================================================================
+  {
+    id: 5,
+    title: 'Goals & Constraints',
+    subtitle: 'Help us understand your transformation priorities and timeline',
     questions: [
       {
         key: 'primary_goal',
         type: 'ranking',
-        question: 'Rank your top 3 goals',
+        question: 'Rank your top 3 transformation goals',
         description: 'Select up to 3 in order of priority',
-        required: true,
         maxSelection: 3,
         options: [
-          { value: 'save_time', label: 'Save time on repetitive work' },
-          { value: 'better_decisions', label: 'Make better/faster decisions' },
-          { value: 'collaboration', label: 'Improve team collaboration' },
-          { value: 'scale', label: 'Scale without adding headcount' },
-          { value: 'customer_experience', label: 'Better customer experience' },
-          { value: 'reduce_errors', label: 'Reduce errors and rework' }
+          { value: 'save_time', label: 'Save time on manual tasks' },
+          { value: 'improve_decisions', label: 'Make faster, better decisions' },
+          { value: 'scale_operations', label: 'Scale operations without hiring more people' },
+          { value: 'enhance_customer', label: 'Enhance customer experience' },
+          { value: 'reduce_errors', label: 'Reduce errors and rework' },
+          { value: 'unlock_insights', label: 'Unlock insights from data' },
+          { value: 'modernize_tech', label: 'Modernize technology stack' },
+          { value: 'competitive_advantage', label: 'Gain competitive advantage' }
         ]
       },
       {
         key: 'biggest_constraint',
         type: 'ranking',
-        question: 'Rank your top constraints',
-        description: 'Select up to 3 in order of impact',
-        required: true,
+        question: 'What are your biggest constraints?',
+        description: 'Rank your top 3 constraints',
         maxSelection: 3,
         options: [
-          { value: 'time', label: 'Time (need quick wins)', description: 'Team is busy, need fast results' },
-          { value: 'people', label: 'People (small team)', description: 'Everyone is already stretched thin' },
-          { value: 'budget', label: 'Budget (need low/no cost)', description: 'Limited budget for new tools' },
-          { value: 'skills', label: 'Technical skills', description: 'Need simple, no-code options' },
-          { value: 'risk', label: 'Risk tolerance', description: 'Can\'t break what\'s working' }
+          { value: 'budget', label: 'Limited budget' },
+          { value: 'time', label: 'Limited time / too busy' },
+          { value: 'technical_skills', label: 'Lack of technical skills' },
+          { value: 'resistance', label: 'Resistance to change' },
+          { value: 'unclear_where_start', label: 'Unclear where to start' },
+          { value: 'legacy_systems', label: 'Legacy systems / technical debt' },
+          { value: 'data_quality', label: 'Poor data quality' },
+          { value: 'leadership_buy_in', label: 'Lack of leadership buy-in' }
         ]
       },
       {
         key: 'timeline',
         type: 'single-select',
-        question: 'When do you want to see results?',
+        question: 'What is your transformation timeline?',
         required: true,
         options: [
           { value: '30_days', label: 'ASAP (within 30 days)', description: 'Urgent need for improvement' },
@@ -476,10 +652,10 @@ export const assessmentSteps: AssessmentStep[] = [
   },
 
   // ============================================================================
-  // STEP 5: Contact Information (Optional)
+  // STEP 6: Contact Information (Optional)
   // ============================================================================
   {
-    id: 5,
+    id: 6,
     title: 'Get Your Results',
     subtitle: 'Optional: receive your personalized roadmap via email',
     questions: [

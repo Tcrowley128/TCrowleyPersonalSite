@@ -143,40 +143,107 @@ export async function POST(request: NextRequest) {
       throw responsesError;
     }
 
-    // Build prompt
-    const prompt = buildAssessmentPrompt(assessment, responses || []);
+    // Build prompt with caching support
+    const promptParts = buildAssessmentPrompt(assessment, responses || []);
 
-    // Call Claude API
+    // Call Claude API with retry logic for rate limits and prompt caching
     console.log('Calling Claude API for assessment:', assessment_id);
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 16000,
-      temperature: 0.7,
-      messages: [
-        {
-          role: 'user',
-          content: prompt
+    let message;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount <= maxRetries) {
+      try {
+        message = await anthropic.messages.create({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 16000,
+          temperature: 0.7,
+          system: promptParts.systemInstructions,
+          messages: [
+            {
+              role: 'user',
+              content: promptParts.userMessage
+            }
+          ],
+          tools: [{
+            type: "web_search_20250305" as const,
+            name: "web_search",
+            max_uses: 5
+          }]
+        });
+
+        // Log cache usage
+        console.log('Cache usage:', {
+          cache_creation_input_tokens: (message.usage as any).cache_creation_input_tokens || 0,
+          cache_read_input_tokens: (message.usage as any).cache_read_input_tokens || 0,
+          input_tokens: message.usage.input_tokens,
+          output_tokens: message.usage.output_tokens
+        });
+
+        break; // Success, exit retry loop
+      } catch (error: any) {
+        if (error.status === 429 && retryCount < maxRetries) {
+          // Rate limit hit, wait and retry
+          const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff: 1s, 2s, 4s
+          console.log(`Rate limit hit, retrying in ${waitTime}ms (attempt ${retryCount + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          retryCount++;
+        } else {
+          throw error; // Re-throw if not rate limit or max retries reached
         }
-      ]
-    });
+      }
+    }
 
-    // Extract the JSON response
-    const responseText = message.content[0].type === 'text'
-      ? message.content[0].text
-      : '';
+    if (!message) {
+      throw new Error('Failed to generate assessment after multiple retries');
+    }
 
-    // Parse JSON response
+    // Check if response was truncated
+    if (message.stop_reason === 'max_tokens') {
+      console.warn('Claude response was truncated due to max_tokens limit');
+    }
+
+    // Extract the JSON response (handle tool use in content array)
+    let responseText = '';
+    for (const block of message.content) {
+      if (block.type === 'text') {
+        responseText += block.text;
+      }
+    }
+
+    // Removed debug logging
+
+    // Parse JSON response with better error handling
     let parsedResults;
     try {
-      // Try to extract JSON if Claude wrapped it in markdown
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      const jsonString = jsonMatch ? jsonMatch[0] : responseText;
+      // Remove markdown code blocks if present
+      let cleanedText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+
+      // Try to extract JSON object
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      let jsonString = jsonMatch ? jsonMatch[0] : cleanedText;
+
+      // If JSON is incomplete, try to close it
+      if (message.stop_reason === 'max_tokens') {
+        // Count open braces and brackets
+        const openBraces = (jsonString.match(/\{/g) || []).length;
+        const closeBraces = (jsonString.match(/\}/g) || []).length;
+        const openBrackets = (jsonString.match(/\[/g) || []).length;
+        const closeBrackets = (jsonString.match(/\]/g) || []).length;
+
+        // Add missing closing characters
+        jsonString += ']'.repeat(Math.max(0, openBrackets - closeBrackets));
+        jsonString += '}'.repeat(Math.max(0, openBraces - closeBraces));
+      }
+
       parsedResults = JSON.parse(jsonString);
     } catch (parseError) {
       console.error('Failed to parse Claude response:', parseError);
-      console.error('Response text:', responseText);
-      throw new Error('Failed to parse AI response');
+      console.error('Response length:', responseText.length);
+      console.error('Stop reason:', message.stop_reason);
+      console.error('Token usage:', message.usage);
+      throw new Error('Failed to parse AI response. The response may have been truncated.');
     }
 
     // Calculate new regeneration count

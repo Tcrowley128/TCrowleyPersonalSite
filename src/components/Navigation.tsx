@@ -93,7 +93,7 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-center space-x-6">
+            <div className="flex items-center space-x-4 mr-2">
               {navItems.map((item, index) => (
                 <Link key={item.href} href={item.href}>
                   <motion.div

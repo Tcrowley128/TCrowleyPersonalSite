@@ -25,7 +25,7 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
       </div>
 
       {/* Step Indicators */}
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-start gap-2">
         {stepTitles.map((title, index) => {
           const stepNumber = index + 1;
           const isCompleted = stepNumber < currentStep;
@@ -48,7 +48,7 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
                     ? '#3b82f6'
                     : '#e5e7eb'
                 }}
-                className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${
                   isCompleted
                     ? 'bg-green-600'
                     : isCurrent
@@ -71,7 +71,7 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
 
               {/* Title */}
               <span
-                className={`text-xs text-center hidden sm:block ${
+                className={`text-xs text-center hidden sm:block leading-relaxed px-1 ${
                   isCurrent
                     ? 'text-blue-600 dark:text-blue-400 font-semibold'
                     : isCompleted

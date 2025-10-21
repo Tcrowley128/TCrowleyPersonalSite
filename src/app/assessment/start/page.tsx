@@ -54,6 +54,18 @@ export default function AssessmentStart() {
   const handleNext = () => {
     if (!isStepComplete()) {
       setError('Please answer all required questions before continuing.');
+      // Scroll to the first unanswered question
+      const firstUnansweredQuestion = currentStepData?.questions.find(q => {
+        const answer = answers[q.key];
+        if (q.type === 'multi-select') {
+          return !Array.isArray(answer) || answer.length === 0;
+        }
+        return answer === undefined || answer === '' || answer === null;
+      });
+      if (firstUnansweredQuestion) {
+        const element = document.getElementById(`question-${firstUnansweredQuestion.key}`);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
       return;
     }
 
