@@ -33,7 +33,14 @@ export default function AssessmentStart() {
   const isStepComplete = () => {
     if (!currentStepData) return false;
 
-    const requiredQuestions = currentStepData.questions.filter(q => q.required);
+    const requiredQuestions = currentStepData.questions.filter(q => {
+      // Skip industry_other if industry is not 'other'
+      if (q.key === 'industry_other' && answers.industry !== 'other') {
+        return false;
+      }
+      return q.required;
+    });
+
     return requiredQuestions.every(q => {
       const answer = answers[q.key];
       if (q.type === 'multi-select') {
@@ -93,7 +100,7 @@ export default function AssessmentStart() {
       const assessmentData = {
         session_id: sessionId,
         company_size: answers.company_size,
-        industry: answers.industry,
+        industry: answers.industry === 'other' && answers.industry_other ? answers.industry_other : answers.industry,
         user_role: answers.user_role,
         technical_capability: answers.technical_capability,
         team_comfort_level: answers.team_comfort_level,
@@ -193,14 +200,42 @@ export default function AssessmentStart() {
         {/* Questions */}
         <div className="space-y-6 mb-8">
           <AnimatePresence mode="wait">
-            {currentStepData.questions.map((question, index) => (
-              <QuestionCard
-                key={`${currentStep}-${question.key}`}
-                question={question}
-                value={answers[question.key]}
-                onChange={(value) => handleAnswerChange(question.key, value)}
-              />
-            ))}
+            {currentStepData.questions
+              .filter(question => {
+                // Only show industry_other field when industry is 'other'
+                if (question.key === 'industry_other') {
+                  return answers.industry === 'other';
+                }
+                // Only show erp_system_other field when 'other' is selected in erp_system
+                if (question.key === 'erp_system_other') {
+                  return Array.isArray(answers.erp_system) && answers.erp_system.includes('other');
+                }
+                return true;
+              })
+              .map((question, index) => {
+                // Filter options based on industry for dynamic questions
+                let processedQuestion = { ...question };
+                if (question.key === 'erp_system' && question.options && answers.industry) {
+                  processedQuestion = {
+                    ...question,
+                    options: question.options.filter(option => {
+                      // Show all options without industry property (core systems)
+                      if (!option.industry) return true;
+                      // Show industry-specific options only if they match selected industry
+                      return option.industry === answers.industry;
+                    })
+                  };
+                }
+
+                return (
+                  <QuestionCard
+                    key={`${currentStep}-${question.key}`}
+                    question={processedQuestion}
+                    value={answers[question.key]}
+                    onChange={(value) => handleAnswerChange(question.key, value)}
+                  />
+                );
+              })}
           </AnimatePresence>
         </div>
 

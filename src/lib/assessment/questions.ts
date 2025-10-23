@@ -13,6 +13,7 @@ export interface QuestionOption {
   value: string;
   label: string;
   description?: string;
+  industry?: string; // Optional: show this option only for specific industries
 }
 
 export interface TooltipTerm {
@@ -82,6 +83,13 @@ export const assessmentSteps: AssessmentStep[] = [
           { value: 'government', label: 'Government' },
           { value: 'other', label: 'Other' }
         ]
+      },
+      {
+        key: 'industry_other',
+        type: 'text',
+        question: 'Please specify your industry:',
+        placeholder: 'e.g., Real Estate, Hospitality, Transportation',
+        required: true
       },
       {
         key: 'user_role',
@@ -174,11 +182,12 @@ export const assessmentSteps: AssessmentStep[] = [
       },
       {
         key: 'erp_system',
-        type: 'single-select',
-        question: 'What ERP system do you use (if any)?',
-        description: 'Enterprise Resource Planning system',
+        type: 'multi-select',
+        question: 'What ERP or core business systems do you use? (Select all that apply)',
+        description: 'Enterprise Resource Planning and industry-specific systems',
         required: false,
         options: [
+          // Core ERP Systems
           { value: 'sap', label: 'SAP' },
           { value: 'oracle', label: 'Oracle ERP Cloud / NetSuite' },
           { value: 'microsoft_dynamics', label: 'Microsoft Dynamics 365' },
@@ -188,10 +197,37 @@ export const assessmentSteps: AssessmentStep[] = [
           { value: 'ifs', label: 'IFS' },
           { value: 'sage', label: 'Sage' },
           { value: 'acumatica', label: 'Acumatica' },
+          // Industry-Specific Systems (will be shown conditionally)
+          { value: 'epic_ehr', label: 'Epic (Healthcare EHR)', industry: 'healthcare' },
+          { value: 'cerner', label: 'Cerner (Healthcare)', industry: 'healthcare' },
+          { value: 'meditech', label: 'Meditech (Healthcare)', industry: 'healthcare' },
+          { value: 'athenahealth', label: 'Athenahealth (Healthcare)', industry: 'healthcare' },
+          { value: 'dexterra', label: 'Dexterra (Manufacturing)', industry: 'manufacturing' },
+          { value: 'plex', label: 'Plex (Manufacturing)', industry: 'manufacturing' },
+          { value: 'iqms', label: 'IQMS (Manufacturing)', industry: 'manufacturing' },
+          { value: 'shopify_plus', label: 'Shopify Plus (Retail)', industry: 'retail' },
+          { value: 'netsuite_retail', label: 'NetSuite for Retail', industry: 'retail' },
+          { value: 'lightspeed', label: 'Lightspeed (Retail POS)', industry: 'retail' },
+          { value: 'square', label: 'Square (Retail)', industry: 'retail' },
+          { value: 'fiserv', label: 'Fiserv (Financial Services)', industry: 'financial_services' },
+          { value: 'temenos', label: 'Temenos (Banking)', industry: 'financial_services' },
+          { value: 'finastra', label: 'Finastra (Financial Services)', industry: 'financial_services' },
+          { value: 'blackbaud', label: 'Blackbaud (Non-profit)', industry: 'nonprofit' },
+          { value: 'salesforce_nonprofit', label: 'Salesforce Nonprofit Cloud', industry: 'nonprofit' },
+          { value: 'canvas', label: 'Canvas (Education LMS)', industry: 'education' },
+          { value: 'blackboard', label: 'Blackboard (Education)', industry: 'education' },
+          { value: 'ellucian', label: 'Ellucian (Higher Education)', industry: 'education' },
           { value: 'custom_erp', label: 'Custom/Legacy ERP system' },
           { value: 'none', label: 'No ERP system' },
-          { value: 'other', label: 'Other ERP system' }
+          { value: 'other', label: 'Other (specify below)' }
         ]
+      },
+      {
+        key: 'erp_system_other',
+        type: 'text',
+        question: 'Please specify your other systems:',
+        placeholder: 'e.g., Custom CRM, Legacy inventory system',
+        required: false
       }
     ]
   },

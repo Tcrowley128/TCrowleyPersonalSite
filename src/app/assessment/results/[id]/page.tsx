@@ -6,7 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, Target, Zap, TrendingUp, Users, Shield,
   Calendar, Download, Mail, RefreshCw, CheckCircle,
-  Lightbulb, BarChart3, Rocket, X, Edit2, MoreVertical
+  Lightbulb, BarChart3, X, Edit2, MoreVertical,
+  History, FileText
 } from 'lucide-react';
 import {
   OverviewTab,
@@ -36,6 +37,9 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const [error, setError] = useState<string>('');
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState('');
+  const [isDownloadingPPTX, setIsDownloadingPPTX] = useState(false);
+  const [pptxProgress, setPptxProgress] = useState('');
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [email, setEmail] = useState('');
   const [isSendingEmail, setIsSendingEmail] = useState(false);
@@ -47,6 +51,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showMenuTip, setShowMenuTip] = useState(true);
+  const [showVersionModal, setShowVersionModal] = useState(false);
   const chatRef = useRef<AssessmentChatHandle>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -155,63 +160,86 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     }
   };
 
-  const handleDownloadPDF = async () => {
-    setIsDownloadingPDF(true);
+  const handleDownloadPPTX = async () => {
+    setIsDownloadingPPTX(true);
+    setPptxProgress('Initializing presentation generator...');
 
     try {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        const messages = [
+          'Analyzing assessment data...',
+          'Researching industry benchmarks...',
+          'Finding relevant insights...',
+          'Creating presentation slides...',
+          'Applying design template...',
+          'Finalizing your presentation...'
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        setPptxProgress(randomMessage);
+      }, 3000);
+
+      // Use the enhanced endpoint with Claude web search and images
+      const response = await fetch(`/api/assessment/${id}/export-pptx-enhanced`);
+
+      clearInterval(progressInterval);
+
+      if (!response.ok) {
+        throw new Error('Failed to generate PowerPoint presentation');
+      }
+
+      setPptxProgress('Downloading presentation...');
+
+      // Get the blob from the response
+      const blob = await response.blob();
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${results.company_name?.replace(/[^a-z0-9]/gi, '_') || 'assessment'}_results.pptx`;
+      document.body.appendChild(a);
+      a.click();
+
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Error generating PowerPoint:', err);
+      setError('Failed to generate PowerPoint. Please try again.');
+    } finally {
+      setIsDownloadingPPTX(false);
+      setPptxProgress('');
+    }
+  };
+
+
+  const handleDownloadPDF = async () => {
+    setIsDownloadingPDF(true);
+    setPdfProgress('Preparing PDF...');
+
+    try {
+      const { toPng } = await import('html-to-image');
       const jsPDF = (await import('jspdf')).default;
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      const maxWidth = pageWidth - (margin * 2);
-      let yPos = 20;
 
-      // Helper to check if we need a new page
-      const checkPageBreak = (additionalHeight: number) => {
-        if (yPos + additionalHeight > pageHeight - margin) {
-          pdf.addPage();
-          yPos = margin;
-          return true;
-        }
-        return false;
-      };
+      // Store original tab
+      const originalTab = activeTab;
 
-      // Helper to add section header
-      const addSectionHeader = (title: string) => {
-        checkPageBreak(20);
-        pdf.setFillColor(59, 130, 246);
-        pdf.rect(margin, yPos, maxWidth, 10, 'F');
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(title, margin + 2, yPos + 7);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 15;
-      };
+      // Define all tabs to capture
+      const tabsToCapture = [
+        { id: 'overview', label: 'Overview' },
+        { id: 'quick-wins', label: 'Quick Wins' },
+        { id: 'recommendations', label: 'Tech Recommendations' },
+        { id: 'roadmap', label: 'Roadmap' },
+        { id: 'maturity', label: 'Maturity Assessment' },
+        { id: 'long-term', label: 'Long-term Vision' },
+        { id: 'change-mgmt', label: 'Change Management' }
+      ];
 
-      // Helper to add training resources with clickable links
-      const addTrainingResources = (resources: any[]) => {
-        if (!resources || resources.length === 0) return;
-
-        checkPageBreak(15);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(8);
-        pdf.text('Training Resources:', margin + 2, yPos);
-        yPos += 5;
-
-        resources.forEach((resource: any) => {
-          checkPageBreak(7);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(7);
-          pdf.setTextColor(59, 130, 246); // Blue color for links
-          const resourceText = `• ${resource.title}${resource.duration ? ` (${resource.duration})` : ''}`;
-          pdf.textWithLink(resourceText, margin + 4, yPos, { url: resource.url });
-          pdf.setTextColor(0, 0, 0);
-          yPos += 4;
-        });
-        yPos += 3;
-      };
+      setPdfProgress('Creating title page...');
 
       // ===== TITLE PAGE =====
       pdf.setFillColor(59, 130, 246);
@@ -221,539 +249,146 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
       pdf.setFont('helvetica', 'bold');
       pdf.text('Digital Transformation Roadmap', pageWidth / 2, 30, { align: 'center' });
 
-      // Add company name if available
       if (results.company_name) {
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'normal');
         pdf.text(results.company_name, pageWidth / 2, 43, { align: 'center' });
         pdf.setFontSize(11);
-        pdf.text('Your Personalized Recommendations', pageWidth / 2, 53, { align: 'center' });
+        pdf.text('Assessment Results', pageWidth / 2, 53, { align: 'center' });
         pdf.setFontSize(9);
         pdf.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth / 2, 62, { align: 'center' });
-      } else {
-        pdf.setFontSize(13);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text('Your Personalized Recommendations', pageWidth / 2, 48, { align: 'center' });
-        pdf.setFontSize(9);
-        pdf.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pageWidth / 2, 58, { align: 'center' });
       }
 
-      // ===== TABLE OF CONTENTS =====
-      pdf.setTextColor(0, 0, 0);
-      yPos = 85;
+      // Capture each tab
+      for (let i = 0; i < tabsToCapture.length; i++) {
+        const tab = tabsToCapture[i];
 
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(16);
-      pdf.text('Table of Contents', margin, yPos);
-      yPos += 10;
+        setPdfProgress(`Capturing ${tab.label} (${i + 1}/${tabsToCapture.length})...`);
 
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(10);
-      const existingOpportunitiesCount = results.existing_tool_opportunities?.length || 0;
-      const tocItems = [
-        { title: 'Executive Summary', page: 2 },
-        { title: 'Digital Maturity Assessment', page: 2 },
-        { title: 'Quick Wins - 30-Day Actions', page: 3 },
-        { title: 'Hidden Gems - Underutilized Features', page: results.quick_wins?.length > 0 ? 4 : 3 },
-        { title: 'Technology Recommendations', page: existingOpportunitiesCount > 0 ? 5 : 4 },
-        { title: '90-Day Transformation Roadmap', page: existingOpportunitiesCount > 0 ? 6 : 5 },
-        { title: 'Long-Term Vision (1-3 Years)', page: existingOpportunitiesCount > 0 ? 7 : 6 },
-        { title: 'Change Management & Training', page: existingOpportunitiesCount > 0 ? 8 : 7 },
-        { title: 'Success Metrics & KPIs', page: existingOpportunitiesCount > 0 ? 9 : 8 }
-      ];
+        // Switch to the tab
+        setActiveTab(tab.id);
 
-      tocItems.forEach((item) => {
-        pdf.setTextColor(59, 130, 246);
-        pdf.text(`${item.title}`, margin + 3, yPos);
-        pdf.setTextColor(100, 100, 100);
-        pdf.text(`${item.page}`, pageWidth - margin - 10, yPos);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 7;
-      });
+        // Wait for tab to render (longer wait for complex content)
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-      yPos += 5;
-      pdf.setFontSize(8);
-      pdf.setTextColor(100, 100, 100);
-      pdf.text('Note: Page numbers are approximate and may vary based on content length', margin, yPos);
-      pdf.setTextColor(0, 0, 0);
+        // Find the tab content element
+        const tabContent = document.querySelector('.p-4.sm\\:p-6.overflow-x-hidden.max-w-full');
 
-      // ===== EXECUTIVE SUMMARY =====
-      pdf.addPage();
-      yPos = margin;
-      addSectionHeader('Executive Summary');
-
-      pdf.setFontSize(10);
-      pdf.setFont('helvetica', 'normal');
-
-      if (results.priority_matrix) {
-        // Current State
-        pdf.setFillColor(248, 250, 252);
-        pdf.roundedRect(margin, yPos, maxWidth, 8, 1, 1, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(11);
-        pdf.setTextColor(59, 130, 246);
-        pdf.text('CURRENT STATE', margin + 3, yPos + 6);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 11;
-
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(10);
-        const currentLines = pdf.splitTextToSize(results.priority_matrix.current_state || '', maxWidth - 4);
-        pdf.text(currentLines, margin + 2, yPos);
-        yPos += currentLines.length * 5 + 6;
-        checkPageBreak(20);
-
-        // Key Opportunity
-        pdf.setFillColor(248, 250, 252);
-        pdf.roundedRect(margin, yPos, maxWidth, 8, 1, 1, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(11);
-        pdf.setTextColor(59, 130, 246);
-        pdf.text('KEY OPPORTUNITY', margin + 3, yPos + 6);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 11;
-
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(10);
-        const oppLines = pdf.splitTextToSize(results.priority_matrix.key_opportunity || '', maxWidth - 4);
-        pdf.text(oppLines, margin + 2, yPos);
-        yPos += oppLines.length * 5 + 6;
-        checkPageBreak(20);
-
-        // Recommended Starting Point
-        pdf.setFillColor(248, 250, 252);
-        pdf.roundedRect(margin, yPos, maxWidth, 8, 1, 1, 'F');
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(11);
-        pdf.setTextColor(59, 130, 246);
-        pdf.text('RECOMMENDED STARTING POINT', margin + 3, yPos + 6);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 11;
-
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(10);
-        const startLines = pdf.splitTextToSize(results.priority_matrix.recommended_starting_point || '', maxWidth - 4);
-        pdf.text(startLines, margin + 2, yPos);
-        yPos += startLines.length * 5 + 8;
-      }
-
-      // ===== MATURITY ASSESSMENT =====
-      addSectionHeader('Digital Maturity Assessment');
-
-      const maturityData = results.maturity_assessment || {};
-      const pillars = [
-        { key: 'data_strategy', title: 'Data Strategy', data: maturityData.data_strategy },
-        { key: 'automation_strategy', title: 'Automation Strategy', data: maturityData.automation_strategy },
-        { key: 'ai_strategy', title: 'AI Strategy', data: maturityData.ai_strategy },
-        { key: 'people_strategy', title: 'People & Change', data: maturityData.people_strategy }
-      ];
-
-      pillars.forEach((pillar) => {
-        checkPageBreak(35);
-
-        // Color-coded header based on score
-        const score = pillar.data?.score || 0;
-        if (score >= 4) {
-          pdf.setFillColor(34, 197, 94); // Green
-        } else if (score >= 3) {
-          pdf.setFillColor(234, 179, 8); // Yellow
-        } else {
-          pdf.setFillColor(239, 68, 68); // Red
-        }
-
-        pdf.roundedRect(margin, yPos, maxWidth, 10, 2, 2, 'F');
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(10);
-        pdf.text(`${pillar.title}: ${score}/5`, margin + 3, yPos + 7);
-        pdf.setTextColor(0, 0, 0);
-        yPos += 13;
-
-        if (pillar.data?.gap_analysis) {
-          pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(9);
-          const gapLines = pdf.splitTextToSize(pillar.data.gap_analysis, maxWidth);
-          pdf.text(gapLines, margin + 2, yPos);
-          yPos += gapLines.length * 4 + 5;
-        }
-
-        // Add sub-categories if available
-        if (pillar.data?.sub_categories && pillar.data.sub_categories.length > 0) {
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(8);
-          pdf.text('Detailed Breakdown:', margin + 2, yPos);
-          yPos += 5;
-
-          pillar.data.sub_categories.forEach((subCat: any) => {
-            checkPageBreak(20);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(8);
-            pdf.text(`• ${subCat.name}: ${subCat.score || 0}/5`, margin + 4, yPos);
-            yPos += 4;
-
-            if (subCat.best_practices) {
-              pdf.setFont('helvetica', 'normal');
-              pdf.setFontSize(7);
-              pdf.setTextColor(59, 130, 246); // Blue
-              pdf.text(`Best Practice: ${subCat.best_practices}`, margin + 6, yPos);
-              pdf.setTextColor(0, 0, 0);
-              yPos += 4;
-            }
-
-            if (subCat.quick_win) {
-              pdf.setFont('helvetica', 'normal');
-              pdf.setFontSize(7);
-              pdf.setTextColor(34, 197, 94); // Green
-              pdf.text(`Quick Win: ${subCat.quick_win}`, margin + 6, yPos);
-              pdf.setTextColor(0, 0, 0);
-              yPos += 5;
-            }
+        if (tabContent) {
+          // Capture the tab as PNG using html-to-image (better CSS support including oklch)
+          const imgData = await toPng(tabContent as HTMLElement, {
+            quality: 0.95, // Slightly compress for smaller file size
+            pixelRatio: 2, // Balance between quality and file size
+            backgroundColor: '#ffffff',
+            cacheBust: true, // Prevent caching issues
           });
-          yPos += 3;
-        }
 
-        if (pillar.data?.target) {
-          checkPageBreak(20);
+          // Create an image to get dimensions
+          const img = new Image();
+          img.src = imgData;
+          await new Promise((resolve) => {
+            img.onload = resolve;
+          });
+
+          // Add new page for each tab
+          pdf.addPage();
+
+          // Add tab title at top
+          pdf.setFillColor(59, 130, 246);
+          pdf.rect(0, 0, pageWidth, 15, 'F');
+          pdf.setTextColor(255, 255, 255);
+          pdf.setFontSize(14);
           pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(8);
-          pdf.setTextColor(59, 130, 246);
-          pdf.text('90-Day Target:', margin + 2, yPos);
-          yPos += 5;
+          pdf.text(tab.label, pageWidth / 2, 10, { align: 'center' });
 
-          pdf.setFillColor(219, 234, 254); // Light blue background
-          const targetLines = pdf.splitTextToSize(pillar.data.target, maxWidth - 8);
-          const boxHeight = (targetLines.length * 4) + 4;
-          pdf.roundedRect(margin, yPos - 2, maxWidth, boxHeight, 1, 1, 'F');
+          // Calculate image dimensions to fit page
+          const imgWidth = pageWidth - 20; // 10mm margin on each side
+          const imgHeight = (img.height * imgWidth) / img.width;
 
-          pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(8);
-          pdf.setTextColor(0, 0, 0);
-          pdf.text(targetLines, margin + 3, yPos + 2);
-          yPos += boxHeight + 5;
-        } else {
-          yPos += 5;
-        }
-      });
+          // Check if image fits on one page
+          if (imgHeight <= pageHeight - 25) {
+            // Single page - add image
+            pdf.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
+          } else {
+            // Multi-page - split the image
+            let yPosition = 0;
+            let pageCount = 0;
+            const pxToMmRatio = imgWidth / img.width; // Conversion ratio
 
-      // ===== QUICK WINS =====
-      pdf.addPage();
-      yPos = margin;
-      addSectionHeader('Quick Wins - 30-Day Actions');
+            while (yPosition < img.height) {
+              if (pageCount > 0) {
+                pdf.addPage();
+                // Add tab title on continuation pages
+                pdf.setFillColor(59, 130, 246);
+                pdf.rect(0, 0, pageWidth, 10, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(10);
+                pdf.text(`${tab.label} (continued)`, pageWidth / 2, 7, { align: 'center' });
+              }
 
-      const quickWins = results.quick_wins || [];
-      quickWins.forEach((win: any, index: number) => {
-        checkPageBreak(55);
+              const startY = pageCount === 0 ? 20 : 15;
+              const availableHeight = pageHeight - startY - 10; // More margin at bottom
 
-        // Header with number badge
-        pdf.setFillColor(59, 130, 246);
-        pdf.circle(margin + 3, yPos + 3, 3, 'F');
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(8);
-        pdf.text(`${index + 1}`, margin + 3, yPos + 4, { align: 'center' });
+              // Calculate how many pixels we can fit in this page
+              const sourceHeightPx = Math.floor(availableHeight / pxToMmRatio);
+              const actualSourceHeight = Math.min(sourceHeightPx, img.height - yPosition);
 
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFontSize(11);
-        pdf.text(win.title, margin + 8, yPos + 4);
-        yPos += 10;
+              // Create a temporary canvas for this slice
+              const sliceCanvas = document.createElement('canvas');
+              sliceCanvas.width = img.width;
+              sliceCanvas.height = actualSourceHeight;
 
-        // Light gray background box
-        pdf.setFillColor(250, 250, 250);
-        pdf.setDrawColor(220, 220, 220);
-        const descLines = pdf.splitTextToSize(win.description, maxWidth - 8);
-        const contentHeight = descLines.length * 5 + 15;
-        pdf.roundedRect(margin, yPos, maxWidth, contentHeight, 2, 2, 'FD');
+              const ctx = sliceCanvas.getContext('2d');
+              if (ctx) {
+                ctx.drawImage(
+                  img,
+                  0, yPosition,
+                  img.width, actualSourceHeight,
+                  0, 0,
+                  img.width, actualSourceHeight
+                );
 
-        pdf.setFont('helvetica', 'normal');
-        pdf.setFontSize(9);
-        pdf.text(descLines, margin + 3, yPos + 5);
-        yPos += descLines.length * 5 + 8;
+                const sliceImgData = sliceCanvas.toDataURL('image/png');
+                const sliceImgHeightMm = actualSourceHeight * pxToMmRatio;
+                pdf.addImage(sliceImgData, 'PNG', 10, startY, imgWidth, sliceImgHeightMm);
+              }
 
-        // Metadata in smaller text
-        pdf.setFontSize(7);
-        pdf.setTextColor(80, 80, 80);
-        pdf.text(`Time: ${win.time_to_implement}`, margin + 3, yPos);
-        pdf.text(`Saves: ${win.estimated_time_saved}`, margin + 50, yPos);
-        if (win.difficulty) {
-          pdf.text(`Difficulty: ${win.difficulty}`, margin + 100, yPos);
-        }
-        pdf.setTextColor(0, 0, 0);
-        yPos += 5;
-
-        pdf.setDrawColor(0, 0, 0); // Reset draw color
-
-        // Add training resources
-        if (win.training_resources && win.training_resources.length > 0) {
-          addTrainingResources(win.training_resources);
-        }
-
-        yPos += 5;
-      });
-
-      // ===== EXISTING TOOL OPPORTUNITIES =====
-      const existingOpportunities = results.existing_tool_opportunities || [];
-      if (existingOpportunities.length > 0) {
-        pdf.addPage();
-        yPos = margin;
-        addSectionHeader('Hidden Gems - Underutilized Features');
-
-        existingOpportunities.forEach((opp: any, index: number) => {
-          checkPageBreak(35);
-
-          // Tool name header
-          pdf.setFillColor(255, 248, 225); // Light yellow
-          pdf.setDrawColor(240, 200, 80);
-          pdf.roundedRect(margin, yPos, maxWidth, 9, 1, 1, 'FD');
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(10);
-          pdf.text(`${opp.tool} - ${opp.feature}`, margin + 3, yPos + 6);
-          yPos += 11;
-
-          // Use case
-          pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(9);
-          const useCaseLines = pdf.splitTextToSize(opp.use_case, maxWidth - 4);
-          pdf.text(useCaseLines, margin + 2, yPos);
-          yPos += useCaseLines.length * 4.5 + 4;
-
-          // Impact badge
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(8);
-          pdf.setTextColor(34, 197, 94);
-          pdf.text(`Impact: ${opp.impact}`, margin + 2, yPos);
-          pdf.setTextColor(0, 0, 0);
-          yPos += 7;
-
-          pdf.setDrawColor(0, 0, 0); // Reset draw color
-        });
-      }
-
-      // ===== TECHNOLOGY RECOMMENDATIONS =====
-      pdf.addPage();
-      yPos = margin;
-      addSectionHeader('Technology Recommendations');
-
-      const addToolSection = (title: string, tools: any[]) => {
-        if (tools && tools.length > 0) {
-          checkPageBreak(12);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(12);
-          pdf.text(title, margin, yPos);
-          yPos += 7;
-
-          tools.forEach((tool: any) => {
-            checkPageBreak(35);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(10);
-            pdf.text(`• ${tool.name}`, margin + 2, yPos);
-            yPos += 5;
-
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(9);
-            const whyLines = pdf.splitTextToSize(tool.why_recommended || tool.description, maxWidth - 5);
-            pdf.text(whyLines, margin + 5, yPos);
-            yPos += whyLines.length * 4 + 2;
-
-            // Add cost and difficulty if available
-            if (tool.cost || tool.difficulty) {
-              pdf.setFontSize(7);
-              pdf.text(`Cost: ${tool.cost || 'N/A'} | Difficulty: ${tool.difficulty || 'N/A'}`, margin + 5, yPos);
-              yPos += 3;
+              yPosition += actualSourceHeight;
+              pageCount++;
             }
-
-            // Add training resources
-            if (tool.training_resources && tool.training_resources.length > 0) {
-              addTrainingResources(tool.training_resources);
-            }
-
-            yPos += 4;
-          });
-          yPos += 3;
-        }
-      };
-
-      addToolSection('Citizen-Led Solutions (No IT Required)', results.tier1_citizen_led);
-      addToolSection('Hybrid Solutions (Business + IT)', results.tier2_hybrid);
-      addToolSection('Technical/Enterprise Solutions', results.tier3_technical);
-
-      // ===== 90-DAY ROADMAP =====
-      pdf.addPage();
-      yPos = margin;
-      addSectionHeader('90-Day Transformation Roadmap');
-
-      const roadmap = results.roadmap || {};
-      const months = [
-        { key: 'month_1', title: 'Days 1-30: Foundation', data: roadmap.month_1 },
-        { key: 'month_2', title: 'Days 31-60: Scale', data: roadmap.month_2 },
-        { key: 'month_3', title: 'Days 61-90: Optimize', data: roadmap.month_3 }
-      ];
-
-      months.forEach((month) => {
-        if (month.data) {
-          checkPageBreak(20);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(12);
-          pdf.text(month.title, margin, yPos);
-          yPos += 7;
-
-          if (month.data.focus) {
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(9);
-            pdf.text('Focus:', margin + 2, yPos);
-            yPos += 4;
-            pdf.setFont('helvetica', 'normal');
-            const focusLines = pdf.splitTextToSize(month.data.focus, maxWidth - 5);
-            pdf.text(focusLines, margin + 5, yPos);
-            yPos += focusLines.length * 4 + 4;
           }
-
-          if (month.data.actions && month.data.actions.length > 0) {
-            month.data.actions.forEach((action: any) => {
-              checkPageBreak(15);
-              pdf.setFont('helvetica', 'bold');
-              pdf.setFontSize(9);
-              pdf.text(`Week ${action.week}: ${action.action}`, margin + 2, yPos);
-              yPos += 4;
-              pdf.setFont('helvetica', 'normal');
-              pdf.setFontSize(8);
-              pdf.text(`Owner: ${action.owner} | Outcome: ${action.outcome}`, margin + 5, yPos);
-              yPos += 5;
-            });
-          }
-          yPos += 4;
-        }
-      });
-
-      // ===== LONG-TERM VISION =====
-      if (results.long_term_vision) {
-        pdf.addPage();
-        yPos = margin;
-        addSectionHeader('Long-Term Vision (1-3 Years)');
-
-        const vision = results.long_term_vision;
-
-        if (vision.year_1_goals) {
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(12);
-          pdf.text('Year 1 Goals', margin, yPos);
-          yPos += 7;
-
-          Object.entries(vision.year_1_goals).forEach(([key, value]: [string, any]) => {
-            checkPageBreak(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(9);
-            pdf.text(`${key.charAt(0).toUpperCase() + key.slice(1)}:`, margin + 2, yPos);
-            yPos += 4;
-            pdf.setFont('helvetica', 'normal');
-            const goalLines = pdf.splitTextToSize(value, maxWidth - 5);
-            pdf.text(goalLines, margin + 5, yPos);
-            yPos += goalLines.length * 4 + 4;
-          });
-        }
-
-        if (vision.year_2_3_aspirations) {
-          checkPageBreak(15);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(12);
-          pdf.text('Years 2-3 Aspirations', margin, yPos);
-          yPos += 7;
-
-          Object.entries(vision.year_2_3_aspirations).forEach(([key, value]: [string, any]) => {
-            checkPageBreak(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(9);
-            pdf.text(`${key.charAt(0).toUpperCase() + key.slice(1)}:`, margin + 2, yPos);
-            yPos += 4;
-            pdf.setFont('helvetica', 'normal');
-            const aspLines = pdf.splitTextToSize(value, maxWidth - 5);
-            pdf.text(aspLines, margin + 5, yPos);
-            yPos += aspLines.length * 4 + 4;
-          });
         }
       }
 
-      // ===== CHANGE MANAGEMENT =====
-      const changeMgmt = results.change_management_plan || {};
-      if (Object.keys(changeMgmt).length > 0) {
-        pdf.addPage();
-        yPos = margin;
-        addSectionHeader('Change Management & Training');
+      // Restore original tab
+      setActiveTab(originalTab);
 
-        const changeSections = [
-          { key: 'communication_strategy', title: 'Communication Strategy' },
-          { key: 'stakeholder_engagement', title: 'Stakeholder Engagement' },
-          { key: 'training_approach', title: 'Training Approach' },
-          { key: 'pilot_recommendations', title: 'Pilot Recommendations' }
-        ];
+      setPdfProgress('Finalizing PDF...');
 
-        changeSections.forEach((section) => {
-          if (changeMgmt[section.key]) {
-            checkPageBreak(15);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(11);
-            pdf.text(section.title, margin, yPos);
-            yPos += 6;
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(9);
-            // Convert to string if it's an object
-            const sectionText = typeof changeMgmt[section.key] === 'string'
-              ? changeMgmt[section.key]
-              : JSON.stringify(changeMgmt[section.key], null, 2);
-            const sectionLines = pdf.splitTextToSize(sectionText, maxWidth);
-            pdf.text(sectionLines, margin, yPos);
-            yPos += sectionLines.length * 4 + 6;
-          }
-        });
-      }
-
-      // ===== SUCCESS METRICS =====
-      if (results.success_metrics) {
-        pdf.addPage();
-        yPos = margin;
-        addSectionHeader('Success Metrics & KPIs');
-
-        const metrics = results.success_metrics;
-        ['30_day_kpis', '60_day_kpis', '90_day_kpis'].forEach((period) => {
-          if (metrics[period] && metrics[period].length > 0) {
-            checkPageBreak(15);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setFontSize(11);
-            pdf.text(period.replace('_', ' ').replace('day', 'Day').toUpperCase(), margin, yPos);
-            yPos += 6;
-
-            pdf.setFont('helvetica', 'normal');
-            pdf.setFontSize(9);
-            metrics[period].forEach((kpi: string) => {
-              checkPageBreak(6);
-              pdf.text(`• ${kpi}`, margin + 2, yPos);
-              yPos += 4;
-            });
-            yPos += 4;
-          }
-        });
-      }
-
-      // ===== FOOTER ON EVERY PAGE =====
+      // Add page numbers
       const totalPages = pdf.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         pdf.setFontSize(8);
         pdf.setTextColor(150, 150, 150);
         pdf.text(
-          `Digital Transformation Roadmap | Page ${i} of ${totalPages}`,
+          `Page ${i} of ${totalPages}`,
           pageWidth / 2,
-          pageHeight - 10,
+          pageHeight - 5,
           { align: 'center' }
         );
       }
 
+      setPdfProgress('Downloading PDF...');
+
       // Save PDF
-      pdf.save(`digital-transformation-roadmap-${id.slice(0, 8)}.pdf`);
+      pdf.save(`${results.company_name?.replace(/[^a-z0-9]/gi, '_') || 'assessment'}_results.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
       setError('Failed to generate PDF. Please try again.');
     } finally {
       setIsDownloadingPDF(false);
+      setPdfProgress('');
     }
   };
 
@@ -810,7 +445,14 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         if (!prev) return prev;
 
         // Deep clone to avoid mutation
-        const newResults = JSON.parse(JSON.stringify(prev));
+        let newResults;
+        try {
+          newResults = JSON.parse(JSON.stringify(prev));
+        } catch (error) {
+          console.error('Failed to clone results:', error);
+          // Fallback to shallow clone
+          newResults = { ...prev };
+        }
 
         if (path) {
           // Handle nested updates starting from the field
@@ -866,7 +508,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     { id: 'recommendations', label: 'Tech Recommendations', icon: Lightbulb },
     { id: 'roadmap', label: 'Roadmap', icon: Calendar },
     { id: 'maturity', label: 'Maturity', icon: BarChart3 },
-    { id: 'long-term', label: 'Long-term Vision', icon: Rocket },
+    { id: 'long-term', label: 'Long-term Vision', icon: TrendingUp },
     { id: 'change-mgmt', label: 'Change Management', icon: Users }
   ];
 
@@ -942,6 +584,32 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 py-12 overflow-x-hidden">
       {showConfetti && <Confetti />}
+
+      {/* PDF Generation Progress Toast */}
+      {isDownloadingPDF && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 min-w-[320px]">
+            <Loader2 className="animate-spin flex-shrink-0" size={24} />
+            <div>
+              <div className="font-semibold text-base">{pdfProgress || 'Generating PDF...'}</div>
+              <div className="text-sm text-blue-100 mt-0.5">Please wait, this may take a moment</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isDownloadingPPTX && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-blue-600 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 min-w-[320px]">
+            <Loader2 className="animate-spin flex-shrink-0" size={24} />
+            <div>
+              <div className="font-semibold text-base">{pptxProgress || 'Generating PowerPoint...'}</div>
+              <div className="text-sm text-blue-100 mt-0.5">This may take a few minutes</div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 overflow-x-hidden">
         {/* Header */}
         <motion.div
@@ -992,7 +660,28 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                       className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Download className={isDownloadingPDF ? 'animate-bounce' : ''} size={18} />
-                      <span className="font-medium">{isDownloadingPDF ? 'Generating...' : 'Download PDF'}</span>
+                      <div className="flex-1">
+                        <div className="font-medium">{isDownloadingPDF ? pdfProgress || 'Generating PDF...' : 'Download PDF'}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {isDownloadingPDF ? 'Please wait, this may take a moment...' : 'Visual screenshot of each section'}
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDownloadPPTX();
+                        setShowActionsMenu(false);
+                      }}
+                      disabled={isDownloadingPPTX}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FileText className={isDownloadingPPTX ? 'animate-bounce' : ''} size={18} />
+                      <div className="flex-1">
+                        <div className="font-medium">{isDownloadingPPTX ? pptxProgress || 'Generating...' : 'Export to PowerPoint'}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {isDownloadingPPTX ? 'Please wait, this may take a few minutes...' : 'AI-powered presentation with industry insights'}
+                        </div>
+                      </div>
                     </button>
                     <button
                       onClick={() => {
@@ -1003,6 +692,16 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     >
                       <Edit2 size={18} />
                       <span className="font-medium">Edit Original Answers</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowVersionModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <History size={18} />
+                      <span className="font-medium">Restore Old Version</span>
                     </button>
                     <button
                       onClick={() => {
@@ -1071,6 +770,47 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             window.location.reload();
           }}
         />
+
+        {/* Version History Modal */}
+        <AnimatePresence>
+          {showVersionModal && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowVersionModal(false)}
+                className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+                >
+                  <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Version History</h2>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Restore a previous version of your assessment results
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setShowVersionModal(false)}
+                      className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="p-6">
+                    <VersionSelector assessmentId={id} onVersionRestore={() => setShowVersionModal(false)} />
+                  </div>
+                </motion.div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
         {/* Tabs */}
         <div id="results-content" className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
@@ -1150,7 +890,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'roadmap' && (
                 <TabContent key="roadmap">
-                  <RoadmapTab roadmap={roadmap} onQuickEdit={handleQuickEdit} />
+                  <RoadmapTab roadmap={roadmap} onQuickEdit={handleQuickEdit} onAskAI={(message: string) => chatRef.current?.openWithMessage(message)} />
                 </TabContent>
               )}
 
@@ -1165,7 +905,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
               {activeTab === 'long-term' && (
                 <TabContent key="long-term">
-                  <LongTermVisionTab vision={results.long_term_vision} onQuickEdit={handleQuickEdit} />
+                  <LongTermVisionTab vision={results.long_term_vision} onQuickEdit={handleQuickEdit} onAskAI={(message: string) => chatRef.current?.openWithMessage(message)} />
                 </TabContent>
               )}
 
@@ -1198,7 +938,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Mail className="text-purple-600" />
+                  <Mail className="text-blue-600" />
                   Email Your Roadmap
                 </h3>
                 <button
@@ -1226,7 +966,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your.email@company.com"
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg mb-4 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg mb-4 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                     onKeyPress={(e) => e.key === 'Enter' && handleSendEmail()}
                   />
 
@@ -1246,7 +986,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     <button
                       onClick={handleSendEmail}
                       disabled={isSendingEmail}
-                      className="flex-1 px-4 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {isSendingEmail ? (
                         <>

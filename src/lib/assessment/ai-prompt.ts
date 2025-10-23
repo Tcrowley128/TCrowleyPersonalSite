@@ -138,12 +138,13 @@ Generate VALID JSON with this EXACT structure:
       "Innovation capability with speed-to-market metrics",
       "Talent advantage with retention or attraction benefits"
     ],
-    "industry_benchmarks": "Detailed comparison showing percentile ranking in their industry. Include specific metrics and peer comparisons with numbers."
+    "industry_benchmarks": "Plain text only (NO HTML tags, NO <cite> or citation markup). Research actual industry statistics and trends using web search. Provide detailed comparison showing percentile ranking in their industry with specific metrics, real statistics, and peer comparisons."
   }
 }
 
 CRITICAL GUIDELINES:
-1. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns
+1. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns. For industry_benchmarks field, use web search to find real, current statistics and trends
+1a. **NO HTML**: Never include HTML tags, <cite>, </cite>, or any markup in the industry_benchmarks field. Plain text only
 2. **Accurate Scoring**: Base sub-category scores on their actual responses and maturity levels
 3. **Real URLs Only**: Use verified URLs (https://trello.com, https://learn.microsoft.com, https://youtube.com/@GoogleWorkspace). Never fake URLs
 4. **Balanced Mix**: Include quick wins (30d), medium goals (60-90d), AND stretch goals (6-12mo)

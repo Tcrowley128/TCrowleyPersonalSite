@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2, ChevronDown, ChevronUp, Palette } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Zap, Clock, TrendingUp, DollarSign, Users, Target, Star, CheckCircle2, AlertCircle, ArrowRight, ExternalLink, Play, FileText, BookOpen, Award, Shield, Sparkles, X, Edit2, ChevronDown, ChevronUp, Palette, BarChart3 } from 'lucide-react';
 import QuickResultEditor from '../QuickResultEditor';
 
 // ============================================================================
@@ -254,7 +254,7 @@ export function QuickWinsTab({ quickWins, existing, onAskAI, onQuickEdit }: any)
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {existing.map((opp: any, index: number) => (
-              <ExistingToolCard key={index} opportunity={opp} />
+              <ExistingToolCard key={index} opportunity={opp} onAskAI={onAskAI} />
             ))}
           </div>
         </div>
@@ -273,12 +273,12 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
 
   return (
     <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-yellow-500 rounded-lg p-4">
-      {/* Header with number and title/description */}
+      {/* Header with number, title/description, and action buttons */}
       <div className="flex items-start gap-3 mb-3">
         <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
           {index + 1}
         </div>
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           {onQuickEdit && isEditing ? (
             <>
               <QuickResultEditor
@@ -308,21 +308,19 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
             </>
           )}
         </div>
-      </div>
-
-      {/* Action buttons below title/description */}
-      <div className="flex items-center gap-2 mb-3 ml-11">
-        {onAskAI && (
-          <AskAIButton
-            onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
-            label="Ask AI"
-          />
-        )}
-        {onQuickEdit && (
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
-            title={isEditing ? "Done editing" : "Edit quick win"}
+        {/* Action buttons in top right */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {onAskAI && (
+            <AskAIButton
+              onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
+              label="Ask AI"
+            />
+          )}
+          {onQuickEdit && (
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg border border-transparent hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+              title={isEditing ? "Done editing" : "Edit quick win"}
             >
               {isEditing ? (
                 <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -331,6 +329,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
               )}
             </button>
           )}
+        </div>
       </div>
 
       {/* Compact badges and metrics row */}
@@ -460,16 +459,26 @@ function TrainingResourceLink({ resource }: any) {
   );
 }
 
-function ExistingToolCard({ opportunity }: any) {
+function ExistingToolCard({ opportunity, onAskAI }: any) {
   return (
     <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-emerald-500 rounded-lg p-4">
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 mb-2">
         <CheckCircle2 className="text-green-600 flex-shrink-0 mt-0.5" size={20} />
         <div className="flex-1 min-w-0">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <h4 className="text-base font-semibold text-gray-900 dark:text-white break-words">{opportunity.tool}</h4>
+          <div className="flex items-center gap-2">
+            <h4 className="text-base font-semibold text-gray-900 dark:text-white break-words flex-1">{opportunity.tool}</h4>
             <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded whitespace-nowrap">Already Owned</span>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`I want to learn more about maximizing ${opportunity.tool}. Can you help me understand the untapped capabilities and how to implement the quick win you suggested?`)}
+                label="Ask AI"
+              />
+            )}
           </div>
+        </div>
+      </div>
+
+      <div className="ml-[32px]">{/* Content container with left margin to align with text */}
 
           {opportunity.current_usage && (
             <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 break-words">
@@ -505,7 +514,6 @@ function ExistingToolCard({ opportunity }: any) {
               </div>
             </div>
           )}
-        </div>
       </div>
     </div>
   );
@@ -571,7 +579,7 @@ export function RecommendationsTab({ tier1, tier2, tier3, onAskAI }: any) {
 // ============================================================================
 // ROADMAP TAB - TIMELINE/GANTT STYLE
 // ============================================================================
-export function RoadmapTab({ roadmap, onQuickEdit }: any) {
+export function RoadmapTab({ roadmap, onQuickEdit, onAskAI }: any) {
   const months = [
     { key: 'month_1', title: 'Days 1-30', label: 'Foundation', color: 'blue', data: roadmap?.month_1, days: [0, 30] },
     { key: 'month_2', title: 'Days 31-60', label: 'Scale', color: 'purple', data: roadmap?.month_2, days: [30, 60] },
@@ -640,14 +648,14 @@ export function RoadmapTab({ roadmap, onQuickEdit }: any) {
       {/* Detailed Actions by Phase */}
       <div className="space-y-6">
         {months.map((month, index) => (
-          <RoadmapPhase key={month.key} month={month} index={index} onQuickEdit={onQuickEdit} />
+          <RoadmapPhase key={month.key} month={month} index={index} onQuickEdit={onQuickEdit} onAskAI={onAskAI} />
         ))}
       </div>
     </div>
   );
 }
 
-function RoadmapPhase({ month, index, onQuickEdit }: any) {
+function RoadmapPhase({ month, index, onQuickEdit, onAskAI }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const colorClasses = {
     blue: {
@@ -695,6 +703,12 @@ function RoadmapPhase({ month, index, onQuickEdit }: any) {
           <h4 className={`text-xl font-bold ${colors.text}`}>{month.label}</h4>
           <p className="text-sm text-gray-600 dark:text-gray-400">{month.title}</p>
         </div>
+        {onAskAI && (
+          <AskAIButton
+            onClick={() => onAskAI(`For my ${month.label} phase (${month.title}), what should I prioritize? What are the key risks and how can I ensure successful execution of this roadmap phase?`)}
+            label="Ask AI"
+          />
+        )}
         {onQuickEdit && (
           <button
             onClick={() => setIsEditing(!isEditing)}
@@ -811,6 +825,9 @@ function RoadmapPhase({ month, index, onQuickEdit }: any) {
 // MATURITY TAB
 // ============================================================================
 export function MaturityTab({ maturity, onAskAI }: any) {
+  // Use useRef to store refs without causing re-renders
+  const pillarRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
   const pillars = [
     { key: 'data_strategy', title: 'Data Strategy', icon: TrendingUp, color: 'blue', data: maturity?.data_strategy },
     { key: 'automation_strategy', title: 'Automation Strategy', icon: Zap, color: 'purple', data: maturity?.automation_strategy },
@@ -819,19 +836,87 @@ export function MaturityTab({ maturity, onAskAI }: any) {
     { key: 'people_strategy', title: 'People & Change', icon: Users, color: 'green', data: maturity?.people_strategy }
   ];
 
+  const scrollToPillar = (key: string) => {
+    const element = pillarRefs.current[key];
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="space-y-8">
-      <div className="text-center mb-8">
+      {/* Title and Subtitle */}
+      <div className="text-center mb-6">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 inline-flex items-center justify-center gap-2">
-          <span className="-mt-0.5">📊</span>
+          <BarChart3 className="text-gray-700 dark:text-gray-300" size={28} />
           <span>Digital Maturity Assessment</span>
         </h3>
-        <p className="text-gray-600 dark:text-gray-400">Where you are today and where you're heading</p>
+        <p className="text-gray-600 dark:text-gray-400">A detailed breakdown of your overall assessment scores</p>
+      </div>
+
+      {/* Overall Scores - Compact clickable buttons */}
+      <div className="flex flex-wrap gap-3 justify-center mb-8">
+          <button
+            onClick={() => scrollToPillar('data_strategy')}
+            className="group flex items-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600 transition-all hover:shadow-md active:scale-95"
+          >
+            <Target className="text-blue-600 dark:text-blue-400" size={18} />
+            <div className="text-left">
+              <div className="text-xs text-blue-600 dark:text-blue-400 font-medium">Data</div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">{maturity?.data_strategy?.score || 0}/5</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => scrollToPillar('automation_strategy')}
+            className="group flex items-center gap-2 px-4 py-2.5 bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:border-purple-400 dark:hover:border-purple-600 transition-all hover:shadow-md active:scale-95"
+          >
+            <TrendingUp className="text-purple-600 dark:text-purple-400" size={18} />
+            <div className="text-left">
+              <div className="text-xs text-purple-600 dark:text-purple-400 font-medium">Automation</div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">{maturity?.automation_strategy?.score || 0}/5</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => scrollToPillar('ai_strategy')}
+            className="group flex items-center gap-2 px-4 py-2.5 bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-800 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/30 hover:border-orange-400 dark:hover:border-orange-600 transition-all hover:shadow-md active:scale-95"
+          >
+            <Star className="text-orange-600 dark:text-orange-400" size={18} />
+            <div className="text-left">
+              <div className="text-xs text-orange-600 dark:text-orange-400 font-medium">AI</div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">{maturity?.ai_strategy?.score || 0}/5</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => scrollToPillar('ux_strategy')}
+            className="group flex items-center gap-2 px-4 py-2.5 bg-pink-50 dark:bg-pink-900/20 border-2 border-pink-200 dark:border-pink-800 rounded-lg hover:bg-pink-100 dark:hover:bg-pink-900/30 hover:border-pink-400 dark:hover:border-pink-600 transition-all hover:shadow-md active:scale-95"
+          >
+            <Palette className="text-pink-600 dark:text-pink-400" size={18} />
+            <div className="text-left">
+              <div className="text-xs text-pink-600 dark:text-pink-400 font-medium">UX</div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">{maturity?.ux_strategy?.score || 0}/5</div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => scrollToPillar('people_strategy')}
+            className="group flex items-center gap-2 px-4 py-2.5 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 hover:border-green-400 dark:hover:border-green-600 transition-all hover:shadow-md active:scale-95"
+          >
+            <Users className="text-green-600 dark:text-green-400" size={18} />
+            <div className="text-left">
+              <div className="text-xs text-green-600 dark:text-green-400 font-medium">People</div>
+              <div className="text-sm font-bold text-gray-900 dark:text-white">{maturity?.people_strategy?.score || 0}/5</div>
+            </div>
+          </button>
       </div>
 
       <div className="space-y-6">
         {pillars.map((pillar) => (
-          <MaturityPillar key={pillar.key} pillar={pillar} onAskAI={onAskAI} />
+          <div key={pillar.key} ref={(el) => { pillarRefs.current[pillar.key] = el; }}>
+            <MaturityPillar pillar={pillar} onAskAI={onAskAI} />
+          </div>
         ))}
       </div>
     </div>
@@ -967,7 +1052,7 @@ function MaturityPillar({ pillar, onAskAI }: any) {
 // ============================================================================
 // LONG-TERM VISION TAB
 // ============================================================================
-export function LongTermVisionTab({ vision, onQuickEdit }: any) {
+export function LongTermVisionTab({ vision, onQuickEdit, onAskAI }: any) {
   const [isEditingYear1, setIsEditingYear1] = useState(false);
   const [isEditingYear23, setIsEditingYear23] = useState(false);
 
@@ -991,6 +1076,12 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
           <div className="flex items-center gap-2 mb-6">
             <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">Year 1</span>
             <div className="h-1 flex-1 bg-blue-500 rounded"></div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`For my Year 1 digital transformation goals, what should I focus on first? How can I ensure I'm building the right foundation for long-term success?`)}
+                label="Ask AI"
+              />
+            )}
             {onQuickEdit && (
               <button
                 onClick={() => setIsEditingYear1(!isEditingYear1)}
@@ -1061,6 +1152,12 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
           <div className="flex items-center gap-2 mb-6">
             <span className="text-3xl font-bold text-purple-600 dark:text-purple-400">Years 2-3</span>
             <div className="h-1 flex-1 bg-purple-500 rounded"></div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`For my Years 2-3 digital transformation aspirations, how can I scale what I build in Year 1? What advanced capabilities should I be planning for to maintain competitive advantage?`)}
+                label="Ask AI"
+              />
+            )}
             {onQuickEdit && (
               <button
                 onClick={() => setIsEditingYear23(!isEditingYear23)}
@@ -1162,7 +1259,26 @@ export function LongTermVisionTab({ vision, onQuickEdit }: any) {
                 multiline
               />
             ) : (
-              <p className="text-gray-800 dark:text-gray-300 text-sm break-words">{vision.industry_benchmarks}</p>
+              <div className="text-gray-800 dark:text-gray-300 text-sm space-y-2">
+                {vision.industry_benchmarks.split('\n').map((line: string, idx: number) => {
+                  // Remove HTML tags like <cite>, </cite>, etc.
+                  const cleanedLine = line.replace(/<[^>]*>/g, '').trim();
+                  if (!cleanedLine) return null;
+
+                  // Check if it's a bullet point
+                  if (cleanedLine.startsWith('•') || cleanedLine.startsWith('-') || cleanedLine.startsWith('*')) {
+                    return (
+                      <div key={idx} className="flex items-start gap-2">
+                        <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
+                        <span className="break-words">{cleanedLine.substring(1).trim()}</span>
+                      </div>
+                    );
+                  }
+
+                  // Regular paragraph
+                  return <p key={idx} className="break-words">{cleanedLine}</p>;
+                })}
+              </div>
             )}
           </div>
         </div>
@@ -1740,6 +1856,13 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
             <TrendingUp className="text-blue-600" size={24} />
             <h4 className="text-xl font-bold text-gray-900 dark:text-white">Success Metrics</h4>
             <div className="flex-1"></div>
+            {onAskAI && (
+              <AskAIButton
+                onClick={() => onAskAI(`Can you help me develop a comprehensive strategy for tracking and measuring success metrics across the 30, 60, and 90-day timeframes? I'd like guidance on setting up dashboards, choosing the right tools, and establishing a review cadence.`)}
+                label="Ask AI"
+                size="sm"
+              />
+            )}
             {onQuickEdit && (
               <button
                 onClick={() => setIsEditingMetrics(!isEditingMetrics)}
@@ -1765,10 +1888,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {successMetrics['30_day_kpis'] && successMetrics['30_day_kpis'].length > 0 && (
               <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
-                <h5 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <span>📊</span>
-                  <span>30-Day KPIs:</span>
-                </h5>
+                <div className="flex items-start justify-between mb-3">
+                  <h5 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span>📊</span>
+                    <span>30-Day KPIs:</span>
+                  </h5>
+                  {onAskAI && (
+                    <AskAIButton
+                      onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 30-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
+                      label="Ask AI"
+                      size="sm"
+                    />
+                  )}
+                </div>
                 <ul className="list-disc list-inside space-y-2">
                   {successMetrics['30_day_kpis'].map((kpi: string, i: number) => (
                     <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
@@ -1792,10 +1924,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
 
             {successMetrics['60_day_kpis'] && successMetrics['60_day_kpis'].length > 0 && (
               <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
-                <h5 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <span>📈</span>
-                  <span>60-Day KPIs:</span>
-                </h5>
+                <div className="flex items-start justify-between mb-3">
+                  <h5 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span>📈</span>
+                    <span>60-Day KPIs:</span>
+                  </h5>
+                  {onAskAI && (
+                    <AskAIButton
+                      onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 60-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
+                      label="Ask AI"
+                      size="sm"
+                    />
+                  )}
+                </div>
                 <ul className="list-disc list-inside space-y-2">
                   {successMetrics['60_day_kpis'].map((kpi: string, i: number) => (
                     <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
@@ -1819,10 +1960,19 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
 
             {successMetrics['90_day_kpis'] && successMetrics['90_day_kpis'].length > 0 && (
               <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-gray-500 dark:border-gray-400 rounded-lg p-4">
-                <h5 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                  <span>🎯</span>
-                  <span>90-Day KPIs:</span>
-                </h5>
+                <div className="flex items-start justify-between mb-3">
+                  <h5 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                    <span>🎯</span>
+                    <span>90-Day KPIs:</span>
+                  </h5>
+                  {onAskAI && (
+                    <AskAIButton
+                      onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 90-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
+                      label="Ask AI"
+                      size="sm"
+                    />
+                  )}
+                </div>
                 <ul className="list-disc list-inside space-y-2">
                   {successMetrics['90_day_kpis'].map((kpi: string, i: number) => (
                     <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
