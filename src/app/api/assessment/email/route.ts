@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: NextRequest) {
   try {
-    const { assessment_id, recipient_email } = await request.json();
+    const { assessment_id, recipient_email, mock_data } = await request.json();
 
     if (!assessment_id || !recipient_email) {
       return NextResponse.json(
@@ -22,28 +22,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createAdminClient();
+    let results, assessment;
 
-    // Fetch assessment results
-    const { data: results, error: resultsError } = await supabase
-      .from('assessment_results')
-      .select('*')
-      .eq('assessment_id', assessment_id)
-      .single();
+    // Use mock data if provided (for testing)
+    if (mock_data) {
+      assessment = {
+        company_name: mock_data.company_name,
+        company_size: mock_data.company_size,
+        industry: mock_data.industry
+      };
+      results = {
+        quick_wins: mock_data.quick_wins,
+        priority_matrix: mock_data.priority_matrix,
+        tier1_citizen_led: Array(mock_data.tier1_count || 0).fill({}),
+        tier2_hybrid: Array(mock_data.tier2_count || 0).fill({}),
+        tier3_technical: Array(mock_data.tier3_count || 0).fill({})
+      };
+    } else {
+      const supabase = createAdminClient();
 
-    if (resultsError || !results) {
-      return NextResponse.json(
-        { error: 'Results not found' },
-        { status: 404 }
-      );
+      // Fetch assessment results
+      const { data: resultsData, error: resultsError } = await supabase
+        .from('assessment_results')
+        .select('*')
+        .eq('assessment_id', assessment_id)
+        .single();
+
+      if (resultsError || !resultsData) {
+        return NextResponse.json(
+          { error: 'Results not found' },
+          { status: 404 }
+        );
+      }
+
+      // Fetch assessment data for context
+      const { data: assessmentData } = await supabase
+        .from('assessments')
+        .select('company_name, company_size, industry')
+        .eq('id', assessment_id)
+        .single();
+
+      results = resultsData;
+      assessment = assessmentData;
     }
-
-    // Fetch assessment data for context
-    const { data: assessment } = await supabase
-      .from('assessments')
-      .select('company_name, company_size, industry')
-      .eq('id', assessment_id)
-      .single();
 
     // Build email content
     const quickWinsCount = results.quick_wins?.length || 0;
@@ -141,21 +162,21 @@ export async function POST(request: NextRequest) {
     </ul>
   </div>
 
-  <div style="text-align: center; padding: 30px 0;">
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://tylercrowley.com'}/assessment/results/${assessment_id}" class="cta-button" style="background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: white; padding: 16px 36px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; display: inline-block;">
+  <div style="background: #ffffff; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://tylercrowley.com'}/assessment/results/${assessment_id}" class="cta-button" style="background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(123, 156, 255, 0.4);">
       🚀 View Your Complete Roadmap
     </a>
-    <p style="color: #6B7280; font-size: 13px; margin-top: 16px;">Access anytime at the link above</p>
+    <p style="color: #6B7280; font-size: 13px; margin-top: 16px; margin-bottom: 0;">Access anytime at the link above</p>
   </div>
 
-  <div class="footer">
+  <div class="footer" style="text-align: center; color: #6B7280; font-size: 13px; margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB;">
     <p style="font-weight: 600; color: #374151; margin-bottom: 8px;">📧 Save This Email</p>
-    <p>Bookmark the link above to access your personalized roadmap anytime. Your assessment is securely saved and ready whenever you need it.</p>
-    <p style="margin-top: 20px;">This assessment was generated using AI based on your specific business context, industry, and organizational size.</p>
-    <p style="margin-top: 16px; font-size: 14px;">
+    <p style="color: #6B7280;">Bookmark the link above to access your personalized roadmap anytime. Your assessment is securely saved and ready whenever you need it.</p>
+    <p style="margin-top: 20px; color: #6B7280;">This assessment was generated using AI based on your specific business context, industry, and organizational size.</p>
+    <p style="margin-top: 16px; font-size: 14px; color: #374151;">
       <strong>Questions? Ready to discuss implementation?</strong><br/>
       I'd love to help you bring this roadmap to life.
-      <a href="mailto:tyler@tylercrowley.com" style="color: #7B9CFF; text-decoration: none; font-weight: 600;">Let's connect!</a>
+      <a href="mailto:tcrowley128@gmail.com" style="color: #7B9CFF; text-decoration: none; font-weight: 600;">Let's connect!</a>
     </p>
   </div>
 </body>
