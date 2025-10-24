@@ -603,7 +603,7 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    const launchFocus = slideContent.recommendedStartingPoint?.focus || 'Centralized information hub using SharePoint with Power BI dashboards';
+    const launchFocus = 'Centralized information hub using SharePoint with Power BI dashboards';
     slide6.addText(truncateText(launchFocus, 120), {
       x: 0.5, y: 2.5, w: 4, h: 0.9,
       fontSize: 11, color: COLORS.textLight,
