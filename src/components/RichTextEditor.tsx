@@ -109,7 +109,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-lg max-w-none focus:outline-none min-h-[300px] px-4 py-3',
+        class: 'prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-4 py-3 text-gray-900 dark:text-gray-100',
         spellcheck: 'true'
       }
     }
