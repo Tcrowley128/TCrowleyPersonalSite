@@ -433,7 +433,15 @@ export async function GET(
     // Summary text with proper wrapping and truncation - moved up
     const maturityLabel = overallScore === 1 ? 'foundational' : overallScore === 2 ? 'developing' : overallScore === 3 ? 'defined' : overallScore === 4 ? 'managed' : 'optimized';
     const companyName = assessment.company_name || 'Your organization';
-    const summaryRest = smartShortenText(slideContent.currentState.summary, 250);
+
+    // Remove duplicate company name and score from summary if present
+    let summaryText = slideContent.currentState.summary || '';
+
+    // Remove patterns like "Company operates at a X/5 digital maturity level" from the beginning
+    summaryText = summaryText.replace(new RegExp(`^${companyName}\\s+operates at a\\s+\\d/5\\s+digital maturity level[,.]?\\s*`, 'i'), '');
+    summaryText = summaryText.replace(new RegExp(`^${companyName}\\s+operates at a\\s+\\w+\\s+digital maturity level[,.]?\\s*`, 'i'), '');
+
+    const summaryRest = smartShortenText(summaryText, 250);
 
     // Use array format to apply different formatting to parts of the text
     slide4.addText([
