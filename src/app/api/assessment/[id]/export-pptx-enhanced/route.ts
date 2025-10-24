@@ -378,7 +378,7 @@ export async function GET(
       { num: '08', title: 'Next Steps', desc: 'Getting started with your transformation' }
     ];
 
-    let agendaY = 1.5;
+    const agendaY = 1.5;
     agendaItems.forEach((item, index) => {
       const col = index < 4 ? 0 : 1;
       const x = col === 0 ? 0.5 : 5.2;
@@ -459,7 +459,7 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    let pillarY = 2.7;
+    const pillarY = 2.7;
     pillars.forEach((pillar, idx) => {
       const percentage = (pillar.score / 5) * 100;
       const pillarContent = slideContent.pillars[pillar.key];
@@ -749,7 +749,7 @@ export async function GET(
     // ======================
     // SLIDES 9-13: DETAILED PILLAR BREAKDOWNS (each pillar gets a divider + detail slide)
     // ======================
-    pillars.forEach((pillar, pillarIndex) => {
+    pillars.forEach((pillar) => {
       const pillarContent = slideContent.pillars[pillar.key];
 
       // Section divider for this pillar
@@ -1551,7 +1551,7 @@ export async function GET(
       { num: '04', title: 'Select Project Management Tool', desc: 'Choose framework and tool for tracking initiatives', icon: 'kanbanWhite' }
     ];
 
-    let actionY = 2.05;
+    const actionY = 2.05;
     immediateActions.forEach((action, idx) => {
       const col = Math.floor(idx / 2);
       const x = col === 0 ? 0.5 : 5.2;
