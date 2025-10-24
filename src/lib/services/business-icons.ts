@@ -19,108 +19,135 @@ function svgToBase64(svg: string): string {
 const ICON_SVGS = {
   // Data & Analytics Icons
   database: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <ellipse cx="32" cy="16" rx="20" ry="8" fill="#7B9CFF" opacity="0.3"/>
-    <ellipse cx="32" cy="16" rx="20" ry="8" stroke="#7B9CFF" stroke-width="3"/>
-    <path d="M12 16v12c0 4.4 9 8 20 8s20-3.6 20-8V16" stroke="#7B9CFF" stroke-width="3" fill="none"/>
-    <path d="M12 28v12c0 4.4 9 8 20 8s20-3.6 20-8V28" stroke="#7B9CFF" stroke-width="3" fill="none"/>
+    <ellipse cx="32" cy="16" rx="20" ry="8" fill="#00BCD4" opacity="0.3"/>
+    <ellipse cx="32" cy="16" rx="20" ry="8" stroke="#00BCD4" stroke-width="3"/>
+    <path d="M12 16v12c0 4.4 9 8 20 8s20-3.6 20-8V16" stroke="#00BCD4" stroke-width="3" fill="none"/>
+    <path d="M12 28v12c0 4.4 9 8 20 8s20-3.6 20-8V28" stroke="#00BCD4" stroke-width="3" fill="none"/>
+    <circle cx="32" cy="28" r="2" fill="#FFB800"/>
+    <circle cx="26" cy="40" r="2" fill="#FFB800"/>
+    <circle cx="38" cy="40" r="2" fill="#FFB800"/>
   </svg>`,
 
   chart: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="12" y="36" width="10" height="20" fill="#7B9CFF" rx="2"/>
-    <rect x="27" y="24" width="10" height="32" fill="#7B9CFF" rx="2"/>
-    <rect x="42" y="12" width="10" height="44" fill="#7B9CFF" rx="2"/>
+    <rect x="12" y="36" width="10" height="20" fill="#00BCD4" opacity="0.3" stroke="#00BCD4" stroke-width="2" rx="2"/>
+    <rect x="27" y="24" width="10" height="32" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2" rx="2"/>
+    <rect x="42" y="12" width="10" height="44" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2" rx="2"/>
+    <circle cx="17" cy="34" r="2" fill="#00BCD4"/>
+    <circle cx="32" cy="22" r="2" fill="#4CAF50"/>
+    <circle cx="47" cy="10" r="2" fill="#FFB800"/>
   </svg>`,
 
   analytics: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="20" cy="44" r="6" fill="#7B9CFF"/>
-    <circle cx="32" cy="28" r="6" fill="#7B9CFF"/>
-    <circle cx="44" cy="20" r="6" fill="#7B9CFF"/>
-    <path d="M24 40l6-10m6-8l6-4" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="20" cy="44" r="6" fill="#00BCD4" opacity="0.3" stroke="#00BCD4" stroke-width="2"/>
+    <circle cx="32" cy="28" r="6" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2"/>
+    <circle cx="44" cy="20" r="6" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2"/>
+    <path d="M24 40l6-10m6-8l6-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    <circle cx="20" cy="44" r="3" fill="#00BCD4"/>
+    <circle cx="32" cy="28" r="3" fill="#4CAF50"/>
+    <circle cx="44" cy="20" r="3" fill="#FFB800"/>
   </svg>`,
 
   visualization: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="8" y="12" width="48" height="40" rx="2" stroke="#7B9CFF" stroke-width="2" fill="none"/>
-    <path d="M14 42L22 30L30 38L38 24L46 32L54 20" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <circle cx="14" cy="42" r="3" fill="#7B9CFF"/>
-    <circle cx="22" cy="30" r="3" fill="#7B9CFF"/>
-    <circle cx="30" cy="38" r="3" fill="#7B9CFF"/>
-    <circle cx="38" cy="24" r="3" fill="#7B9CFF"/>
-    <circle cx="46" cy="32" r="3" fill="#7B9CFF"/>
-    <circle cx="54" cy="20" r="3" fill="#7B9CFF"/>
+    <rect x="8" y="12" width="48" height="40" rx="2" stroke="#ffffff" stroke-width="2" fill="none" opacity="0.3"/>
+    <path d="M14 42L22 30L30 38L38 24L46 32L54 20" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="14" cy="42" r="3" fill="#00BCD4"/>
+    <circle cx="22" cy="30" r="3" fill="#4CAF50"/>
+    <circle cx="30" cy="38" r="3" fill="#FFB800"/>
+    <circle cx="38" cy="24" r="3" fill="#00BCD4"/>
+    <circle cx="46" cy="32" r="3" fill="#4CAF50"/>
+    <circle cx="54" cy="20" r="3" fill="#FFB800"/>
   </svg>`,
 
   dataQuality: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <ellipse cx="32" cy="16" rx="20" ry="8" fill="#7B9CFF" opacity="0.3"/>
-    <ellipse cx="32" cy="16" rx="20" ry="8" stroke="#7B9CFF" stroke-width="2"/>
-    <path d="M12 16v12c0 4.4 9 8 20 8s20-3.6 20-8V16" stroke="#7B9CFF" stroke-width="2" fill="none"/>
-    <circle cx="32" cy="40" r="12" fill="#7B9CFF" opacity="0.2"/>
-    <path d="M26 40l4 4 8-8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <ellipse cx="32" cy="16" rx="20" ry="8" fill="#00BCD4" opacity="0.3"/>
+    <ellipse cx="32" cy="16" rx="20" ry="8" stroke="#00BCD4" stroke-width="2"/>
+    <path d="M12 16v12c0 4.4 9 8 20 8s20-3.6 20-8V16" stroke="#00BCD4" stroke-width="2" fill="none"/>
+    <circle cx="32" cy="40" r="12" fill="#4CAF50" opacity="0.2"/>
+    <path d="M26 40l4 4 8-8" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
   </svg>`,
 
   // Automation Icons
   gear: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="10" fill="#7B9CFF"/>
-    <path d="M32 8l3 8-3 8-3-8z M56 32l-8 3-8-3 8-3z M32 56l-3-8 3-8 3 8z M8 32l8-3 8 3-8 3z" fill="#7B9CFF"/>
+    <circle cx="32" cy="32" r="10" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <path d="M32 8l3 8-3 8-3-8z M56 32l-8 3-8-3 8-3z M32 56l-3-8 3-8 3 8z M8 32l8-3 8 3-8 3z" fill="#FF6B6B" opacity="0.5"/>
+    <circle cx="32" cy="32" r="5" fill="#FF6B6B"/>
+    <circle cx="32" cy="16" r="2" fill="#FFB800"/>
+    <circle cx="48" cy="32" r="2" fill="#FFB800"/>
+    <circle cx="32" cy="48" r="2" fill="#FFB800"/>
+    <circle cx="16" cy="32" r="2" fill="#FFB800"/>
   </svg>`,
 
   workflow: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="8" y="24" width="16" height="16" fill="#7B9CFF" rx="3"/>
-    <rect x="40" y="24" width="16" height="16" fill="#7B9CFF" rx="3"/>
-    <path d="M24 32h16M32 24v16" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
+    <rect x="8" y="24" width="16" height="16" fill="#00BCD4" opacity="0.3" stroke="#00BCD4" stroke-width="2" rx="3"/>
+    <rect x="40" y="24" width="16" height="16" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2" rx="3"/>
+    <path d="M24 32h16M32 24v16" stroke="#FFB800" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="3" fill="#FFB800"/>
   </svg>`,
 
   automation: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="20" stroke="#7B9CFF" stroke-width="3"/>
-    <path d="M32 20v24M20 32h24" stroke="#7B9CFF" stroke-width="3"/>
-    <circle cx="32" cy="32" r="6" fill="#7B9CFF"/>
+    <circle cx="32" cy="32" r="20" stroke="#00BCD4" stroke-width="3" opacity="0.5"/>
+    <path d="M32 20v24M20 32h24" stroke="#FFB800" stroke-width="3"/>
+    <circle cx="32" cy="32" r="6" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2"/>
+    <circle cx="32" cy="20" r="3" fill="#00BCD4"/>
+    <circle cx="44" cy="32" r="3" fill="#00BCD4"/>
+    <circle cx="32" cy="44" r="3" fill="#00BCD4"/>
+    <circle cx="20" cy="32" r="3" fill="#00BCD4"/>
   </svg>`,
 
   rpa: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="16" y="20" width="32" height="32" rx="3" stroke="#7B9CFF" stroke-width="2" fill="none"/>
-    <circle cx="26" cy="32" r="3" fill="#7B9CFF"/>
-    <circle cx="38" cy="32" r="3" fill="#7B9CFF"/>
-    <path d="M24 42h16" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
-    <path d="M32 12v8M22 18l5 5M42 18l-5 5" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
-    <rect x="28" y="36" width="8" height="6" rx="1" fill="#7B9CFF" opacity="0.5"/>
+    <rect x="16" y="20" width="32" height="32" rx="3" stroke="#00BCD4" stroke-width="2" fill="none"/>
+    <circle cx="26" cy="32" r="3" fill="#4CAF50"/>
+    <circle cx="38" cy="32" r="3" fill="#4CAF50"/>
+    <path d="M24 42h16" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/>
+    <path d="M32 12v8M22 18l5 5M42 18l-5 5" stroke="#00BCD4" stroke-width="2" stroke-linecap="round"/>
+    <rect x="28" y="36" width="8" height="6" rx="1" fill="#FF6B6B" opacity="0.5"/>
   </svg>`,
 
   // AI Icons
   brain: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M20 16c-6 0-8 4-8 8s2 8 8 8c0 6 2 8 8 8h8c6 0 8-2 8-8 6 0 8-4 8-8s-2-8-8-8c0-4-4-8-12-8s-12 4-12 8z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="24" cy="24" r="2" fill="#7B9CFF"/>
-    <circle cx="40" cy="24" r="2" fill="#7B9CFF"/>
+    <path d="M20 16c-6 0-8 4-8 8s2 8 8 8c0 6 2 8 8 8h8c6 0 8-2 8-8 6 0 8-4 8-8s-2-8-8-8c0-4-4-8-12-8s-12 4-12 8z" fill="#FF6B6B" opacity="0.2" stroke="#FF6B6B" stroke-width="2"/>
+    <circle cx="24" cy="24" r="2" fill="#FFB800"/>
+    <circle cx="40" cy="24" r="2" fill="#FFB800"/>
+    <path d="M20 24c2 0 4 2 4 4M40 24c-2 0-4 2-4 4" stroke="#FF6B6B" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <circle cx="32" cy="20" r="2" fill="#00BCD4"/>
   </svg>`,
 
   robot: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="20" y="24" width="24" height="28" rx="4" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="28" cy="34" r="3" fill="#7B9CFF"/>
-    <circle cx="36" cy="34" r="3" fill="#7B9CFF"/>
-    <rect x="30" y="12" width="4" height="8" fill="#7B9CFF"/>
-    <circle cx="32" cy="12" r="4" fill="#7B9CFF"/>
+    <rect x="20" y="24" width="24" height="28" rx="4" fill="#00BCD4" opacity="0.2" stroke="#00BCD4" stroke-width="2"/>
+    <circle cx="28" cy="34" r="3" fill="#4CAF50"/>
+    <circle cx="36" cy="34" r="3" fill="#4CAF50"/>
+    <rect x="30" y="12" width="4" height="8" fill="#FFB800"/>
+    <circle cx="32" cy="12" r="4" fill="#FFB800"/>
+    <rect x="26" cy="42" width="4" height="6" rx="1" fill="#FF6B6B" opacity="0.5"/>
+    <rect x="34" cy="42" width="4" height="6" rx="1" fill="#FF6B6B" opacity="0.5"/>
   </svg>`,
 
   ai: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M32 8l8 16-8 16-8-16z M56 32l-16 8-16-8 16-8z M32 56l-8-16 8-16 8 16z M8 32l16-8 16 8-16 8z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M32 8l8 16-8 16-8-16z" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <path d="M56 32l-16 8-16-8 16-8z" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2"/>
+    <path d="M32 56l-8-16 8-16 8 16z" fill="#00BCD4" opacity="0.3" stroke="#00BCD4" stroke-width="2"/>
+    <path d="M8 32l16-8 16 8-16 8z" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2"/>
+    <circle cx="32" cy="32" r="4" fill="#ffffff"/>
   </svg>`,
 
   // People Icons
   people: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="24" cy="20" r="8" fill="#7B9CFF"/>
-    <path d="M8 52c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="44" cy="24" r="6" fill="#7B9CFF" opacity="0.6"/>
-    <path d="M32 52c0-6.6 5.4-12 12-12s12 5.4 12 12" fill="#7B9CFF" opacity="0.2" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="24" cy="20" r="8" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <path d="M8 52c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="#FF6B6B" opacity="0.2" stroke="#FF6B6B" stroke-width="2"/>
+    <circle cx="44" cy="24" r="6" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2"/>
+    <path d="M32 52c0-6.6 5.4-12 12-12s12 5.4 12 12" fill="#FFB800" opacity="0.2" stroke="#FFB800" stroke-width="2"/>
   </svg>`,
 
   user: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="24" r="12" fill="#7B9CFF"/>
-    <path d="M8 56c0-13.2 10.8-24 24-24s24 10.8 24 24" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="3"/>
+    <circle cx="32" cy="24" r="12" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <path d="M8 56c0-13.2 10.8-24 24-24s24 10.8 24 24" fill="#00BCD4" opacity="0.2" stroke="#00BCD4" stroke-width="3"/>
   </svg>`,
 
   team: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="20" cy="24" r="6" fill="#7B9CFF"/>
-    <circle cx="32" cy="20" r="7" fill="#7B9CFF"/>
-    <circle cx="44" cy="24" r="6" fill="#7B9CFF"/>
-    <path d="M8 48c0-6.6 5.4-12 12-12s12 5.4 12 12M24 52c0-8.8 7.2-16 16-16s16 7.2 16 16M44 48c0-6.6 5.4-12 12-12" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <circle cx="20" cy="24" r="6" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <circle cx="32" cy="20" r="7" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2"/>
+    <circle cx="44" cy="24" r="6" fill="#4CAF50" opacity="0.3" stroke="#4CAF50" stroke-width="2"/>
+    <path d="M8 48c0-6.6 5.4-12 12-12s12 5.4 12 12M24 52c0-8.8 7.2-16 16-16s16 7.2 16 16M44 48c0-6.6 5.4-12 12-12" stroke="#00BCD4" stroke-width="2" fill="none"/>
   </svg>`,
 
   // UX Icons
