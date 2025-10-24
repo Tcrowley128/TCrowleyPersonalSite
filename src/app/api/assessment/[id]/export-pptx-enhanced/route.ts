@@ -432,7 +432,8 @@ export async function GET(
 
     // Summary text with proper wrapping and truncation - moved up
     const maturityLabel = overallScore === 1 ? 'foundational' : overallScore === 2 ? 'developing' : overallScore === 3 ? 'defined' : overallScore === 4 ? 'managed' : 'optimized';
-    const summaryText = `Your organization operates at a ${maturityLabel} digital maturity level (${overallScore}/5) with ${truncateText(slideContent.currentState.summary, 150)}`;
+    const companyName = assessment.company_name || 'Your organization';
+    const summaryText = `${companyName} operates at a ${maturityLabel} digital maturity level of ${overallScore}/5. ${smartShortenText(slideContent.currentState.summary, 250)}`;
 
     slide4.addText(summaryText, {
       x: 0.5, y: 1.0, w: 9, h: 0.6,
