@@ -138,7 +138,6 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
   };
 
   const setFontSize = (size: string) => {
-    // @ts-expect-error - setFontSize is added by custom FontSize extension
     editor.chain().focus().setFontSize(size).run();
     setShowFontSize(false);
   };
