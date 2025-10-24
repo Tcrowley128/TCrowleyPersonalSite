@@ -1462,8 +1462,11 @@ export async function GET(
       { metric: 'Revenue Growth', target: '15% digital channel increase', measure: 'Sales analytics', icon: 'trendUp' }
     ];
 
+    // Array of business impact icons to cycle through
+    const businessIcons = ['speedometer', 'money', 'trendUp', 'productivity', 'roi', 'revenue', 'efficiency', 'quality', 'growth', 'profit'];
+
     let bizY = 1.5;
-    businessMetrics.forEach((metric: any) => {
+    businessMetrics.forEach((metric: any, idx: number) => {
       // Card - taller for better spacing
       slide24.addShape(pptx.ShapeType.roundRect, {
         x: 0.5, y: bizY, w: 4.3, h: 1.1,
@@ -1471,8 +1474,9 @@ export async function GET(
         line: { color: COLORS.accent, width: 1 }
       });
 
-      // Icon
-      addIcon(slide24, 0.7, bizY + 0.25, metric.icon || 'chart', 0.4);
+      // Icon - use unique icon for each metric
+      const iconKey = metric.icon || businessIcons[idx % businessIcons.length];
+      addIcon(slide24, 0.7, bizY + 0.25, iconKey, 0.4);
 
       // Metric name
       slide24.addText(metric.metric, {
@@ -1513,8 +1517,11 @@ export async function GET(
       { metric: 'Innovation', target: '50 citizen developer solutions', measure: 'App inventory', icon: 'bulb' }
     ];
 
+    // Array of adoption metric icons to cycle through
+    const adoptionIcons = ['users', 'heart', 'bulb', 'engagement', 'satisfaction', 'training', 'collaboration', 'adoption', 'retention', 'feedback'];
+
     let adoptY = 1.5;
-    adoptionMetrics.forEach((metric: any) => {
+    adoptionMetrics.forEach((metric: any, idx: number) => {
       // Card - taller for better spacing
       slide24.addShape(pptx.ShapeType.roundRect, {
         x: 5.2, y: adoptY, w: 4.3, h: 1.1,
@@ -1522,8 +1529,9 @@ export async function GET(
         line: { color: COLORS.accent, width: 1 }
       });
 
-      // Icon
-      addIcon(slide24, 5.4, adoptY + 0.25, metric.icon || 'lightbulb', 0.4);
+      // Icon - use unique icon for each metric
+      const iconKey = metric.icon || adoptionIcons[idx % adoptionIcons.length];
+      addIcon(slide24, 5.4, adoptY + 0.25, iconKey, 0.4);
 
       // Metric name
       slide24.addText(metric.metric, {

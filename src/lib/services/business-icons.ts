@@ -479,6 +479,109 @@ const ICON_SVGS = {
     <path d="M32 12v4M16 20l2.8 2.8M12 32h4M48 20l-2.8 2.8M52 32h-4" stroke="#FFB800" stroke-width="2" stroke-linecap="round"/>
   </svg>`,
 
+  // Additional Business Impact Icons
+  productivity: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="12" y="20" width="40" height="32" rx="2" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <path d="M20 28h24M20 36h24M20 44h16" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="44" cy="44" r="10" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M38 44l4 4 8-8" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  roi: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="20" fill="#7B9CFF" opacity="0.2" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M32 16v16l12 8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M22 22l-6-6M42 22l6-6" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="4" fill="#7B9CFF"/>
+  </svg>`,
+
+  revenue: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="16" y="24" width="32" height="24" rx="2" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <circle cx="32" cy="36" r="8" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M32 32v8M28 36h8" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M20 16h24M20 52h24" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
+  efficiency: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <path d="M32 8l12 12-12 12-12-12z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M32 32l12 12-12 12-12-12z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="32" cy="20" r="3" fill="#7B9CFF"/>
+    <circle cx="32" cy="44" r="3" fill="#7B9CFF"/>
+    <path d="M20 20l-8-8M44 20l8-8M20 44l-8 8M44 44l8 8" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
+  quality: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <path d="M32 8l8 16 16 2-12 12 3 16-15-8-15 8 3-16-12-12 16-2z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="32" cy="28" r="6" fill="#7B9CFF"/>
+  </svg>`,
+
+  growth: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <path d="M12 48L24 36L32 42L44 28L52 32" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 20v12h-12" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="12" cy="48" r="4" fill="#7B9CFF"/>
+    <circle cx="24" cy="36" r="4" fill="#7B9CFF"/>
+    <circle cx="32" cy="42" r="4" fill="#7B9CFF"/>
+    <circle cx="44" cy="28" r="4" fill="#7B9CFF"/>
+    <circle cx="52" cy="32" r="4" fill="#7B9CFF"/>
+  </svg>`,
+
+  profit: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="12" y="12" width="40" height="40" rx="4" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <path d="M22 32h20M22 40h20M32 22v20" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="12" fill="#7B9CFF" opacity="0.2"/>
+  </svg>`,
+
+  // Additional Adoption Metric Icons
+  engagement: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="20" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <path d="M20 28c0-6.6 5.4-12 12-12s12 5.4 12 12" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <circle cx="24" cy="28" r="3" fill="#7B9CFF"/>
+    <circle cx="40" cy="28" r="3" fill="#7B9CFF"/>
+    <path d="M22 40c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="#7B9CFF" stroke-width="2"/>
+  </svg>`,
+
+  satisfaction: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <path d="M32 8c-13.2 0-24 10.8-24 24s10.8 24 24 24 24-10.8 24-24S45.2 8 32 8z" fill="#7B9CFF" opacity="0.2" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="24" cy="28" r="3" fill="#7B9CFF"/>
+    <circle cx="40" cy="28" r="3" fill="#7B9CFF"/>
+    <path d="M20 38c0-6.6 5.4-12 12-12s12 5.4 12 12" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+  </svg>`,
+
+  training: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="16" y="20" width="32" height="28" rx="2" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <path d="M24 28h16M24 36h16M24 44h12" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M32 12l8 8h-16z" fill="#7B9CFF" stroke="#7B9CFF" stroke-width="2" stroke-linejoin="round"/>
+  </svg>`,
+
+  collaboration: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <circle cx="20" cy="24" r="8" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="44" cy="24" r="8" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="32" cy="44" r="8" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M24 28l6 12M40 28l-6 12" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
+  adoption: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <path d="M8 48L20 36L28 44L40 32L52 40" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="8" cy="48" r="4" fill="#7B9CFF"/>
+    <circle cx="20" cy="36" r="4" fill="#7B9CFF"/>
+    <circle cx="28" cy="44" r="4" fill="#7B9CFF"/>
+    <circle cx="40" cy="32" r="4" fill="#7B9CFF"/>
+    <circle cx="52" cy="40" r="4" fill="#7B9CFF"/>
+    <path d="M12 20h40M12 20l4-4 4 4M52 20l-4-4-4 4" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  retention: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <circle cx="32" cy="32" r="16" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M32 20v12l8 4" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M48 32c0-8.8-7.2-16-16-16S16 23.2 16 32" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M12 32l4-4 4 4" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`,
+
+  feedback: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="12" y="16" width="40" height="28" rx="4" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M28 44l4 8 4-8" fill="#7B9CFF" stroke="#7B9CFF" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M20 26h24M20 34h16" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
   // White Action Icons for Next Steps
   handshakeWhite: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <path d="M8 28l8-8 8 4 8-4 8 4 8-4 8 8-16 16-16-16z" fill="#FFFFFF" opacity="0.3" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
