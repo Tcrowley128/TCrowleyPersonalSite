@@ -1860,7 +1860,6 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
               <AskAIButton
                 onClick={() => onAskAI(`Can you help me develop a comprehensive strategy for tracking and measuring success metrics across the 30, 60, and 90-day timeframes? I'd like guidance on setting up dashboards, choosing the right tools, and establishing a review cadence.`)}
                 label="Ask AI"
-                size="sm"
               />
             )}
             {onQuickEdit && (
