@@ -13,7 +13,7 @@ Generate VALID JSON with this EXACT structure:
 
 {
   "executive_summary": {
-    "current_state": "2-3 sentence assessment",
+    "current_state": "MUST be 2-3 sentences that ALWAYS include: (1) The organization's overall digital maturity score out of 5, (2) How this compares to industry average/benchmark with specific numbers, (3) Brief statement about future potential and what improvements would enable. Example format: 'Company operates at a 2.1/5 digital maturity level, below the financial services industry average of 2.8. Current gaps in automation and data governance limit operational efficiency. Strategic investments in workflow automation and citizen development could accelerate the organization to a 3.5+ maturity level within 12 months.'",
     "key_opportunity": "Single biggest impact opportunity",
     "recommended_starting_point": "Specific first action"
   },
