@@ -1896,7 +1896,6 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     <AskAIButton
                       onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 30-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
                       label="Ask AI"
-                      size="sm"
                     />
                   )}
                 </div>
@@ -1932,7 +1931,6 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     <AskAIButton
                       onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 60-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
                       label="Ask AI"
-                      size="sm"
                     />
                   )}
                 </div>
@@ -1968,7 +1966,6 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     <AskAIButton
                       onClick={() => onAskAI(`Can you help me understand how to effectively track and measure these 90-day KPIs? I'd like guidance on setting up tracking systems and what tools to use.`)}
                       label="Ask AI"
-                      size="sm"
                     />
                   )}
                 </div>
