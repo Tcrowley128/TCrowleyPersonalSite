@@ -598,6 +598,12 @@ export const ICON_MAPPING = {
   conversation: 'chatbot',
   training: 'model',
   inference: 'model',
+  powered: 'analytics',        // AI-Powered Analytics
+  generative: 'brain',         // Generative AI & LLMs
+  llm: 'brain',                // Generative AI & LLMs
+  agents: 'robot',             // AI Agents & Copilots
+  copilot: 'chatbot',          // AI Agents & Copilots
+  operations: 'pipeline',      // ML Operations
   research: 'search',
   design: 'design',
   onboarding: 'user',
