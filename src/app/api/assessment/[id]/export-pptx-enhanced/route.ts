@@ -1261,9 +1261,9 @@ export async function GET(
       } else if (tech.icon) {
         techIcon = tech.icon;
       }
-      // Card
+      // Card - expanded height to 4.04
       slide21.addShape(pptx.ShapeType.roundRect, {
-        x: techX, y: 1.2, w: 2.8, h: 3.5,
+        x: techX, y: 1.2, w: 2.8, h: 4.04,
         fill: { color: COLORS.cardBg },
         line: { color: COLORS.accent, width: 2 }
       });
@@ -1293,24 +1293,24 @@ export async function GET(
         fontFace: 'Arial'
       });
 
-      // Rationale with truncation and wrapping
-      slide21.addText(truncateText(tech.rationale || '', 85), {
-        x: techX + 0.2, y: 2.97, w: 2.4, h: 0.6,
+      // Rationale - expanded character limit and height, using smart shortening
+      slide21.addText(smartShortenText(tech.rationale || '', 150), {
+        x: techX + 0.2, y: 2.97, w: 2.4, h: 0.85,
         fontSize: 9, color: COLORS.textLight,
         fontFace: 'Arial',
         wrap: true
       });
 
-      // Use Cases label
+      // Use Cases label - shifted down
       slide21.addText('Use Cases:', {
-        x: techX + 0.2, y: 3.47, w: 2.4, h: 0.2,
+        x: techX + 0.2, y: 3.9, w: 2.4, h: 0.2,
         fontSize: 10, bold: true, color: COLORS.accent,
         fontFace: 'Arial'
       });
 
-      // Use cases with truncation
+      // Use cases with truncation - shifted down
       const useCases = tech.useCases?.slice(0, 3) || [];
-      let ucY = 3.72;
+      let ucY = 4.15;
       useCases.forEach((uc: string) => {
         slide21.addText(`• ${truncateText(uc, 40)}`, {
           x: techX + 0.3, y: ucY, w: 2.2, h: 0.25,
