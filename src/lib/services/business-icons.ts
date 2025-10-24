@@ -491,6 +491,20 @@ const ICON_SVGS = {
     <rect x="45" y="18" width="8" height="6" rx="1" fill="#FFFFFF"/>
   </svg>`,
 
+  robotWhite: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="20" y="24" width="24" height="28" rx="4" stroke="#FFFFFF" stroke-width="2" fill="none"/>
+    <circle cx="28" cy="34" r="3" fill="#FFFFFF"/>
+    <circle cx="36" cy="34" r="3" fill="#FFFFFF"/>
+    <rect x="30" y="12" width="4" height="8" fill="#FFFFFF"/>
+    <circle cx="32" cy="12" r="4" fill="#FFFFFF"/>
+  </svg>`,
+
+  workflowWhite: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="8" y="24" width="16" height="16" fill="#FFFFFF" rx="3"/>
+    <rect x="40" y="24" width="16" height="16" fill="#FFFFFF" rx="3"/>
+    <path d="M24 32h16M32 24v16" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+
   // Additional AI/ML Icons
   neuralNetwork: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <circle cx="32" cy="12" r="4" fill="#A78BFF"/>
