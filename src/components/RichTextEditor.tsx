@@ -82,6 +82,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
   const [showFontSize, setShowFontSize] = useState(false);
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         heading: {
