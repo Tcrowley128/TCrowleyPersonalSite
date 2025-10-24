@@ -336,12 +336,39 @@ export async function POST(request: NextRequest) {
       industry: assessment.industry
     };
 
+    // Send email automatically on first generation (not regenerations)
+    if (!regenerate && assessment.email) {
+      try {
+        const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/assessment/email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            assessment_id,
+            recipient_email: assessment.email
+          })
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Failed to send email:', await emailResponse.text());
+          // Don't fail the whole request if email fails
+        } else {
+          console.log('Assessment results email sent successfully to:', assessment.email);
+        }
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+        // Don't fail the whole request if email fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       results: resultsWithMetadata,
       cached: false,
       regeneration_count: newRegenerationCount,
       regenerations_remaining: 2 - newRegenerationCount,
+      email_sent: !regenerate && assessment.email ? true : false,
       usage: {
         input_tokens: message.usage.input_tokens,
         output_tokens: message.usage.output_tokens
