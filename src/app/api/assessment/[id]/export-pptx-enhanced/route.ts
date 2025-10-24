@@ -1463,7 +1463,7 @@ export async function GET(
     ];
 
     // Array of business impact icons to cycle through
-    const businessIcons = ['speedometer', 'money', 'trendUp', 'productivity', 'roi', 'revenue', 'efficiency', 'quality', 'growth', 'profit'];
+    const businessIcons = ['speedometer', 'money', 'trendUp', 'productivity', 'roi', 'revenue', 'efficiency', 'qualityMetric', 'growthMetric', 'profit'];
 
     let bizY = 1.5;
     businessMetrics.forEach((metric: any, idx: number) => {

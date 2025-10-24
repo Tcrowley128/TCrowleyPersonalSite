@@ -509,12 +509,12 @@ const ICON_SVGS = {
     <path d="M20 20l-8-8M44 20l8-8M20 44l-8 8M44 44l8 8" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
   </svg>`,
 
-  quality: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  qualityMetric: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <path d="M32 8l8 16 16 2-12 12 3 16-15-8-15 8 3-16-12-12 16-2z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2" stroke-linejoin="round"/>
     <circle cx="32" cy="28" r="6" fill="#7B9CFF"/>
   </svg>`,
 
-  growth: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  growthMetric: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <path d="M12 48L24 36L32 42L44 28L52 32" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M52 20v12h-12" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
     <circle cx="12" cy="48" r="4" fill="#7B9CFF"/>
