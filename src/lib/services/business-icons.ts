@@ -86,21 +86,21 @@ const ICON_SVGS = {
 
   // AI Icons
   brain: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M20 16c-6 0-8 4-8 8s2 8 8 8c0 6 2 8 8 8h8c6 0 8-2 8-8 6 0 8-4 8-8s-2-8-8-8c0-4-4-8-12-8s-12 4-12 8z" fill="#A78BFF" opacity="0.3" stroke="#A78BFF" stroke-width="2"/>
-    <circle cx="24" cy="24" r="2" fill="#A78BFF"/>
-    <circle cx="40" cy="24" r="2" fill="#A78BFF"/>
+    <path d="M20 16c-6 0-8 4-8 8s2 8 8 8c0 6 2 8 8 8h8c6 0 8-2 8-8 6 0 8-4 8-8s-2-8-8-8c0-4-4-8-12-8s-12 4-12 8z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="24" cy="24" r="2" fill="#7B9CFF"/>
+    <circle cx="40" cy="24" r="2" fill="#7B9CFF"/>
   </svg>`,
 
   robot: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="20" y="24" width="24" height="28" rx="4" fill="#A78BFF" opacity="0.3" stroke="#A78BFF" stroke-width="2"/>
-    <circle cx="28" cy="34" r="3" fill="#A78BFF"/>
-    <circle cx="36" cy="34" r="3" fill="#A78BFF"/>
-    <rect x="30" y="12" width="4" height="8" fill="#A78BFF"/>
-    <circle cx="32" cy="12" r="4" fill="#A78BFF"/>
+    <rect x="20" y="24" width="24" height="28" rx="4" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <circle cx="28" cy="34" r="3" fill="#7B9CFF"/>
+    <circle cx="36" cy="34" r="3" fill="#7B9CFF"/>
+    <rect x="30" y="12" width="4" height="8" fill="#7B9CFF"/>
+    <circle cx="32" cy="12" r="4" fill="#7B9CFF"/>
   </svg>`,
 
   ai: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M32 8l8 16-8 16-8-16z M56 32l-16 8-16-8 16-8z M32 56l-8-16 8-16 8 16z M8 32l16-8 16 8-16 8z" fill="#A78BFF" opacity="0.3" stroke="#A78BFF" stroke-width="2"/>
+    <path d="M32 8l8 16-8 16-8-16z M56 32l-16 8-16-8 16-8z M32 56l-8-16 8-16 8 16z M8 32l16-8 16 8-16 8z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
   </svg>`,
 
   // People Icons
@@ -570,10 +570,10 @@ const ICON_SVGS = {
   </svg>`,
 
   pipeline: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="8" y="24" width="12" height="16" rx="2" fill="#A78BFF" opacity="0.3" stroke="#A78BFF" stroke-width="2"/>
-    <rect x="26" y="24" width="12" height="16" rx="2" fill="#A78BFF" opacity="0.5" stroke="#A78BFF" stroke-width="2"/>
-    <rect x="44" y="24" width="12" height="16" rx="2" fill="#A78BFF" opacity="0.7" stroke="#A78BFF" stroke-width="2"/>
-    <path d="M20 32h6M38 32h6" stroke="#A78BFF" stroke-width="2" stroke-linecap="round"/>
+    <rect x="8" y="24" width="12" height="16" rx="2" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
+    <rect x="26" y="24" width="12" height="16" rx="2" fill="#7B9CFF" opacity="0.5" stroke="#7B9CFF" stroke-width="2"/>
+    <rect x="44" y="24" width="12" height="16" rx="2" fill="#7B9CFF" opacity="0.7" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M20 32h6M38 32h6" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
   </svg>`,
 
   prediction: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">

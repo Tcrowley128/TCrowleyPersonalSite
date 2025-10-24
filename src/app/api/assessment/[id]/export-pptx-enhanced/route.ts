@@ -433,12 +433,15 @@ export async function GET(
     // Summary text with proper wrapping and truncation - moved up
     const maturityLabel = overallScore === 1 ? 'foundational' : overallScore === 2 ? 'developing' : overallScore === 3 ? 'defined' : overallScore === 4 ? 'managed' : 'optimized';
     const companyName = assessment.company_name || 'Your organization';
-    const summaryText = `${companyName} operates at a ${maturityLabel} digital maturity level of ${overallScore}/5. ${smartShortenText(slideContent.currentState.summary, 250)}`;
+    const summaryRest = smartShortenText(slideContent.currentState.summary, 250);
 
-    slide4.addText(summaryText, {
+    // Use array format to apply different formatting to parts of the text
+    slide4.addText([
+      { text: `${companyName} operates at a `, options: { fontSize: 11, color: COLORS.white, fontFace: 'Arial' } },
+      { text: `${maturityLabel} digital maturity level`, options: { fontSize: 11, color: COLORS.accent, fontFace: 'Arial', bold: true } },
+      { text: ` of ${overallScore}/5. ${summaryRest}`, options: { fontSize: 11, color: COLORS.white, fontFace: 'Arial' } }
+    ], {
       x: 0.5, y: 1.0, w: 9, h: 0.6,
-      fontSize: 11, color: COLORS.white,
-      fontFace: 'Arial',
       wrap: true
     });
 
