@@ -442,8 +442,8 @@ export async function GET(
     });
 
     // Gap analysis sentence - single line
-    const gapAnalysis = slideContent.currentState.keyFindings && slideContent.currentState.keyFindings[0]
-      ? truncateText(slideContent.currentState.keyFindings[0], 140)
+    const gapAnalysis = slideContent.currentState.painPoints && slideContent.currentState.painPoints[0]
+      ? truncateText(slideContent.currentState.painPoints[0], 140)
       : 'Key gaps identified in data integration, automation workflows, and digital skill development.';
 
     slide4.addText(`Gap Analysis: ${gapAnalysis}`, {
