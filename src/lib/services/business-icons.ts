@@ -75,6 +75,15 @@ const ICON_SVGS = {
     <circle cx="32" cy="32" r="6" fill="#7B9CFF"/>
   </svg>`,
 
+  rpa: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="16" y="20" width="32" height="32" rx="3" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <circle cx="26" cy="32" r="3" fill="#7B9CFF"/>
+    <circle cx="38" cy="32" r="3" fill="#7B9CFF"/>
+    <path d="M24 42h16" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <path d="M32 12v8M22 18l5 5M42 18l-5 5" stroke="#7B9CFF" stroke-width="2" stroke-linecap="round"/>
+    <rect x="28" y="36" width="8" height="6" rx="1" fill="#7B9CFF" opacity="0.5"/>
+  </svg>`,
+
   // AI Icons
   brain: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <path d="M20 16c-6 0-8 4-8 8s2 8 8 8c0 6 2 8 8 8h8c6 0 8-2 8-8 6 0 8-4 8-8s-2-8-8-8c0-4-4-8-12-8s-12 4-12 8z" fill="#A78BFF" opacity="0.3" stroke="#A78BFF" stroke-width="2"/>
@@ -608,6 +617,8 @@ export const ICON_MAPPING = {
   visualization: 'visualization',
   integration: 'workflow',
   analytics: 'analytics',
+  rpa: 'rpa',
+  robotic: 'rpa',
   culture: 'team',
   process: 'gear',
   workflow: 'workflow',
