@@ -143,18 +143,23 @@ Generate VALID JSON with this EXACT structure:
 }
 
 CRITICAL GUIDELINES:
-1. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns. For industry_benchmarks field, use web search to find real, current statistics and trends
-1a. **NO HTML**: Never include HTML tags, <cite>, </cite>, or any markup in the industry_benchmarks field. Plain text only
-2. **Accurate Scoring**: Base sub-category scores on their actual responses and maturity levels
-3. **Real URLs Only**: Use verified URLs (https://trello.com, https://learn.microsoft.com, https://youtube.com/@GoogleWorkspace). Never fake URLs
-4. **Balanced Mix**: Include quick wins (30d), medium goals (60-90d), AND stretch goals (6-12mo)
-5. **All Pillars**: Every pillar (Data, Automation, AI, UX, People) needs ≥1 quick win and ≥2 tools
-6. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
-7. **Training Resources**: Only official docs (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
-8. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
-9. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools
-10. **UX Focus**: Include UX-specific recommendations if design questions were answered
-11. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons
+1. **EXECUTIVE SUMMARY - CURRENT STATE (MANDATORY FORMAT)**: The current_state field MUST follow this EXACT 3-sentence structure:
+   - Sentence 1: "[Company] operates at a [X.X]/5 digital maturity level, [above/below/at] the [industry] industry average of [Y.Y]."
+   - Sentence 2: "Current gaps in [specific areas] limit [specific business impact]."
+   - Sentence 3: "Strategic investments in [specific solutions] could accelerate the organization to a [target score]+ maturity level within [timeframe]."
+
+2. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns. For industry_benchmarks field, use web search to find real, current statistics and trends
+3. **NO HTML**: Never include HTML tags, <cite>, </cite>, or any markup in the industry_benchmarks field. Plain text only
+4. **Accurate Scoring**: Base sub-category scores on their actual responses and maturity levels. Calculate overall score as average of all 5 pillars
+5. **Real URLs Only**: Use verified URLs (https://trello.com, https://learn.microsoft.com, https://youtube.com/@GoogleWorkspace). Never fake URLs
+6. **Balanced Mix**: Include quick wins (30d), medium goals (60-90d), AND stretch goals (6-12mo)
+7. **All Pillars**: Every pillar (Data, Automation, AI, UX, People) needs ≥1 quick win and ≥2 tools
+8. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
+9. **Training Resources**: Only official docs (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
+10. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
+11. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools
+12. **UX Focus**: Include UX-specific recommendations if design questions were answered
+13. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons
 
 Return ONLY valid JSON, no markdown or explanation.`;
 
@@ -211,7 +216,7 @@ Industry Context: ${assessment.industry}`;
     systemInstructions: [
       {
         type: "text",
-        text: "You are a digital transformation consultant with McKinsey, Gartner, and BCG expertise. Analyze this assessment and provide a comprehensive, actionable roadmap."
+        text: "You are a digital transformation consultant with McKinsey, Gartner, and BCG expertise. Analyze this assessment and provide a comprehensive, actionable roadmap.\n\nCRITICAL: The executive_summary.current_state field MUST follow the exact 3-sentence format specified in the guidelines. First sentence MUST include the overall maturity score (X.X/5) and industry comparison with specific benchmark number. This is MANDATORY and will be displayed prominently to clients."
       },
       {
         type: "text",
