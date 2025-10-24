@@ -128,17 +128,18 @@ describe('AssessmentChat', () => {
   });
 
   describe('Expand/Collapse Functionality', () => {
-    it('has maximize button in header', async () => {
+    it('has minimize button in header when chat opens (opens expanded by default)', async () => {
       render(<AssessmentChat assessmentId={mockAssessmentId} />);
       const button = screen.getByText('Ask Tyler\'s AI');
       fireEvent.click(button);
 
       await waitFor(() => {
         const buttons = screen.getAllByRole('button');
-        const maximizeButton = buttons.find(btn =>
-          btn.getAttribute('title') === 'Expand'
+        // Chat opens in expanded mode by default, so should show "Minimize" button
+        const minimizeButton = buttons.find(btn =>
+          btn.getAttribute('title') === 'Minimize'
         );
-        expect(maximizeButton).toBeInTheDocument();
+        expect(minimizeButton).toBeInTheDocument();
       });
     });
 
