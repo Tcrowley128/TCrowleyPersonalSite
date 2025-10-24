@@ -95,11 +95,21 @@ export default function AIAnalyticsClient() {
             <ArrowLeft size={20} />
             Back to Admin Dashboard
           </Link>
-          <div className="flex items-center gap-3 mb-2">
-            <Sparkles className="text-indigo-600 dark:text-indigo-400" size={32} />
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              Tyler's AI Usage & Analytics
-            </h1>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <Sparkles className="text-indigo-600 dark:text-indigo-400" size={32} />
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                Tyler's AI Usage & Analytics
+              </h1>
+            </div>
+            <button
+              onClick={loadAnalytics}
+              disabled={isLoading}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RefreshCw className={isLoading ? 'animate-spin' : ''} size={18} />
+              Refresh Data
+            </button>
           </div>
           <p className="text-gray-600 dark:text-gray-400">
             Detailed insights into Claude AI usage, token consumption, and associated costs
