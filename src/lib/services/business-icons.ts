@@ -38,6 +38,25 @@ const ICON_SVGS = {
     <path d="M24 40l6-10m6-8l6-4" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
   </svg>`,
 
+  visualization: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <rect x="8" y="12" width="48" height="40" rx="2" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <path d="M14 42L22 30L30 38L38 24L46 32L54 20" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="14" cy="42" r="3" fill="#7B9CFF"/>
+    <circle cx="22" cy="30" r="3" fill="#7B9CFF"/>
+    <circle cx="30" cy="38" r="3" fill="#7B9CFF"/>
+    <circle cx="38" cy="24" r="3" fill="#7B9CFF"/>
+    <circle cx="46" cy="32" r="3" fill="#7B9CFF"/>
+    <circle cx="54" cy="20" r="3" fill="#7B9CFF"/>
+  </svg>`,
+
+  dataQuality: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+    <ellipse cx="32" cy="16" rx="20" ry="8" fill="#7B9CFF" opacity="0.3"/>
+    <ellipse cx="32" cy="16" rx="20" ry="8" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M12 16v12c0 4.4 9 8 20 8s20-3.6 20-8V16" stroke="#7B9CFF" stroke-width="2" fill="none"/>
+    <circle cx="32" cy="40" r="12" fill="#7B9CFF" opacity="0.2"/>
+    <path d="M26 40l4 4 8-8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </svg>`,
+
   // Automation Icons
   gear: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <circle cx="32" cy="32" r="10" fill="#7B9CFF"/>
@@ -585,7 +604,8 @@ export const ICON_MAPPING = {
   user_experience: 'smile',
 
   // Sub-category icons
-  quality: 'checkmark',
+  quality: 'dataQuality',
+  visualization: 'visualization',
   integration: 'workflow',
   analytics: 'analytics',
   culture: 'team',

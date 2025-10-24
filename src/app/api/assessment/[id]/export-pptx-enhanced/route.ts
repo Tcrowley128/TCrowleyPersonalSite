@@ -820,7 +820,9 @@ export async function GET(
           let iconKey = 'quality';
 
           // Check for specific multi-word patterns first
-          if (subNameLower.includes('powered') || subNameLower.includes('analytics')) iconKey = 'analytics';
+          if (subNameLower.includes('visualization') || subNameLower.includes('dashboards')) iconKey = 'visualization';
+          else if (subNameLower.includes('quality') || subNameLower.includes('governance')) iconKey = 'dataQuality';
+          else if (subNameLower.includes('powered') || subNameLower.includes('analytics')) iconKey = 'analytics';
           else if (subNameLower.includes('generative') || subNameLower.includes('llm')) iconKey = 'brain';
           else if (subNameLower.includes('agents') || subNameLower.includes('copilot')) iconKey = 'robot';
           else if (subNameLower.includes('operations') || subNameLower.includes('ml ops')) iconKey = 'pipeline';
