@@ -1208,13 +1208,30 @@ export async function GET(
     });
 
     const techRecommendations = slideContent.technologyRecommendations?.slice(0, 3) || [
-      { name: 'Microsoft Power Platform', rationale: 'Rapid development and citizen developer enablement', useCases: ['Power BI dashboards', 'Power Automate workflows', 'Power Apps'], icon: 'gearWhite' },
-      { name: 'Cloud Infrastructure', rationale: 'Scalability and AI services', useCases: ['Data lake', 'AI/ML services', 'DevOps'], icon: 'cloudWhite' },
-      { name: 'Analytics Platform', rationale: 'Unified data and insights', useCases: ['Real-time dashboards', 'Predictive analytics', 'Reporting'], icon: 'analyticsWhite' }
+      { name: 'Microsoft Power Platform', rationale: 'Rapid development and citizen developer enablement', useCases: ['Power BI dashboards', 'Power Automate workflows', 'Power Apps'] },
+      { name: 'Cloud Infrastructure', rationale: 'Scalability and AI services', useCases: ['Data lake', 'AI/ML services', 'DevOps'] },
+      { name: 'Analytics Platform', rationale: 'Unified data and insights', useCases: ['Real-time dashboards', 'Predictive analytics', 'Reporting'] }
     ];
 
+    // Default icons for tech recommendations (cycle through these)
+    const techIcons = ['gearWhite', 'cloudWhite', 'analyticsWhite', 'robotWhite', 'databaseWhite', 'workflowWhite'];
+
     let techX = 0.7;
-    techRecommendations.forEach((tech: any) => {
+    techRecommendations.forEach((tech: any, techIndex: number) => {
+      // Assign unique icon based on content keywords or use default from array
+      let techIcon = techIcons[techIndex % techIcons.length];
+
+      if (tech.name && !tech.icon) {
+        const nameLower = tech.name.toLowerCase();
+        if (nameLower.includes('power') || nameLower.includes('platform')) techIcon = 'gearWhite';
+        else if (nameLower.includes('cloud') || nameLower.includes('azure') || nameLower.includes('aws')) techIcon = 'cloudWhite';
+        else if (nameLower.includes('analytics') || nameLower.includes('bi') || nameLower.includes('data')) techIcon = 'analyticsWhite';
+        else if (nameLower.includes('ai') || nameLower.includes('ml') || nameLower.includes('machine')) techIcon = 'robotWhite';
+        else if (nameLower.includes('database') || nameLower.includes('storage') || nameLower.includes('sql')) techIcon = 'databaseWhite';
+        else if (nameLower.includes('automation') || nameLower.includes('workflow') || nameLower.includes('process')) techIcon = 'workflowWhite';
+      } else if (tech.icon) {
+        techIcon = tech.icon;
+      }
       // Card
       slide21.addShape(pptx.ShapeType.roundRect, {
         x: techX, y: 1.2, w: 2.8, h: 3.5,
@@ -1230,7 +1247,7 @@ export async function GET(
       });
 
       // White icon specific to each technology
-      addIcon(slide21, techX + 1.15, 1.5, tech.icon || 'gearWhite', 0.5);
+      addIcon(slide21, techX + 1.15, 1.5, techIcon, 0.5);
 
       // Name
       slide21.addText(tech.name, {
