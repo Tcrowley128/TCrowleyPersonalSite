@@ -338,10 +338,18 @@ export async function GET(
       fontFace: 'Arial'
     });
 
+    // Add disclaimer
+    slide1.addText('⚠️ AI-Generated Content: Please review and verify all recommendations before implementation.', {
+      x: 0.5, y: 3.85, w: 9, h: 0.3,
+      fontSize: 11, color: COLORS.textLight,
+      fontFace: 'Arial',
+      italic: true
+    });
+
     slide1.addText(new Date().toLocaleDateString('en-US', {
       year: 'numeric', month: 'long', day: 'numeric'
     }), {
-      x: 0.5, y: 4.2, w: 9, h: 0.3,
+      x: 0.5, y: 4.3, w: 9, h: 0.3,
       fontSize: 14, color: COLORS.textLight,
       fontFace: 'Arial'
     });
