@@ -987,18 +987,18 @@ export async function GET(
           });
         });
 
-        // Description with truncation
+        // Description with truncation - even spacing
         slideQW.addText(truncateText(qw.description || qw.action || '', 120), {
-          x: 1.4, y: qwY + 0.78, w: 7.6, h: 0.3,
+          x: 1.4, y: qwY + 0.75, w: 7.6, h: 0.25,
           fontSize: 10, color: COLORS.white,
           fontFace: 'Arial',
           wrap: true
         });
 
-        // Expected Outcome with truncation
+        // Expected Outcome with truncation - more spacing above
         const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
         slideQW.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
-          x: 1.4, y: qwY + 0.98, w: 7.6, h: 0.18,
+          x: 1.4, y: qwY + 1.05, w: 7.6, h: 0.18,
           fontSize: 9, color: COLORS.textLight, italic: true,
           fontFace: 'Arial',
           wrap: true
