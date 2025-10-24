@@ -1074,9 +1074,9 @@ export async function GET(
       });
 
       // Action - use smart shortening without "..."
-      const action = smartShortenText(weekData.action || 'Execute plan', 80);
+      const action = smartShortenText(weekData.action || 'Execute plan', 120);
       slide18.addText(`Action: ${action}`, {
-        x: x - 0.96, y: timelineY + 1.35, w: 1.92, h: 0.7,
+        x: x - 0.96, y: timelineY + 1.35, w: 1.92, h: 1.0,
         fontSize: 8, color: COLORS.white,
         align: 'center',
         fontFace: 'Arial',
@@ -1084,9 +1084,9 @@ export async function GET(
       });
 
       // Outcome - use smart shortening without "..."
-      const outcome = smartShortenText(weekData.outcome || 'Milestone achieved', 75);
+      const outcome = smartShortenText(weekData.outcome || 'Milestone achieved', 120);
       slide18.addText(`Outcome: ${outcome}`, {
-        x: x - 0.96, y: timelineY + 2.1, w: 1.92, h: 0.7,
+        x: x - 0.96, y: timelineY + 2.4, w: 1.92, h: 1.0,
         fontSize: 8, color: COLORS.textLight,
         align: 'center',
         fontFace: 'Arial',
