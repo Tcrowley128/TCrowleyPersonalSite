@@ -105,60 +105,72 @@ export async function POST(request: NextRequest) {
 
   ${assessment?.company_name ? `<div style="background: #ffffff; padding: 20px; border-radius: 10px; margin-bottom: 24px; text-align: center; border: 2px solid #7B9CFF;"><p style="font-size: 20px; color: #7B9CFF; font-weight: 600; margin: 0;">Assessment for: ${assessment.company_name}</p></div>` : ''}
 
-  <div class="section">
-    <h2>📊 Your Digital Transformation Snapshot</h2>
+  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">📊 Your Digital Transformation Snapshot</h2>
     <p style="color: #374151; font-size: 15px; margin-bottom: 20px;">We've analyzed your organization and created a comprehensive roadmap tailored to your specific needs.</p>
-    <div class="stat-grid">
-      <div class="stat-card">
-        <div class="number">${quickWinsCount}</div>
-        <div class="label">Quick Wins (30 Days)</div>
-      </div>
-      <div class="stat-card">
-        <div class="number">${tier1Count}</div>
-        <div class="label">Low-Code Solutions</div>
-      </div>
-      <div class="stat-card">
-        <div class="number">${tier2Count}</div>
-        <div class="label">Hybrid Initiatives</div>
-      </div>
-      <div class="stat-card">
-        <div class="number">${tier3Count}</div>
-        <div class="label">Advanced Solutions</div>
-      </div>
-    </div>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+      <tr>
+        <td style="padding: 10px; width: 50%;">
+          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+            <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${quickWinsCount}</div>
+            <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Quick Wins (30 Days)</div>
+          </div>
+        </td>
+        <td style="padding: 10px; width: 50%;">
+          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+            <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier1Count}</div>
+            <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Low-Code Solutions</div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 10px; width: 50%;">
+          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+            <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier2Count}</div>
+            <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Hybrid Initiatives</div>
+          </div>
+        </td>
+        <td style="padding: 10px; width: 50%;">
+          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+            <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier3Count}</div>
+            <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Advanced Solutions</div>
+          </div>
+        </td>
+      </tr>
+    </table>
   </div>
 
   ${results.priority_matrix ? `
-  <div class="section">
-    <h2>🎯 Executive Summary</h2>
-    <p><strong>Current State:</strong> ${results.priority_matrix.current_state || 'Assessment complete'}</p>
-    <p><strong>Key Opportunity:</strong> ${results.priority_matrix.key_opportunity || 'Multiple opportunities identified'}</p>
-    <p><strong>Recommended Starting Point:</strong> ${results.priority_matrix.recommended_starting_point || 'Review quick wins tab'}</p>
+  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">🎯 Executive Summary</h2>
+    <p style="color: #374151; margin: 12px 0;"><strong style="color: #0A1628;">Current State:</strong> ${results.priority_matrix.current_state || 'Assessment complete'}</p>
+    <p style="color: #374151; margin: 12px 0;"><strong style="color: #0A1628;">Key Opportunity:</strong> ${results.priority_matrix.key_opportunity || 'Multiple opportunities identified'}</p>
+    <p style="color: #374151; margin: 12px 0;"><strong style="color: #0A1628;">Recommended Starting Point:</strong> ${results.priority_matrix.recommended_starting_point || 'Review quick wins tab'}</p>
   </div>
   ` : ''}
 
   ${results.quick_wins && results.quick_wins.length > 0 ? `
-  <div class="section">
-    <h2>⚡ Your Top Quick Wins</h2>
+  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+    <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">⚡ Your Top Quick Wins</h2>
     <p style="color: #374151; font-size: 15px; margin-bottom: 16px;">Start seeing results in the next 30 days with these high-impact, low-effort initiatives:</p>
     ${results.quick_wins.slice(0, 3).map((win: any, idx: number) => `
-      <div class="quick-win">
-        <h3>${idx + 1}. ${win.title}</h3>
-        <p>${win.description}</p>
-        <p class="meta"><strong>⏱️ Time to Implement:</strong> ${win.time_to_implement} | <strong>💡 Time Saved:</strong> ${win.estimated_time_saved}</p>
+      <div style="background: #f0fdf4; padding: 18px; margin: 12px 0; border-radius: 10px; border-left: 4px solid #10B981;">
+        <h3 style="margin: 0 0 10px 0; color: #059669; font-size: 16px; font-weight: 600;">${idx + 1}. ${win.title}</h3>
+        <p style="margin: 8px 0; font-size: 14px; color: #374151;">${win.description}</p>
+        <p style="font-size: 13px; color: #6B7280; font-weight: 500; margin: 8px 0;"><strong style="color: #374151;">⏱️ Time to Implement:</strong> ${win.time_to_implement} | <strong style="color: #374151;">💡 Time Saved:</strong> ${win.estimated_time_saved}</p>
       </div>
     `).join('')}
   </div>
   ` : ''}
 
-  <div class="highlight">
-    <h3 style="color: #92400E; margin-top: 0; font-size: 18px;">💼 What's Inside Your Full Roadmap</h3>
+  <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB800; margin: 16px 0;">
+    <h3 style="color: #92400E; margin-top: 0; font-size: 18px; font-weight: 600;">💼 What's Inside Your Full Roadmap</h3>
     <ul style="color: #78350F; margin: 12px 0; padding-left: 24px;">
-      <li style="margin: 8px 0;"><strong>90-Day Action Plan:</strong> Month-by-month breakdown with specific milestones</li>
-      <li style="margin: 8px 0;"><strong>Tiered Technology Stack:</strong> Low-code, hybrid, and advanced solutions</li>
-      <li style="margin: 8px 0;"><strong>Maturity Assessment:</strong> Data Strategy, Automation, AI Integration & People & Culture</li>
-      <li style="margin: 8px 0;"><strong>Change Management:</strong> Training plans and adoption strategies</li>
-      <li style="margin: 8px 0;"><strong>Success Metrics:</strong> KPIs to measure your transformation progress</li>
+      <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">90-Day Action Plan:</strong> Month-by-month breakdown with specific milestones</li>
+      <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">Tiered Technology Stack:</strong> Low-code, hybrid, and advanced solutions</li>
+      <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">Maturity Assessment:</strong> Data Strategy, Automation, AI Integration & People & Culture</li>
+      <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">Change Management:</strong> Training plans and adoption strategies</li>
+      <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">Success Metrics:</strong> KPIs to measure your transformation progress</li>
     </ul>
   </div>
 
