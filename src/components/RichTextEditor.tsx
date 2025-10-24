@@ -5,8 +5,8 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
-import TextStyle from '@tiptap/extension-text-style';
-import Color from '@tiptap/extension-color';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { Color } from '@tiptap/extension-color';
 import { Extension } from '@tiptap/core';
 import { useEffect, useState } from 'react';
 import {
@@ -138,7 +138,7 @@ export default function RichTextEditor({ content, onChange, placeholder = 'Start
   };
 
   const setFontSize = (size: string) => {
-    // @ts-ignore
+    // @ts-expect-error - setFontSize is added by custom FontSize extension
     editor.chain().focus().setFontSize(size).run();
     setShowFontSize(false);
   };
