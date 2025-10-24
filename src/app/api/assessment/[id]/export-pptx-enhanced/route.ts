@@ -1620,7 +1620,7 @@ export async function GET(
     console.log('[PPTX Export] Presentation created successfully');
 
     // Return as downloadable file
-    return new NextResponse(buffer, {
+    return new NextResponse(Buffer.from(buffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         'Content-Disposition': `attachment; filename="${assessment.company_name?.replace(/[^a-z0-9]/gi, '_') || 'assessment'}_digital_transformation.pptx"`,
