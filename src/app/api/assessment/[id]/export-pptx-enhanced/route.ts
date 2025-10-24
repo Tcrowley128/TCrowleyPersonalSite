@@ -995,10 +995,10 @@ export async function GET(
           wrap: true
         });
 
-        // Expected Outcome with truncation - more spacing above
+        // Expected Outcome with truncation - balanced spacing
         const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
         slideQW.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
-          x: 1.4, y: qwY + 1.05, w: 7.6, h: 0.18,
+          x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
           fontSize: 9, color: COLORS.textLight, italic: true,
           fontFace: 'Arial',
           wrap: true
