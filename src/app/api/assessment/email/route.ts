@@ -77,47 +77,30 @@ export async function POST(request: NextRequest) {
 <html>
 <head>
   <meta charset="utf-8">
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #0A1628; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fb; }
-    .header { background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: white; padding: 40px; border-radius: 12px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(123, 156, 255, 0.3); }
-    .header h1 { margin: 0; font-size: 32px; font-weight: 700; }
-    .header p { margin: 12px 0 0 0; font-size: 16px; opacity: 0.95; }
-    .section { background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-    .section h2 { color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600; }
-    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
-    .stat-card { background: linear-gradient(135deg, #f8f9fb 0%, #ffffff 100%); padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF; }
-    .stat-card .number { font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0; }
-    .stat-card .label { font-size: 13px; color: #6B7280; font-weight: 500; }
-    .quick-win { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); padding: 18px; margin: 12px 0; border-radius: 10px; border-left: 4px solid #10B981; }
-    .quick-win h3 { margin: 0 0 10px 0; color: #059669; font-size: 16px; font-weight: 600; }
-    .quick-win p { margin: 8px 0; font-size: 14px; color: #374151; }
-    .quick-win .meta { font-size: 13px; color: #6B7280; font-weight: 500; }
-    .cta-button { display: inline-block; background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: white; padding: 16px 36px; text-decoration: none; border-radius: 10px; margin: 24px 0; font-weight: 600; font-size: 16px; box-shadow: 0 4px 12px rgba(123, 156, 255, 0.4); }
-    .footer { text-align: center; color: #6B7280; font-size: 13px; margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB; }
-    .highlight { background: linear-gradient(135deg, #fef3c7 0%, #ffffff 100%); padding: 16px; border-radius: 8px; border-left: 4px solid #FFB800; margin: 16px 0; }
-  </style>
+  <meta name="color-scheme" content="light">
+  <meta name="supported-color-schemes" content="light">
 </head>
-<body>
-  <div class="header" style="background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: #ffffff; padding: 40px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #0A1628; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fb;">
+  <div style="background-color: #7B9CFF; color: #ffffff; padding: 40px; border-radius: 12px; text-align: center; margin-bottom: 30px;">
     <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700;">🚀 Your Digital Transformation Roadmap is Ready!</h1>
     <p style="color: #ffffff; margin: 12px 0 0 0; font-size: 16px;">Personalized AI-Powered Recommendations</p>
   </div>
 
-  ${assessment?.company_name ? `<div style="background: #ffffff; padding: 20px; border-radius: 10px; margin-bottom: 24px; text-align: center; border: 2px solid #7B9CFF;"><p style="font-size: 20px; color: #7B9CFF; font-weight: 600; margin: 0;">Assessment for: ${assessment.company_name}</p></div>` : ''}
+  ${assessment?.company_name ? `<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin-bottom: 24px; text-align: center; border: 2px solid #7B9CFF;"><p style="font-size: 20px; color: #7B9CFF; font-weight: 600; margin: 0;">Assessment for: ${assessment.company_name}</p></div>` : ''}
 
-  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div style="background-color: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF;">
     <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">📊 Your Digital Transformation Snapshot</h2>
     <p style="color: #374151; font-size: 15px; margin-bottom: 20px;">We've analyzed your organization and created a comprehensive roadmap tailored to your specific needs.</p>
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
       <tr>
         <td style="padding: 10px; width: 50%;">
-          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
             <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${quickWinsCount}</div>
             <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Quick Wins (30 Days)</div>
           </div>
         </td>
         <td style="padding: 10px; width: 50%;">
-          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
             <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier1Count}</div>
             <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Low-Code Solutions</div>
           </div>
@@ -125,13 +108,13 @@ export async function POST(request: NextRequest) {
       </tr>
       <tr>
         <td style="padding: 10px; width: 50%;">
-          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
             <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier2Count}</div>
             <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Hybrid Initiatives</div>
           </div>
         </td>
         <td style="padding: 10px; width: 50%;">
-          <div style="background: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; text-align: center; border: 2px solid #7B9CFF;">
             <div style="font-size: 36px; font-weight: bold; color: #7B9CFF; margin: 8px 0;">${tier3Count}</div>
             <div style="font-size: 13px; color: #6B7280; font-weight: 500;">Advanced Solutions</div>
           </div>
@@ -141,7 +124,7 @@ export async function POST(request: NextRequest) {
   </div>
 
   ${results.priority_matrix ? `
-  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div style="background-color: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF;">
     <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">🎯 Executive Summary</h2>
     <p style="color: #374151; margin: 12px 0;"><strong style="color: #0A1628;">Current State:</strong> ${results.priority_matrix.current_state || 'Assessment complete'}</p>
     <p style="color: #374151; margin: 12px 0;"><strong style="color: #0A1628;">Key Opportunity:</strong> ${results.priority_matrix.key_opportunity || 'Multiple opportunities identified'}</p>
@@ -150,11 +133,11 @@ export async function POST(request: NextRequest) {
   ` : ''}
 
   ${results.quick_wins && results.quick_wins.length > 0 ? `
-  <div style="background: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+  <div style="background-color: #ffffff; padding: 24px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #7B9CFF;">
     <h2 style="color: #7B9CFF; margin-top: 0; font-size: 20px; font-weight: 600;">⚡ Your Top Quick Wins</h2>
     <p style="color: #374151; font-size: 15px; margin-bottom: 16px;">Start seeing results in the next 30 days with these high-impact, low-effort initiatives:</p>
     ${results.quick_wins.slice(0, 3).map((win: any, idx: number) => `
-      <div style="background: #f0fdf4; padding: 18px; margin: 12px 0; border-radius: 10px; border-left: 4px solid #10B981;">
+      <div style="background-color: #f0fdf4; padding: 18px; margin: 12px 0; border-radius: 10px; border-left: 4px solid #10B981;">
         <h3 style="margin: 0 0 10px 0; color: #059669; font-size: 16px; font-weight: 600;">${idx + 1}. ${win.title}</h3>
         <p style="margin: 8px 0; font-size: 14px; color: #374151;">${win.description}</p>
         <p style="font-size: 13px; color: #6B7280; font-weight: 500; margin: 8px 0;"><strong style="color: #374151;">⏱️ Time to Implement:</strong> ${win.time_to_implement} | <strong style="color: #374151;">💡 Time Saved:</strong> ${win.estimated_time_saved}</p>
@@ -163,7 +146,7 @@ export async function POST(request: NextRequest) {
   </div>
   ` : ''}
 
-  <div style="background: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB800; margin: 16px 0;">
+  <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; border-left: 4px solid #FFB800; margin: 16px 0;">
     <h3 style="color: #92400E; margin-top: 0; font-size: 18px; font-weight: 600;">💼 What's Inside Your Full Roadmap</h3>
     <ul style="color: #78350F; margin: 12px 0; padding-left: 24px;">
       <li style="margin: 8px 0; color: #78350F;"><strong style="color: #92400E;">90-Day Action Plan:</strong> Month-by-month breakdown with specific milestones</li>
@@ -174,19 +157,19 @@ export async function POST(request: NextRequest) {
     </ul>
   </div>
 
-  <div style="background: #ffffff; padding: 30px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://tylercrowley.com'}/assessment/results/${assessment_id}" class="cta-button" style="background: linear-gradient(135deg, #7B9CFF 0%, #A78BFF 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(123, 156, 255, 0.4);">
+  <div style="background-color: #ffffff; padding: 30px; border-radius: 12px; text-align: center;">
+    <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://tylercrowley.com'}/assessment/results/${assessment_id}" style="background-color: #7B9CFF; color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 16px; display: inline-block;">
       🚀 View Your Complete Roadmap
     </a>
     <p style="color: #6B7280; font-size: 13px; margin-top: 16px; margin-bottom: 0;">Access anytime at the link above</p>
   </div>
 
-  <div class="footer" style="text-align: center; color: #6B7280; font-size: 13px; margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB;">
+  <div style="text-align: center; color: #6B7280; font-size: 13px; margin-top: 40px; padding-top: 24px; border-top: 2px solid #E5E7EB;">
     <p style="font-weight: 600; color: #374151; margin-bottom: 8px;">📧 Save This Email</p>
     <p style="color: #6B7280;">Bookmark the link above to access your personalized roadmap anytime. Your assessment is securely saved and ready whenever you need it.</p>
     <p style="margin-top: 20px; color: #6B7280;">This assessment was generated using AI based on your specific business context, industry, and organizational size.</p>
     <p style="margin-top: 16px; font-size: 14px; color: #374151;">
-      <strong>Questions? Ready to discuss implementation?</strong><br/>
+      <strong style="color: #374151;">Questions? Ready to discuss implementation?</strong><br/>
       I'd love to help you bring this roadmap to life.
       <a href="mailto:tcrowley128@gmail.com" style="color: #7B9CFF; text-decoration: none; font-weight: 600;">Let's connect!</a>
     </p>
