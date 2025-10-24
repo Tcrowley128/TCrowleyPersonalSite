@@ -815,8 +815,23 @@ export async function GET(
             line: { color: COLORS.accent, width: 1 }
           });
 
-          // Icon
-          const iconKey = Object.keys(ICON_CONFIG).find(k => subName.toLowerCase().includes(k)) || 'quality';
+          // Icon - prioritize longer/more specific keyword matches
+          const subNameLower = subName.toLowerCase();
+          let iconKey = 'quality';
+
+          // Check for specific multi-word patterns first
+          if (subNameLower.includes('powered') || subNameLower.includes('analytics')) iconKey = 'analytics';
+          else if (subNameLower.includes('generative') || subNameLower.includes('llm')) iconKey = 'brain';
+          else if (subNameLower.includes('agents') || subNameLower.includes('copilot')) iconKey = 'robot';
+          else if (subNameLower.includes('operations') || subNameLower.includes('ml ops')) iconKey = 'pipeline';
+          else {
+            // Fall back to single keyword matching (sorted by length, longest first)
+            const matches = Object.keys(ICON_CONFIG)
+              .filter(k => subNameLower.includes(k))
+              .sort((a, b) => b.length - a.length);
+            if (matches.length > 0) iconKey = matches[0];
+          }
+
           addIcon(detailSlide, 0.7, subY + 0.15, iconKey, 0.45);
 
           // Sub-category name (truncate if too long)
