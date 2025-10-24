@@ -1443,38 +1443,40 @@ export async function GET(
 
     let bizY = 1.5;
     businessMetrics.forEach((metric: any) => {
-      // Card
+      // Card - taller for better spacing
       slide24.addShape(pptx.ShapeType.roundRect, {
-        x: 0.5, y: bizY, w: 4.3, h: 0.8,
+        x: 0.5, y: bizY, w: 4.3, h: 1.1,
         fill: { color: COLORS.cardBg },
         line: { color: COLORS.accent, width: 1 }
       });
 
       // Icon
-      addIcon(slide24, 0.7, bizY + 0.2, metric.icon || 'chart', 0.4);
+      addIcon(slide24, 0.7, bizY + 0.25, metric.icon || 'chart', 0.4);
 
       // Metric name
       slide24.addText(metric.metric, {
-        x: 1.3, y: bizY + 0.13, w: 3.3, h: 0.25,
+        x: 1.3, y: bizY + 0.2, w: 3.3, h: 0.25,
         fontSize: 12, bold: true, color: COLORS.white,
         fontFace: 'Arial'
       });
 
-      // Target
+      // Target - more spacing
       slide24.addText(`Target: ${metric.target}`, {
-        x: 1.3, y: bizY + 0.4, w: 3.3, h: 0.18,
+        x: 1.3, y: bizY + 0.5, w: 3.3, h: 0.22,
         fontSize: 9, color: COLORS.accent,
-        fontFace: 'Arial'
+        fontFace: 'Arial',
+        wrap: true
       });
 
-      // Measure
+      // Measure - more spacing
       slide24.addText(`Measure: ${metric.measure}`, {
-        x: 1.3, y: bizY + 0.58, w: 3.3, h: 0.15,
+        x: 1.3, y: bizY + 0.78, w: 3.3, h: 0.22,
         fontSize: 8, color: COLORS.textLight,
-        fontFace: 'Arial'
+        fontFace: 'Arial',
+        wrap: true
       });
 
-      bizY += 1;
+      bizY += 1.25;
     });
 
     // Right - Adoption Metrics
@@ -1492,38 +1494,40 @@ export async function GET(
 
     let adoptY = 1.5;
     adoptionMetrics.forEach((metric: any) => {
-      // Card
+      // Card - taller for better spacing
       slide24.addShape(pptx.ShapeType.roundRect, {
-        x: 5.2, y: adoptY, w: 4.3, h: 0.8,
+        x: 5.2, y: adoptY, w: 4.3, h: 1.1,
         fill: { color: COLORS.cardBg },
         line: { color: COLORS.accent, width: 1 }
       });
 
       // Icon
-      addIcon(slide24, 5.4, adoptY + 0.2, metric.icon || 'lightbulb', 0.4);
+      addIcon(slide24, 5.4, adoptY + 0.25, metric.icon || 'lightbulb', 0.4);
 
       // Metric name
       slide24.addText(metric.metric, {
-        x: 6, y: adoptY + 0.13, w: 3.3, h: 0.25,
+        x: 6, y: adoptY + 0.2, w: 3.3, h: 0.25,
         fontSize: 12, bold: true, color: COLORS.white,
         fontFace: 'Arial'
       });
 
-      // Target
+      // Target - more spacing
       slide24.addText(`Target: ${metric.target}`, {
-        x: 6, y: adoptY + 0.4, w: 3.3, h: 0.18,
+        x: 6, y: adoptY + 0.5, w: 3.3, h: 0.22,
         fontSize: 9, color: COLORS.accent,
-        fontFace: 'Arial'
+        fontFace: 'Arial',
+        wrap: true
       });
 
-      // Measure
+      // Measure - more spacing
       slide24.addText(`Measure: ${metric.measure}`, {
-        x: 6, y: adoptY + 0.58, w: 3.3, h: 0.15,
+        x: 6, y: adoptY + 0.78, w: 3.3, h: 0.22,
         fontSize: 8, color: COLORS.textLight,
-        fontFace: 'Arial'
+        fontFace: 'Arial',
+        wrap: true
       });
 
-      adoptY += 1;
+      adoptY += 1.25;
     });
 
     // Add branding
