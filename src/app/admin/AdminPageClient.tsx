@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, EyeOff, Globe, Mail } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Globe, Mail, FileText, TrendingUp, DollarSign, Activity, BarChart3, Users, MessagesSquare } from 'lucide-react';
 import Link from 'next/link';
 import AdminLayout from '@/components/AdminLayout';
 import RichTextEditor from '@/components/RichTextEditor';
@@ -34,11 +34,49 @@ interface Post {
   }>;
 }
 
+interface AdminStats {
+  assessments: {
+    total: number;
+    completed: number;
+    inProgress: number;
+    withResults: number;
+    last7Days: number;
+    last30Days: number;
+    last90Days: number;
+    inPeriod: number;
+  };
+  ai: {
+    totalTokens: number;
+    promptTokens: number;
+    completionTokens: number;
+    totalResults: number;
+    totalRegenerations: number;
+    estimatedCost: number;
+    periodTokens: number;
+    periodCost: number;
+  };
+  contacts: {
+    total: number;
+    new: number;
+    last7Days: number;
+    inPeriod: number;
+    newInPeriod: number;
+  };
+  blog: {
+    total: number;
+    published: number;
+    totalViews: number;
+  };
+  period: string;
+}
+
 export default function AdminPageClient() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [timePeriod, setTimePeriod] = useState<'7days' | '30days' | '90days'>('7days');
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -57,7 +95,8 @@ export default function AdminPageClient() {
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+    fetchStats();
+  }, [timePeriod]);
 
   const fetchPosts = async () => {
     try {
@@ -68,6 +107,18 @@ export default function AdminPageClient() {
       console.error('Error fetching posts:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`/api/admin/stats?period=${timePeriod}`);
+      const data = await response.json();
+      if (data.success) {
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
     }
   };
 
@@ -234,8 +285,8 @@ export default function AdminPageClient() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-xl">Loading...</div>
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
+          <div className="text-xl text-gray-900 dark:text-white">Loading...</div>
         </div>
       </AdminLayout>
     );
@@ -243,67 +294,91 @@ export default function AdminPageClient() {
 
   return (
     <AdminLayout>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
 
-          {/* Quick Navigation */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Link
-              href="/admin/seo"
-              className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                  <Globe className="w-6 h-6 text-green-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">SEO Manager</h3>
-                  <p className="text-sm text-gray-600">Manage metadata</p>
-                </div>
-              </div>
-            </Link>
-
-            <Link
-              href="/admin/contact-submissions"
-              className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Contact Forms</h3>
-                  <p className="text-sm text-gray-600">Manage submissions</p>
-                </div>
-              </div>
-            </Link>
-
-            <Link
-              href="/admin/assessments"
-              className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900">Assessments</h3>
-                  <p className="text-sm text-gray-600">View submissions</p>
-                </div>
-              </div>
-            </Link>
+            {/* Time Period Filter */}
+            <div className="flex gap-2 bg-white dark:bg-slate-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setTimePeriod('7days')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  timePeriod === '7days'
+                    ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                }`}
+              >
+                Last 7 Days
+              </button>
+              <button
+                onClick={() => setTimePeriod('30days')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  timePeriod === '30days'
+                    ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                }`}
+              >
+                Last 30 Days
+              </button>
+              <button
+                onClick={() => setTimePeriod('90days')}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  timePeriod === '90days'
+                    ? 'bg-blue-600 dark:bg-blue-500 text-white'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
+                }`}
+              >
+                Last 90 Days
+              </button>
+            </div>
           </div>
+
+          {/* Quick Live Figures */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                <div className="text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">New Contact Submissions</div>
+                <div className="text-3xl font-bold text-blue-900 dark:text-blue-200">{stats.contacts.newInPeriod}</div>
+                <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  {timePeriod === '7days' ? 'Last 7 days' : timePeriod === '30days' ? 'Last 30 days' : 'Last 90 days'}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                <div className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-1">Assessments Submitted</div>
+                <div className="text-3xl font-bold text-purple-900 dark:text-purple-200">{stats.assessments.inPeriod}</div>
+                <div className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                  {timePeriod === '7days' ? 'Last 7 days' : timePeriod === '30days' ? 'Last 30 days' : 'Last 90 days'}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                <div className="text-sm font-medium text-green-600 dark:text-green-400 mb-1">Total API Cost</div>
+                <div className="text-3xl font-bold text-green-900 dark:text-green-200">${stats.ai.periodCost.toFixed(2)}</div>
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  {timePeriod === '7days' ? 'Last 7 days' : timePeriod === '30days' ? 'Last 30 days' : 'Last 90 days'}
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                <div className="text-sm font-medium text-orange-600 dark:text-orange-400 mb-1">Total Tokens Used</div>
+                <div className="text-3xl font-bold text-orange-900 dark:text-orange-200">{(stats.ai.periodTokens / 1000).toFixed(1)}k</div>
+                <div className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                  {timePeriod === '7days' ? 'Last 7 days' : timePeriod === '30days' ? 'Last 30 days' : 'Last 90 days'}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
 
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Blog Posts</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Blog Posts</h2>
           <button
             onClick={() => openModal()}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+            className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200 flex items-center gap-2"
           >
             <Plus size={20} />
             New Post
@@ -314,17 +389,17 @@ export default function AdminPageClient() {
           {posts.map((post) => (
             <div
               key={post.id}
-              className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
+              className="bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 mb-3">
+                  <p className="text-gray-600 dark:text-gray-400 mb-3">
                     {post.excerpt || post.content.substring(0, 150) + '...'}
                   </p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                  <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <span>By {post.author?.name || 'Unknown'}</span>
                     <span>•</span>
                     <span>
@@ -335,8 +410,8 @@ export default function AdminPageClient() {
                     <span>•</span>
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       post.published
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                     }`}>
                       {post.published ? 'Published' : 'Draft'}
                     </span>
@@ -346,7 +421,7 @@ export default function AdminPageClient() {
                       {post.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-xs rounded-full"
                         >
                           {tag.name}
                         </span>
@@ -357,20 +432,20 @@ export default function AdminPageClient() {
                 <div className="flex gap-2 ml-4">
                   <button
                     onClick={() => togglePublished(post)}
-                    className="text-gray-500 hover:text-blue-600 transition-colors duration-200"
+                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                     title={post.published ? 'Unpublish' : 'Publish'}
                   >
                     {post.published ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                   <button
                     onClick={() => openModal(post)}
-                    className="text-gray-500 hover:text-blue-600 transition-colors duration-200"
+                    className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200"
                   >
                     <Edit size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(post.id)}
-                    className="text-gray-500 hover:text-red-600 transition-colors duration-200"
+                    className="text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors duration-200"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -381,15 +456,15 @@ export default function AdminPageClient() {
 
           {posts.length === 0 && (
             <div className="text-center py-12">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No posts yet
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Create your first blog post to get started.
               </p>
               <button
                 onClick={() => openModal()}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
+                className="bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200"
               >
                 Create First Post
               </button>
@@ -401,9 +476,9 @@ export default function AdminPageClient() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">
+          <div className="bg-white dark:bg-slate-800 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 {editingPost ? 'Edit Post' : 'New Post'}
               </h2>
             </div>
@@ -633,5 +708,46 @@ export default function AdminPageClient() {
       )}
       </div>
     </AdminLayout>
+  );
+}
+
+interface MetricCardProps {
+  title: string;
+  value: number | string;
+  subtitle: string;
+  icon: any;
+  color: 'blue' | 'green' | 'purple' | 'orange';
+  trend?: 'up' | 'down' | 'neutral';
+}
+
+function MetricCard({ title, value, subtitle, icon: Icon, color, trend }: MetricCardProps) {
+  const colors = {
+    blue: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800',
+    green: 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800',
+    purple: 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800',
+    orange: 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-800',
+  };
+
+  const trendColors = {
+    up: 'text-green-600 dark:text-green-400',
+    down: 'text-red-600 dark:text-red-400',
+    neutral: 'text-gray-500 dark:text-gray-400',
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{value}</p>
+          <p className={`text-sm ${trend ? trendColors[trend] : 'text-gray-500 dark:text-gray-400'}`}>
+            {subtitle}
+          </p>
+        </div>
+        <div className={`w-12 h-12 rounded-lg ${colors[color]} flex items-center justify-center border`}>
+          <Icon size={24} />
+        </div>
+      </div>
+    </div>
   );
 }

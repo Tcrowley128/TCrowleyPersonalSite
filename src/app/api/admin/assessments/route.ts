@@ -70,3 +70,55 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    // Check authentication
+    const userSupabase = await createClient();
+    const { data: { user } } = await userSupabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    const assessmentId = searchParams.get('id');
+
+    if (!assessmentId) {
+      return NextResponse.json(
+        { error: 'Assessment ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const supabase = createAdminClient();
+
+    // Delete the assessment (CASCADE will handle related records)
+    const { error: deleteError } = await supabase
+      .from('assessments')
+      .delete()
+      .eq('id', assessmentId);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Assessment deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Error deleting assessment:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to delete assessment',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}

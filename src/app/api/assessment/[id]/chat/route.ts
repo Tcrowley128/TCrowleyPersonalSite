@@ -125,13 +125,16 @@ export async function POST(
       ? response.content[0].text
       : '';
 
-    // Save assistant response
+    // Save assistant response with token usage
     await supabase
       .from('conversation_messages')
       .insert({
         conversation_id: currentConversationId,
         role: 'assistant',
-        content: assistantMessage
+        content: assistantMessage,
+        input_tokens: response.usage.input_tokens,
+        output_tokens: response.usage.output_tokens,
+        model_version: 'claude-sonnet-4-20250514'
       });
 
     return NextResponse.json({
