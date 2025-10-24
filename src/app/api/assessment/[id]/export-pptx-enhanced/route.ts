@@ -526,7 +526,7 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    const opportunityDesc = slideContent.keyOpportunity?.description || 'Leverage existing technology ecosystem to create citizen-led solutions that directly address your top pain points:';
+    const opportunityDesc = 'Leverage existing technology ecosystem to create citizen-led solutions that directly address your top pain points:';
     slide5.addText(truncateText(opportunityDesc, 180), {
       x: 0.5, y: 1.4, w: 9, h: 0.8,
       fontSize: 13, color: COLORS.white,
