@@ -152,55 +152,64 @@ const ICON_SVGS = {
 
   // UX Icons
   mouse: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <rect x="22" y="12" width="20" height="32" rx="10" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="3"/>
-    <path d="M32 20v8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
+    <rect x="22" y="12" width="20" height="32" rx="10" fill="#00BCD4" opacity="0.2" stroke="#00BCD4" stroke-width="3"/>
+    <path d="M32 20v8" stroke="#FFB800" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="24" r="2" fill="#FF6B6B"/>
   </svg>`,
 
   design: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M12 12h40v40H12z" stroke="#7B9CFF" stroke-width="3" fill="none"/>
-    <circle cx="32" cy="32" r="12" fill="#7B9CFF" opacity="0.3"/>
-    <path d="M20 32h24M32 20v24" stroke="#7B9CFF" stroke-width="2"/>
+    <path d="M12 12h40v40H12z" stroke="#00BCD4" stroke-width="3" fill="none"/>
+    <circle cx="32" cy="32" r="12" fill="#FF6B6B" opacity="0.2"/>
+    <path d="M20 32h24M32 20v24" stroke="#FFB800" stroke-width="2"/>
   </svg>`,
 
   palette: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M32 8C18.8 8 8 18.8 8 32c0 8 4 15 10 19.4 2-.8 4-3.4 4-6.4 0-3.6-2.8-6.4-6.4-6.4C14.4 32 8 25.6 8 19.2 8 12.8 14.8 8 32 8s24 4.8 24 11.2S45.2 32 38.6 32c-3.6 0-6.4 2.8-6.4 6.4 0 3 2 5.6 4 6.4 6-4.4 10-11.4 10-19.4C46 18.8 45.2 8 32 8z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="24" cy="24" r="3" fill="#7B9CFF"/>
-    <circle cx="40" cy="24" r="3" fill="#7B9CFF"/>
-    <circle cx="32" cy="16" r="3" fill="#7B9CFF"/>
+    <ellipse cx="32" cy="28" rx="18" ry="16" fill="#00BCD4" opacity="0.2" stroke="#00BCD4" stroke-width="2"/>
+    <circle cx="24" cy="24" r="3" fill="#FF6B6B"/>
+    <circle cx="40" cy="24" r="3" fill="#4CAF50"/>
+    <circle cx="32" cy="16" r="3" fill="#FFB800"/>
+    <circle cx="28" cy="32" r="3" fill="#FF4081"/>
+    <circle cx="36" cy="32" r="3" fill="#00BCD4"/>
   </svg>`,
 
   // General Icons
   search: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="28" cy="28" r="16" stroke="#7B9CFF" stroke-width="4"/>
-    <path d="M40 40l16 16" stroke="#7B9CFF" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="28" cy="28" r="16" stroke="#00BCD4" stroke-width="4" fill="none"/>
+    <path d="M40 40l16 16" stroke="#FFB800" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="28" cy="28" r="8" fill="#00BCD4" opacity="0.2"/>
   </svg>`,
 
   clock: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="24" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="3"/>
-    <path d="M32 16v16l12 8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="24" fill="#00BCD4" opacity="0.2" stroke="#00BCD4" stroke-width="3"/>
+    <path d="M32 16v16l12 8" stroke="#FFB800" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="3" fill="#FF6B6B"/>
   </svg>`,
 
   lightbulb: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
     <path d="M32 8C23.2 8 16 15.2 16 24c0 6 3.4 11.2 8 14v8h16v-8c4.6-2.8 8-8 8-14 0-8.8-7.2-16-16-16z" fill="#FFB800" opacity="0.3" stroke="#FFB800" stroke-width="2"/>
     <rect x="24" y="46" width="16" height="4" rx="2" fill="#FFB800"/>
     <rect x="26" y="50" width="12" height="4" rx="2" fill="#FFB800"/>
+    <circle cx="32" cy="22" r="3" fill="#ffffff" opacity="0.8"/>
   </svg>`,
 
   target: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="24" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="32" cy="32" r="16" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="32" cy="32" r="8" fill="#7B9CFF"/>
+    <circle cx="32" cy="32" r="24" stroke="#00BCD4" stroke-width="2" opacity="0.5"/>
+    <circle cx="32" cy="32" r="16" stroke="#FFB800" stroke-width="2"/>
+    <circle cx="32" cy="32" r="8" fill="#FF6B6B" opacity="0.3" stroke="#FF6B6B" stroke-width="2"/>
+    <circle cx="32" cy="32" r="3" fill="#FF6B6B"/>
   </svg>`,
 
   checkmark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <circle cx="32" cy="32" r="24" fill="#7B9CFF" opacity="0.3"/>
-    <path d="M20 32l8 8 16-16" stroke="#7B9CFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="32" r="24" fill="#4CAF50" opacity="0.2" stroke="#4CAF50" stroke-width="2"/>
+    <path d="M20 32l8 8 16-16" stroke="#4CAF50" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`,
 
   rocket: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-    <path d="M32 8c8 0 16 8 16 16v16l-8 8h-16l-8-8V24c0-8 8-16 16-16z" fill="#7B9CFF" opacity="0.3" stroke="#7B9CFF" stroke-width="2"/>
-    <circle cx="32" cy="28" r="4" fill="#7B9CFF"/>
-    <path d="M24 48l-8 8M40 48l8 8" stroke="#7B9CFF" stroke-width="3" stroke-linecap="round"/>
+    <path d="M32 8c8 0 16 8 16 16v16l-8 8h-16l-8-8V24c0-8 8-16 16-16z" fill="#FF6B6B" opacity="0.2" stroke="#FF6B6B" stroke-width="2"/>
+    <circle cx="32" cy="28" r="4" fill="#FFB800"/>
+    <path d="M24 48l-8 8M40 48l8 8" stroke="#FFB800" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="28" cy="38" r="2" fill="#00BCD4"/>
+    <circle cx="36" cy="38" r="2" fill="#00BCD4"/>
   </svg>`,
 
   // Technology Icons
