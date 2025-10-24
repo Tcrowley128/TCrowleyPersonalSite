@@ -552,9 +552,8 @@ export async function GET(
       // Icon circle background (subtle)
       slide5.addShape(pptx.ShapeType.ellipse, {
         x: opp.x + 0.85, y: 2.7, w: 0.8, h: 0.8,
-        fill: { color: COLORS.accent },
-        line: { type: 'none' },
-        transparency: 30
+        fill: { color: COLORS.accent, transparency: 30 },
+        line: { type: 'none' }
       });
 
       // Actual white icon on top - perfectly centered in circle
@@ -1226,9 +1225,8 @@ export async function GET(
       // Icon circle background
       slide21.addShape(pptx.ShapeType.ellipse, {
         x: techX + 1, y: 1.35, w: 0.8, h: 0.8,
-        fill: { color: COLORS.accent },
-        line: { type: 'none' },
-        transparency: 20
+        fill: { color: COLORS.accent, transparency: 20 },
+        line: { type: 'none' }
       });
 
       // White icon specific to each technology
@@ -1561,9 +1559,8 @@ export async function GET(
       // Icon circle background
       slide26.addShape(pptx.ShapeType.ellipse, {
         x: x + 0.05, y: y + 0.02, w: 0.45, h: 0.45,
-        fill: { color: COLORS.accent },
-        line: { type: 'none' },
-        transparency: 20
+        fill: { color: COLORS.accent, transparency: 20 },
+        line: { type: 'none' }
       });
 
       // Icon
