@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Question } from '@/lib/assessment/questions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Tooltip from './Tooltip';
 
 interface QuestionCardProps {
@@ -13,6 +13,15 @@ interface QuestionCardProps {
 
 export default function QuestionCard({ question, value, onChange }: QuestionCardProps) {
   const [sliderValue, setSliderValue] = useState(value || question.min || 1);
+
+  // Initialize slider value on mount if not already set
+  useEffect(() => {
+    if (question.type === 'slider' && !value) {
+      const initialValue = question.min || 1;
+      setSliderValue(initialValue);
+      onChange(initialValue);
+    }
+  }, [question.type, question.min, value, onChange]);
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(e.target.value);
