@@ -361,7 +361,7 @@ export default function AssessmentStart() {
         {isReviewStep ? (
           <ReviewAnswersStep
             answers={answers}
-            onEdit={(stepId) => setCurrentStep(stepId)}
+            onAnswerChange={handleAnswerChange}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
           />

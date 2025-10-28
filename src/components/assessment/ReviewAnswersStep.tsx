@@ -1,22 +1,26 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Edit2, CheckCircle, ArrowRight } from 'lucide-react';
-import { assessmentSteps } from '@/lib/assessment/questions';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Edit2, CheckCircle, ArrowRight, X, Check } from 'lucide-react';
+import { assessmentSteps, Question } from '@/lib/assessment/questions';
+import { useState } from 'react';
+import QuestionCard from './QuestionCard';
 
 interface ReviewAnswersStepProps {
   answers: Record<string, any>;
-  onEdit: (stepId: number) => void;
+  onAnswerChange: (key: string, value: any) => void;
   onSubmit: () => void;
   isSubmitting: boolean;
 }
 
 export default function ReviewAnswersStep({
   answers,
-  onEdit,
+  onAnswerChange,
   onSubmit,
   isSubmitting
 }: ReviewAnswersStepProps) {
+  const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+
   // Format answer value for display
   const formatAnswerValue = (value: any, questionKey: string): string => {
     if (value === undefined || value === null || value === '') {
@@ -49,6 +53,14 @@ export default function ReviewAnswersStep({
     }
 
     return String(value);
+  };
+
+  const handleSaveEdit = () => {
+    setEditingQuestion(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingQuestion(null);
   };
 
   return (
@@ -95,39 +107,71 @@ export default function ReviewAnswersStep({
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                   {step.title}
                 </h3>
-                <button
-                  onClick={() => onEdit(step.id)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                >
-                  <Edit2 size={14} />
-                  Edit
-                </button>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {answeredQuestions.map((question) => {
+                  const isEditing = editingQuestion === question.key;
                   const answerValue = formatAnswerValue(answers[question.key], question.key);
                   const isAnswered = answerValue !== 'Not answered';
 
                   return (
-                    <div
-                      key={question.key}
-                      className="flex flex-col sm:flex-row sm:items-start gap-2 py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                    >
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {question.question}
-                        </p>
-                      </div>
-                      <div className="sm:text-right sm:max-w-md">
-                        <p className={`text-sm ${
-                          isAnswered
-                            ? 'text-gray-900 dark:text-white font-medium'
-                            : 'text-gray-400 dark:text-gray-500 italic'
-                        }`}>
-                          {answerValue}
-                        </p>
-                      </div>
+                    <div key={question.key}>
+                      {isEditing ? (
+                        // Inline editing mode
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-3"
+                        >
+                          <QuestionCard
+                            question={question}
+                            value={answers[question.key]}
+                            onChange={(value) => onAnswerChange(question.key, value)}
+                            allAnswers={answers}
+                          />
+                          <div className="flex items-center gap-3 justify-end">
+                            <button
+                              onClick={handleCancelEdit}
+                              className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                            >
+                              <X size={16} />
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleSaveEdit}
+                              className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                            >
+                              <Check size={16} />
+                              Done
+                            </button>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        // Display mode
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-2 py-3 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors group">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                              {question.question}
+                            </p>
+                            <p className={`text-sm ${
+                              isAnswered
+                                ? 'text-gray-900 dark:text-white'
+                                : 'text-gray-400 dark:text-gray-500 italic'
+                            }`}>
+                              {answerValue}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setEditingQuestion(question.key)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors opacity-0 group-hover:opacity-100 self-start"
+                          >
+                            <Edit2 size={12} />
+                            Edit
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -145,9 +189,9 @@ export default function ReviewAnswersStep({
       >
         <button
           onClick={onSubmit}
-          disabled={isSubmitting}
+          disabled={isSubmitting || editingQuestion !== null}
           className={`flex items-center gap-3 px-8 py-4 rounded-lg font-semibold text-lg transition-all ${
-            isSubmitting
+            isSubmitting || editingQuestion !== null
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:shadow-xl hover:scale-105'
           } bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg`}
@@ -170,6 +214,11 @@ export default function ReviewAnswersStep({
             </>
           )}
         </button>
+        {editingQuestion && (
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            Please save or cancel your current edit before submitting
+          </p>
+        )}
         <p className="text-sm text-gray-500 dark:text-gray-400">
           This will take about 30-60 seconds to analyze your responses and create personalized recommendations
         </p>
