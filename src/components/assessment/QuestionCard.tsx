@@ -254,8 +254,8 @@ export default function QuestionCard({ question, value, onChange, allAnswers }: 
             return true;
           }) || [];
 
-          // Use searchable dropdown if 10+ options, otherwise use regular checkboxes
-          const useSearchable = filteredOptions.length >= 10;
+          // Use searchable dropdown if 5+ options, otherwise use regular checkboxes
+          const useSearchable = filteredOptions.length >= 5;
 
           if (useSearchable) {
             return (
