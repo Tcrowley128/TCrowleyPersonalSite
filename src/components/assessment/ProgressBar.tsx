@@ -84,25 +84,18 @@ export default function ProgressBar({
                 )}
               </motion.div>
 
-              {/* Title with completion info */}
-              <div className="flex flex-col items-center">
-                <span
-                  className={`text-xs text-center hidden sm:block leading-relaxed px-1 ${
-                    isCurrent
-                      ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                      : isCompleted
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-gray-500 dark:text-gray-400'
-                  }`}
-                >
-                  {title}
-                </span>
-                {completionInfo && (isCurrent || !isCompleted) && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-                    {completionInfo.answered}/{completionInfo.total}
-                  </span>
-                )}
-              </div>
+              {/* Title */}
+              <span
+                className={`text-xs text-center hidden sm:block leading-relaxed px-1 ${
+                  isCurrent
+                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                    : isCompleted
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-gray-500 dark:text-gray-400'
+                }`}
+              >
+                {title}
+              </span>
             </div>
           );
         })}

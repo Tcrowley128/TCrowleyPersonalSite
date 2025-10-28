@@ -20,6 +20,8 @@ export default function AssessmentStart() {
   const [error, setError] = useState<string>('');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showResumeBanner, setShowResumeBanner] = useState(false);
+  const [draftTimestamp, setDraftTimestamp] = useState<string>('');
 
   // Initialize session and load saved progress
   useEffect(() => {
@@ -31,10 +33,12 @@ export default function AssessmentStart() {
     const savedProgress = localStorage.getItem(`assessment_progress_${sid}`);
     if (savedProgress) {
       try {
-        const { answers: savedAnswers, step } = JSON.parse(savedProgress);
+        const { answers: savedAnswers, step, timestamp } = JSON.parse(savedProgress);
         setAnswers(savedAnswers);
         setCurrentStep(step);
         setLastSaved(new Date());
+        setShowResumeBanner(true);
+        setDraftTimestamp(timestamp);
       } catch (err) {
         console.error('Failed to load saved progress:', err);
       }
@@ -192,6 +196,19 @@ export default function AssessmentStart() {
     }
   };
 
+  const handleStartFresh = () => {
+    if (confirm('Are you sure you want to start over? This will delete your saved progress.')) {
+      if (sessionId) {
+        localStorage.removeItem(`assessment_progress_${sessionId}`);
+      }
+      setAnswers({});
+      setCurrentStep(1);
+      setShowResumeBanner(false);
+      setLastSaved(null);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
     setError('');
@@ -291,6 +308,54 @@ export default function AssessmentStart() {
           onStepClick={handleStepClick}
           stepCompletionCounts={stepCompletionCounts}
         />
+
+        {/* Resume Draft Banner */}
+        {showResumeBanner && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4"
+          >
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-0.5">
+                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                  Welcome back!
+                </h3>
+                <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                  We've restored your progress from {new Date(draftTimestamp).toLocaleString()}. You're on step {currentStep} of {totalSteps}.
+                </p>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowResumeBanner(false)}
+                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  >
+                    Continue where I left off
+                  </button>
+                  <span className="text-blue-300 dark:text-blue-700">•</span>
+                  <button
+                    onClick={handleStartFresh}
+                    className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  >
+                    Start fresh
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowResumeBanner(false)}
+                className="flex-shrink-0 text-blue-400 dark:text-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Review Step */}
         {isReviewStep ? (
