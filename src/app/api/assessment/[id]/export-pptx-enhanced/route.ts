@@ -380,8 +380,8 @@ export async function GET(
       { num: '02', title: 'Digital Maturity Assessment', desc: 'Five-pillar evaluation framework' },
       { num: '03', title: 'Strategic Priorities', desc: 'Data, Automation, AI, People, and UX strategies' },
       { num: '04', title: 'Quick Wins', desc: '30-day high-impact actions' },
-      { num: '05', title: 'Technology Roadmap', desc: 'Recommended tools and platforms' },
-      { num: '06', title: '90-Day Implementation Plan', desc: 'Phased transformation approach' },
+      { num: '05', title: '90-Day Implementation Plan', desc: 'Phased transformation approach' },
+      { num: '06', title: 'Technology Roadmap', desc: 'Recommended tools and platforms' },
       { num: '07', title: 'Change Management', desc: 'Communication and training strategy' },
       { num: '08', title: 'Next Steps', desc: 'Getting started with your transformation' }
     ];
@@ -593,107 +593,7 @@ export async function GET(
     addBranding(slide5);
 
     // ======================
-    // SLIDE 6: RECOMMENDED STARTING POINT
-    // ======================
-    const slide6 = pptx.addSlide();
-    slide6.background = { color: COLORS.darkBg };
-
-    slide6.addText('Recommended Starting Point', {
-      x: 0.5, y: 0.4, w: 9, h: 0.6,
-      fontSize: 28, bold: true, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    // Use EXACT text from assessment results database (priority_matrix.recommended_starting_point)
-    const exactStartingPoint = results.priority_matrix?.recommended_starting_point || '30-Day Power Platform Pilot';
-    slide6.addText(truncateText(exactStartingPoint, 150), {
-      x: 0.5, y: 1.2, w: 9, h: 0.5,
-      fontSize: 20, bold: true, color: COLORS.accent,
-      fontFace: 'Arial',
-      wrap: true
-    });
-
-    // Left column - Launch details
-    slide6.addText('Launch Focus', {
-      x: 0.5, y: 2, w: 4, h: 0.4,
-      fontSize: 16, bold: true, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    // If the starting point is detailed enough, extract launch focus from it, otherwise use default
-    const launchFocus = exactStartingPoint.length > 50
-      ? truncateText(exactStartingPoint, 120)
-      : 'Centralized information hub using SharePoint with Power BI dashboards';
-    slide6.addText(launchFocus, {
-      x: 0.5, y: 2.5, w: 4, h: 0.9,
-      fontSize: 11, color: COLORS.textLight,
-      fontFace: 'Arial',
-      wrap: true
-    });
-
-    slide6.addText('Target Audience', {
-      x: 0.5, y: 3.5, w: 4, h: 0.4,
-      fontSize: 16, bold: true, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    slide6.addText('Your most change-ready team members as initial citizen developers', {
-      x: 0.5, y: 4, w: 4, h: 0.6,
-      fontSize: 12, color: COLORS.textLight,
-      fontFace: 'Arial'
-    });
-
-    // Right column - Expected Outcomes
-    slide6.addText('Expected Outcomes', {
-      x: 5.2, y: 2, w: 4.3, h: 0.4,
-      fontSize: 16, bold: true, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    const outcomes = [
-      'Immediate pain point relief (information access)',
-      'Champion network established (10-15 advocates)',
-      'Quick wins demonstrated (build momentum)',
-      'Foundation for broader transformation'
-    ];
-
-    let outcomeY = 2.5;
-    outcomes.forEach(outcome => {
-      slide6.addText(`• ${outcome}`, {
-        x: 5.2, y: outcomeY, w: 4.3, h: 0.4,
-        fontSize: 12, color: COLORS.textLight,
-        fontFace: 'Arial'
-      });
-      outcomeY += 0.45;
-    });
-
-    // Bottom info box
-    slide6.addShape(pptx.ShapeType.roundRect, {
-      x: 0.5, y: 4.8, w: 9, h: 0.65,
-      fill: { color: COLORS.cardBg },
-      line: { color: COLORS.accent, width: 1 }
-    });
-
-    // Icon for "Why This Works"
-    addIcon(slide6, 0.7, 4.95, 'lightbulb', 0.35);
-
-    slide6.addText('Why This Works', {
-      x: 1.15, y: 4.95, w: 1.5, h: 0.3,
-      fontSize: 10, bold: true, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    slide6.addText('Builds on existing Microsoft investment, requires minimal new technology, and creates internal advocates who will drive adoption across the organization.', {
-      x: 2.7, y: 4.95, w: 6.65, h: 0.4,
-      fontSize: 10, color: COLORS.white,
-      fontFace: 'Arial'
-    });
-
-    // Add branding
-    addBranding(slide6);
-
-    // ======================
-    // SLIDE 7: SECTION DIVIDER - Digital Maturity Assessment
+    // SLIDE 6: SECTION DIVIDER - Digital Maturity Assessment
     // ======================
     addSectionDivider('02', 'Digital Maturity\nAssessment', 'Five-pillar evaluation framework', 'maturity_assessment');
 
@@ -1230,7 +1130,7 @@ export async function GET(
     // ======================
     // SLIDE 20: SECTION DIVIDER - Technology Recommendations
     // ======================
-    addSectionDivider('05', 'Technology Stack', 'Technology Recommendations\nImmediate Priorities', 'technology');
+    addSectionDivider('05', 'Technology Stack', 'Recommended tools and platforms', 'technology');
 
     // ======================
     // SLIDE 21: TECHNOLOGY RECOMMENDATIONS
@@ -1338,7 +1238,7 @@ export async function GET(
     // ======================
     // SLIDE 22: SECTION DIVIDER - Change Management
     // ======================
-    addSectionDivider('06', 'Change Management', 'Communication & Training Strategies', 'change_management');
+    addSectionDivider('06', 'Change Management', 'Communication and training strategy', 'change_management');
 
     // ======================
     // SLIDE 23: CHANGE MANAGEMENT STRATEGY
@@ -1581,7 +1481,7 @@ export async function GET(
     // ======================
     // SLIDE 25: SECTION DIVIDER - Next Steps
     // ======================
-    addSectionDivider('07', 'Getting Started', 'Next Steps', 'next_steps');
+    addSectionDivider('07', 'Getting Started', 'Getting started with your transformation', 'next_steps');
 
     // ======================
     // SLIDE 26: NEXT STEPS
