@@ -13,11 +13,12 @@ interface Option {
 
 interface SearchableMultiSelectProps {
   options: Option[];
-  value: string[];
-  onChange: (value: string[]) => void;
+  value: string | string[];
+  onChange: (value: string | string[]) => void;
   placeholder?: string;
   searchPlaceholder?: string;
   maxHeight?: string;
+  singleSelect?: boolean; // When true, only allow one selection
 }
 
 export default function SearchableMultiSelect({
@@ -26,12 +27,16 @@ export default function SearchableMultiSelect({
   onChange,
   placeholder = 'Select options...',
   searchPlaceholder = 'Search...',
-  maxHeight = '300px'
+  maxHeight = '300px',
+  singleSelect = false
 }: SearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Normalize value to array for internal use
+  const valueArray = Array.isArray(value) ? value : (value ? [value] : []);
 
   // Filter options based on search query
   const filteredOptions = options.filter(option =>
@@ -41,7 +46,7 @@ export default function SearchableMultiSelect({
 
   // Get selected option labels for display
   const selectedLabels = options
-    .filter(opt => value.includes(opt.value))
+    .filter(opt => valueArray.includes(opt.value))
     .map(opt => opt.label);
 
   // Close dropdown when clicking outside
@@ -67,19 +72,31 @@ export default function SearchableMultiSelect({
   }, [isOpen]);
 
   const handleToggleOption = (optionValue: string) => {
-    const newValue = value.includes(optionValue)
-      ? value.filter(v => v !== optionValue)
-      : [...value, optionValue];
-    onChange(newValue);
+    if (singleSelect) {
+      // Single select mode: replace value and close dropdown
+      onChange(optionValue);
+      setIsOpen(false);
+      setSearchQuery('');
+    } else {
+      // Multi select mode: toggle in array
+      const newValue = valueArray.includes(optionValue)
+        ? valueArray.filter(v => v !== optionValue)
+        : [...valueArray, optionValue];
+      onChange(newValue);
+    }
   };
 
   const handleRemoveOption = (optionValue: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    onChange(value.filter(v => v !== optionValue));
+    if (singleSelect) {
+      onChange('');
+    } else {
+      onChange(valueArray.filter(v => v !== optionValue));
+    }
   };
 
   const handleClearAll = () => {
-    onChange([]);
+    onChange(singleSelect ? '' : []);
     setSearchQuery('');
   };
 
@@ -181,7 +198,7 @@ export default function SearchableMultiSelect({
               {filteredOptions.length > 0 ? (
                 <div className="p-2">
                   {filteredOptions.map((option) => {
-                    const isSelected = value.includes(option.value);
+                    const isSelected = valueArray.includes(option.value);
                     return (
                       <label
                         key={option.value}
@@ -193,7 +210,7 @@ export default function SearchableMultiSelect({
                       >
                         <div className="flex-shrink-0 mt-0.5">
                           <div
-                            className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                            className={`w-5 h-5 ${singleSelect ? 'rounded-full' : 'rounded'} border-2 flex items-center justify-center transition-all ${
                               isSelected
                                 ? 'bg-blue-600 border-blue-600'
                                 : 'border-gray-300 dark:border-gray-500'
@@ -203,7 +220,7 @@ export default function SearchableMultiSelect({
                           </div>
                         </div>
                         <input
-                          type="checkbox"
+                          type={singleSelect ? 'radio' : 'checkbox'}
                           checked={isSelected}
                           onChange={() => handleToggleOption(option.value)}
                           className="sr-only"
@@ -236,7 +253,10 @@ export default function SearchableMultiSelect({
               <div className="p-3 border-t border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-slate-800 rounded-b-lg">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 dark:text-gray-400">
-                    {selectedLabels.length} selected
+                    {singleSelect
+                      ? (selectedLabels.length > 0 ? `${selectedLabels[0]} selected` : 'No selection')
+                      : `${selectedLabels.length} selected`
+                    }
                     {searchQuery && ` • ${filteredOptions.length} of ${options.length} shown`}
                   </span>
                   {selectedLabels.length > 0 && (
@@ -244,7 +264,7 @@ export default function SearchableMultiSelect({
                       onClick={handleClearAll}
                       className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                     >
-                      Clear all
+                      Clear {singleSelect ? 'selection' : 'all'}
                     </button>
                   )}
                 </div>

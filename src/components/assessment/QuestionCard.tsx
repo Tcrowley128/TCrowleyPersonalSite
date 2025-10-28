@@ -190,56 +190,75 @@ export default function QuestionCard({ question, value, onChange, allAnswers }: 
       {/* Question Type Rendering */}
       <div className="mt-4">
         {/* Single Select */}
-        {question.type === 'single-select' && (
-          <div className="space-y-3" role="radiogroup" aria-labelledby={`question-${question.key}`}>
-            {question.options?.map((option, index) => (
-              <label
-                key={option.value}
-                className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 ${
-                  value === option.value
-                    ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
-                }`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onChange(option.value);
-                  } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    const nextIndex = (index + 1) % (question.options?.length || 1);
-                    const nextValue = question.options?.[nextIndex]?.value;
-                    if (nextValue) onChange(nextValue);
-                  } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    const prevIndex = index === 0 ? (question.options?.length || 1) - 1 : index - 1;
-                    const prevValue = question.options?.[prevIndex]?.value;
-                    if (prevValue) onChange(prevValue);
-                  }
-                }}
-              >
-                <input
-                  type="radio"
-                  name={question.key}
-                  value={option.value}
-                  checked={value === option.value}
-                  onChange={(e) => onChange(e.target.value)}
-                  className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
-                  aria-describedby={option.description ? `${question.key}-${option.value}-desc` : undefined}
-                />
-                <div className="flex-1">
-                  <span className="font-medium text-gray-900 dark:text-white">
-                    {option.label}
-                  </span>
-                  {option.description && (
-                    <p id={`${question.key}-${option.value}-desc`} className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {option.description}
-                    </p>
-                  )}
-                </div>
-              </label>
-            ))}
-          </div>
-        )}
+        {question.type === 'single-select' && (() => {
+          const options = question.options || [];
+          const useSearchable = options.length >= 5;
+
+          if (useSearchable) {
+            return (
+              <SearchableMultiSelect
+                options={options}
+                value={value || ''}
+                onChange={onChange}
+                placeholder="Select an option..."
+                searchPlaceholder="Search options..."
+                singleSelect={true}
+              />
+            );
+          }
+
+          // Regular radio buttons for fewer options
+          return (
+            <div className="space-y-3" role="radiogroup" aria-labelledby={`question-${question.key}`}>
+              {options.map((option, index) => (
+                <label
+                  key={option.value}
+                  className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 ${
+                    value === option.value
+                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
+                  }`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onChange(option.value);
+                    } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                      e.preventDefault();
+                      const nextIndex = (index + 1) % options.length;
+                      const nextValue = options[nextIndex]?.value;
+                      if (nextValue) onChange(nextValue);
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                      e.preventDefault();
+                      const prevIndex = index === 0 ? options.length - 1 : index - 1;
+                      const prevValue = options[prevIndex]?.value;
+                      if (prevValue) onChange(prevValue);
+                    }
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name={question.key}
+                    value={option.value}
+                    checked={value === option.value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="mt-1 mr-3 text-blue-600 focus:ring-blue-500"
+                    aria-describedby={option.description ? `${question.key}-${option.value}-desc` : undefined}
+                  />
+                  <div className="flex-1">
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {option.label}
+                    </span>
+                    {option.description && (
+                      <p id={`${question.key}-${option.value}-desc`} className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        {option.description}
+                      </p>
+                    )}
+                  </div>
+                </label>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Multi Select */}
         {question.type === 'multi-select' && (() => {
