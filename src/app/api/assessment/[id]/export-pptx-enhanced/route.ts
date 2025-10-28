@@ -438,26 +438,19 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    // Summary text with proper wrapping and truncation - moved up
-    const maturityLabel = overallScore === 1 ? 'foundational' : overallScore === 2 ? 'developing' : overallScore === 3 ? 'defined' : overallScore === 4 ? 'managed' : 'optimized';
-    const companyName = assessment.company_name || 'Your organization';
+    // Summary text - use EXACT text from assessment results database (priority_matrix.current_state)
+    // This ensures consistency with what's shown in the web UI Overview tab
+    const exactCurrentState = results.priority_matrix?.current_state || slideContent.currentState.summary || '';
 
-    // Remove duplicate company name and score from summary if present
-    let summaryText = slideContent.currentState.summary || '';
+    // Shorten if needed for PowerPoint space constraints
+    const summaryText = smartShortenText(exactCurrentState, 280);
 
-    // Remove patterns like "Company operates at a X/5 digital maturity level" from the beginning
-    summaryText = summaryText.replace(new RegExp(`^${companyName}\\s+operates at a\\s+\\d/5\\s+digital maturity level[,.]?\\s*`, 'i'), '');
-    summaryText = summaryText.replace(new RegExp(`^${companyName}\\s+operates at a\\s+\\w+\\s+digital maturity level[,.]?\\s*`, 'i'), '');
-
-    const summaryRest = smartShortenText(summaryText, 250);
-
-    // Use array format to apply different formatting to parts of the text
-    slide4.addText([
-      { text: `${companyName} operates at a `, options: { fontSize: 11, color: COLORS.white, fontFace: 'Arial' } },
-      { text: `${maturityLabel} digital maturity level`, options: { fontSize: 11, color: COLORS.accent, fontFace: 'Arial', bold: true } },
-      { text: ` of ${overallScore}/5. ${summaryRest}`, options: { fontSize: 11, color: COLORS.white, fontFace: 'Arial' } }
-    ], {
+    // Display the exact current state statement from the database
+    slide4.addText(summaryText, {
       x: 0.5, y: 1.0, w: 9, h: 0.6,
+      fontSize: 11,
+      color: COLORS.white,
+      fontFace: 'Arial',
       wrap: true
     });
 
