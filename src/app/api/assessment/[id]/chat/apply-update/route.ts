@@ -63,7 +63,7 @@ export async function POST(
     }
 
     // Create a mutable copy of the results
-    let updatedResults = JSON.parse(JSON.stringify(results));
+    const updatedResults = JSON.parse(JSON.stringify(results));
 
     // 2. Apply each update
     for (const update of updates) {
