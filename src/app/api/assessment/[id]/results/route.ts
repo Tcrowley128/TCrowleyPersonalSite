@@ -63,7 +63,16 @@ export async function PATCH(
       }
 
       // Deep set the value using path
-      const updatedField = setNestedValue(currentResults[field], path, value);
+      let updatedField;
+      try {
+        updatedField = setNestedValue(currentResults[field], path, value);
+      } catch (pathError: any) {
+        console.error('Error setting nested value:', pathError.message);
+        return NextResponse.json(
+          { error: `Invalid path: ${pathError.message}` },
+          { status: 400 }
+        );
+      }
 
       updateQuery = supabase
         .from('assessment_results')
@@ -143,6 +152,9 @@ function setNestedValue(obj: any, path: string, value: any): any {
       const match = part.match(/^\[(\d+)\]$/);
       if (match) {
         const index = parseInt(match[1]);
+        if (!Array.isArray(current) || current[index] === undefined) {
+          throw new Error(`Invalid path: array index ${index} does not exist at "${pathParts.slice(0, i + 1).join('.')}"`);
+        }
         current = current[index];
       }
     } else {
@@ -151,8 +163,17 @@ function setNestedValue(obj: any, path: string, value: any): any {
       if (arrayMatch) {
         const arrayKey = arrayMatch[1];
         const index = parseInt(arrayMatch[2]);
+        if (!current[arrayKey] || !Array.isArray(current[arrayKey])) {
+          throw new Error(`Invalid path: "${arrayKey}" is not an array at "${pathParts.slice(0, i + 1).join('.')}"`);
+        }
+        if (current[arrayKey][index] === undefined) {
+          throw new Error(`Invalid path: array index ${index} does not exist in "${arrayKey}" at "${pathParts.slice(0, i + 1).join('.')}"`);
+        }
         current = current[arrayKey][index];
       } else {
+        if (current[part] === undefined) {
+          throw new Error(`Invalid path: property "${part}" does not exist at "${pathParts.slice(0, i + 1).join('.')}"`);
+        }
         current = current[part];
       }
     }
@@ -164,6 +185,9 @@ function setNestedValue(obj: any, path: string, value: any): any {
     const match = lastPart.match(/^\[(\d+)\]$/);
     if (match) {
       const index = parseInt(match[1]);
+      if (!Array.isArray(current) || current[index] === undefined) {
+        throw new Error(`Invalid path: array index ${index} does not exist at "${path}"`);
+      }
       current[index] = value;
     }
   } else {
@@ -171,6 +195,12 @@ function setNestedValue(obj: any, path: string, value: any): any {
     if (arrayMatch) {
       const arrayKey = arrayMatch[1];
       const index = parseInt(arrayMatch[2]);
+      if (!current[arrayKey] || !Array.isArray(current[arrayKey])) {
+        throw new Error(`Invalid path: "${arrayKey}" is not an array at "${path}"`);
+      }
+      if (current[arrayKey][index] === undefined) {
+        throw new Error(`Invalid path: array index ${index} does not exist in "${arrayKey}" at "${path}"`);
+      }
       current[arrayKey][index] = value;
     } else {
       current[lastPart] = value;
