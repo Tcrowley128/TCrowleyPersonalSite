@@ -101,6 +101,7 @@ export default function AssessmentStart() {
         session_id: sessionId,
         company_size: answers.company_size,
         industry: answers.industry === 'other' && answers.industry_other ? answers.industry_other : answers.industry,
+        operational_areas: answers.operational_areas || [],
         user_role: answers.user_role,
         technical_capability: answers.technical_capability,
         team_comfort_level: answers.team_comfort_level,

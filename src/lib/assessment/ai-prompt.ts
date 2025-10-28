@@ -171,6 +171,7 @@ CRITICAL GUIDELINES:
 13. **Change Management Frameworks**: MUST recommend 2-3 different frameworks (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's) based on company context. Use web search to find current best practices and resources for each framework
 14. **UX Focus**: Include UX-specific recommendations if design questions were answered
 15. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons researched via web search
+16. **Operational Areas**: When operational areas are provided, contextualize recommendations throughout ALL sections (quick wins, roadmap, tools, change management) with specific callouts like "For Retail Banking:" or "In Card Payments operations:". Make recommendations area-specific where relevant, while maintaining overall strategic coherence
 
 Return ONLY valid JSON, no markdown or explanation.`;
 
@@ -199,6 +200,7 @@ ${responsesMap.ux_detail ? `- UX Details: "${responsesMap.ux_detail}"` : ''}
 Size: ${assessment.company_size} | Industry: ${assessment.industry} | Role: ${assessment.user_role}
 Technical Capability: ${assessment.technical_capability}
 Team Skills: ${JSON.stringify(assessment.team_comfort_level)}
+${assessment.operational_areas && assessment.operational_areas.length > 0 ? `Operational Areas: ${JSON.stringify(assessment.operational_areas)} - IMPORTANT: Provide area-specific callouts and contextualize recommendations for these areas throughout the assessment` : ''}
 
 EXISTING TOOLS: ${JSON.stringify(assessment.existing_tools)}
 
