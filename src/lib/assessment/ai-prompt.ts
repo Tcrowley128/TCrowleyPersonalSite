@@ -200,7 +200,7 @@ ${responsesMap.ux_detail ? `- UX Details: "${responsesMap.ux_detail}"` : ''}
 Size: ${assessment.company_size} | Industry: ${assessment.industry} | Role: ${assessment.user_role}
 Technical Capability: ${assessment.technical_capability}
 Team Skills: ${JSON.stringify(assessment.team_comfort_level)}
-${assessment.operational_areas && assessment.operational_areas.length > 0 ? `Operational Areas: ${JSON.stringify(assessment.operational_areas)} - IMPORTANT: Provide area-specific callouts and contextualize recommendations for these areas throughout the assessment` : ''}
+${responsesMap.operational_areas && responsesMap.operational_areas.length > 0 ? `Operational Areas: ${JSON.stringify(responsesMap.operational_areas)} - IMPORTANT: Provide area-specific callouts and contextualize recommendations for these areas throughout the assessment` : ''}
 
 EXISTING TOOLS: ${JSON.stringify(assessment.existing_tools)}
 

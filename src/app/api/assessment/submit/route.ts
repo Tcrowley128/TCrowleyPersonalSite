@@ -5,13 +5,18 @@ export async function POST(request: NextRequest) {
   console.log('[Submit] Received POST request to /api/assessment/submit');
   try {
     const body = await request.json();
-    console.log('[Submit] Parsed body:', { hasAssessment: !!body.assessment, hasResponses: !!body.responses });
-    const { assessment, responses } = body;
+    console.log('[Submit] Parsed body keys:', Object.keys(body));
+    console.log('[Submit] Body sample:', JSON.stringify(body).substring(0, 300));
 
-    if (!assessment) {
-      console.error('[Submit] Missing assessment data in request');
+    // The body might be the assessment data directly, or nested under an "assessment" key
+    const assessment = body.assessment || body;
+    const responses = body.responses || [];
+
+    if (!assessment || (!assessment.name && !assessment.company_name)) {
+      console.error('[Submit] Missing required assessment data in request');
+      console.error('[Submit] Available keys:', Object.keys(assessment || {}));
       return NextResponse.json(
-        { error: 'Assessment data is required' },
+        { error: 'Assessment data with name or company name is required' },
         { status: 400 }
       );
     }
@@ -30,20 +35,47 @@ export async function POST(request: NextRequest) {
     // Insert assessment
     const now = new Date().toISOString();
     console.log('[Submit] Inserting assessment into database...');
+
+    // Only include fields that exist in the assessments table schema
+    // All other fields should be in assessment_responses table
+    const validAssessmentFields = [
+      'session_id', 'user_id', 'company_name', 'company_size', 'industry', 'user_role',
+      'technical_capability', 'team_comfort_level', 'existing_tools',
+      'change_readiness_score', 'transformation_approach', 'has_champion',
+      'contact_name', 'email', 'wants_consultation',
+      'status', 'current_step', 'completed_at', 'referrer'
+    ];
+
+    const dataToInsert: any = {
+      ip_address: ipAddress,
+      user_agent: userAgent,
+      created_at: now,
+      updated_at: now,
+      status: 'COMPLETED' // Mark as completed when submitted
+    };
+
+    // Only add fields that exist in the schema
+    for (const field of validAssessmentFields) {
+      if (assessment[field] !== undefined) {
+        dataToInsert[field] = assessment[field];
+      }
+    }
+
+    console.log('[Submit] Data to insert keys:', Object.keys(dataToInsert));
+    console.log('[Submit] Data to insert sample:', JSON.stringify(dataToInsert).substring(0, 500));
+
     const { data: assessmentData, error: assessmentError } = await supabase
       .from('assessments')
-      .insert({
-        ...assessment,
-        ip_address: ipAddress,
-        user_agent: userAgent,
-        created_at: now,
-        updated_at: now
-      })
+      .insert(dataToInsert)
       .select()
       .single();
 
     if (assessmentError) {
-      console.error('[Submit] Error creating assessment:', assessmentError);
+      console.error('[Submit] Error creating assessment:');
+      console.error('[Submit] Error code:', assessmentError.code);
+      console.error('[Submit] Error message:', assessmentError.message);
+      console.error('[Submit] Error details:', assessmentError.details);
+      console.error('[Submit] Error hint:', assessmentError.hint);
       throw assessmentError;
     }
     console.log('[Submit] Assessment created successfully with ID:', assessmentData.id);
