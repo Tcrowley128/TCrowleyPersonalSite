@@ -233,6 +233,7 @@ export default function AssessmentStart() {
                     question={processedQuestion}
                     value={answers[question.key]}
                     onChange={(value) => handleAnswerChange(question.key, value)}
+                    allAnswers={answers}
                   />
                 );
               })}

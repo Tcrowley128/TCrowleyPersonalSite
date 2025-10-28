@@ -92,6 +92,96 @@ export const assessmentSteps: AssessmentStep[] = [
         required: true
       },
       {
+        key: 'operational_areas',
+        type: 'multi-select',
+        question: 'Which operational areas would you like tailored recommendations for?',
+        description: 'Select all that apply. This helps us provide specific insights for each area of your business.',
+        required: false,
+        options: [
+          // Financial Services
+          { value: 'retail_banking', label: 'Retail Banking', industry: 'financial_services' },
+          { value: 'commercial_banking', label: 'Commercial Banking', industry: 'financial_services' },
+          { value: 'loans_lending', label: 'Loans & Lending', industry: 'financial_services' },
+          { value: 'card_payments', label: 'Card Payments & Processing', industry: 'financial_services' },
+          { value: 'wealth_management', label: 'Wealth Management', industry: 'financial_services' },
+          { value: 'investment_banking', label: 'Investment Banking', industry: 'financial_services' },
+          { value: 'compliance_risk', label: 'Compliance & Risk Management', industry: 'financial_services' },
+          { value: 'mortgage', label: 'Mortgage Services', industry: 'financial_services' },
+
+          // Healthcare
+          { value: 'patient_care', label: 'Patient Care & Treatment', industry: 'healthcare' },
+          { value: 'billing_revenue', label: 'Billing & Revenue Cycle', industry: 'healthcare' },
+          { value: 'clinical_ops', label: 'Clinical Operations', industry: 'healthcare' },
+          { value: 'lab_diagnostics', label: 'Lab & Diagnostics', industry: 'healthcare' },
+          { value: 'pharmacy', label: 'Pharmacy Services', industry: 'healthcare' },
+          { value: 'medical_records', label: 'Medical Records & EHR', industry: 'healthcare' },
+          { value: 'scheduling', label: 'Patient Scheduling', industry: 'healthcare' },
+
+          // Manufacturing
+          { value: 'production', label: 'Production & Assembly', industry: 'manufacturing' },
+          { value: 'supply_chain', label: 'Supply Chain Management', industry: 'manufacturing' },
+          { value: 'quality_assurance', label: 'Quality Assurance', industry: 'manufacturing' },
+          { value: 'maintenance', label: 'Equipment Maintenance', industry: 'manufacturing' },
+          { value: 'logistics', label: 'Logistics & Distribution', industry: 'manufacturing' },
+          { value: 'procurement', label: 'Procurement & Sourcing', industry: 'manufacturing' },
+          { value: 'planning', label: 'Production Planning', industry: 'manufacturing' },
+
+          // Retail / E-commerce
+          { value: 'storefront', label: 'Storefront Operations', industry: 'retail' },
+          { value: 'ecommerce', label: 'E-commerce Platform', industry: 'retail' },
+          { value: 'inventory', label: 'Inventory Management', industry: 'retail' },
+          { value: 'customer_service', label: 'Customer Service', industry: 'retail' },
+          { value: 'marketing_retail', label: 'Marketing & Promotions', industry: 'retail' },
+          { value: 'merchandising', label: 'Merchandising', industry: 'retail' },
+          { value: 'fulfillment', label: 'Order Fulfillment', industry: 'retail' },
+
+          // Technology / Software
+          { value: 'product_dev', label: 'Product Development', industry: 'technology' },
+          { value: 'engineering', label: 'Engineering & R&D', industry: 'technology' },
+          { value: 'customer_success', label: 'Customer Success', industry: 'technology' },
+          { value: 'devops', label: 'DevOps & Infrastructure', industry: 'technology' },
+          { value: 'sales_tech', label: 'Sales & Business Development', industry: 'technology' },
+          { value: 'support', label: 'Technical Support', industry: 'technology' },
+
+          // Professional Services
+          { value: 'client_services', label: 'Client Services & Delivery', industry: 'professional_services' },
+          { value: 'consulting', label: 'Consulting & Advisory', industry: 'professional_services' },
+          { value: 'project_mgmt', label: 'Project Management', industry: 'professional_services' },
+          { value: 'accounting', label: 'Accounting & Finance', industry: 'professional_services' },
+          { value: 'legal', label: 'Legal Services', industry: 'professional_services' },
+
+          // Education
+          { value: 'admissions', label: 'Admissions & Enrollment', industry: 'education' },
+          { value: 'student_services', label: 'Student Services', industry: 'education' },
+          { value: 'academic_programs', label: 'Academic Programs', industry: 'education' },
+          { value: 'facilities', label: 'Facilities Management', industry: 'education' },
+          { value: 'research', label: 'Research & Innovation', industry: 'education' },
+
+          // Non-profit
+          { value: 'fundraising', label: 'Fundraising & Development', industry: 'nonprofit' },
+          { value: 'program_delivery', label: 'Program Delivery', industry: 'nonprofit' },
+          { value: 'volunteer_mgmt', label: 'Volunteer Management', industry: 'nonprofit' },
+          { value: 'donor_relations', label: 'Donor Relations', industry: 'nonprofit' },
+          { value: 'advocacy', label: 'Advocacy & Outreach', industry: 'nonprofit' },
+
+          // Government
+          { value: 'public_services', label: 'Public Services', industry: 'government' },
+          { value: 'permits_licensing', label: 'Permits & Licensing', industry: 'government' },
+          { value: 'regulatory', label: 'Regulatory & Compliance', industry: 'government' },
+          { value: 'citizen_engagement', label: 'Citizen Engagement', industry: 'government' },
+          { value: 'infrastructure', label: 'Infrastructure Management', industry: 'government' },
+
+          // Generic/Cross-Industry (shown for all)
+          { value: 'sales', label: 'Sales', description: 'Sales operations and processes' },
+          { value: 'marketing', label: 'Marketing', description: 'Marketing and demand generation' },
+          { value: 'operations', label: 'Operations', description: 'General business operations' },
+          { value: 'finance', label: 'Finance & Accounting', description: 'Financial operations and reporting' },
+          { value: 'hr', label: 'Human Resources', description: 'HR and people operations' },
+          { value: 'it', label: 'IT / Technology', description: 'Technology and infrastructure' },
+          { value: 'customer_service_gen', label: 'Customer Service', description: 'Customer support and service' }
+        ]
+      },
+      {
         key: 'user_role',
         type: 'single-select',
         question: 'What is your role?',

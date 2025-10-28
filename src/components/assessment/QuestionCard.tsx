@@ -9,9 +9,10 @@ interface QuestionCardProps {
   question: Question;
   value: any;
   onChange: (value: any) => void;
+  allAnswers?: Record<string, any>; // For conditional rendering based on other answers
 }
 
-export default function QuestionCard({ question, value, onChange }: QuestionCardProps) {
+export default function QuestionCard({ question, value, onChange, allAnswers }: QuestionCardProps) {
   const [sliderValue, setSliderValue] = useState(value || question.min || 1);
 
   // Initialize slider value on mount if not already set
@@ -211,7 +212,17 @@ export default function QuestionCard({ question, value, onChange }: QuestionCard
         {/* Multi Select */}
         {question.type === 'multi-select' && (
           <div className="space-y-3">
-            {question.options?.map((option) => {
+            {question.options
+              ?.filter((option) => {
+                // Filter operational areas based on selected industry
+                if (question.key === 'operational_areas' && allAnswers?.industry) {
+                  const selectedIndustry = allAnswers.industry;
+                  // Show industry-specific options OR generic options (those without industry field)
+                  return !option.industry || option.industry === selectedIndustry;
+                }
+                return true;
+              })
+              .map((option) => {
               const isSelected = Array.isArray(value) && value.includes(option.value);
               return (
                 <label
