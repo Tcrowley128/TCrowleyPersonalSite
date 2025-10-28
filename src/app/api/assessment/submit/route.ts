@@ -2,17 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
+  console.log('[Submit] Received POST request to /api/assessment/submit');
   try {
     const body = await request.json();
+    console.log('[Submit] Parsed body:', { hasAssessment: !!body.assessment, hasResponses: !!body.responses });
     const { assessment, responses } = body;
 
     if (!assessment) {
+      console.error('[Submit] Missing assessment data in request');
       return NextResponse.json(
         { error: 'Assessment data is required' },
         { status: 400 }
       );
     }
 
+    console.log('[Submit] Creating admin client...');
     const supabase = createAdminClient();
 
     // Get IP address for analytics
@@ -25,6 +29,7 @@ export async function POST(request: NextRequest) {
 
     // Insert assessment
     const now = new Date().toISOString();
+    console.log('[Submit] Inserting assessment into database...');
     const { data: assessmentData, error: assessmentError } = await supabase
       .from('assessments')
       .insert({
@@ -38,9 +43,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (assessmentError) {
-      console.error('Error creating assessment:', assessmentError);
+      console.error('[Submit] Error creating assessment:', assessmentError);
       throw assessmentError;
     }
+    console.log('[Submit] Assessment created successfully with ID:', assessmentData.id);
 
     // Insert responses
     if (responses && responses.length > 0) {
