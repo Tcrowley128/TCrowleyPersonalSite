@@ -285,7 +285,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
                 fieldName="quick_wins"
                 value={win.title}
                 onSave={async (newValue) => {
-                  await onQuickEdit('quick_wins', newValue, `items[${index}].title`);
+                  await onQuickEdit('quick_wins', newValue, `[${index}].title`);
                 }}
                 label="Quick Win Title"
               />
@@ -294,7 +294,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
                   fieldName="quick_wins"
                   value={win.description}
                   onSave={async (newValue) => {
-                    await onQuickEdit('quick_wins', newValue, `items[${index}].description`);
+                    await onQuickEdit('quick_wins', newValue, `[${index}].description`);
                   }}
                   label="Quick Win Description"
                   multiline

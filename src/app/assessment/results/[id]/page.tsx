@@ -457,7 +457,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         if (path) {
           // Handle nested updates starting from the field
           // e.g., field="priority_matrix", path="current_state"
-          // or field="quick_wins", path="items[0].title"
+          // or field="quick_wins", path="[0].title"
           if (!newResults[field]) {
             console.error('Field not found in results:', field);
             return prev;
@@ -468,26 +468,44 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
           for (let i = 0; i < keys.length - 1; i++) {
             const key = keys[i];
-            // Handle array indices like items[0]
-            const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
-            if (arrayMatch) {
-              const arrayKey = arrayMatch[1];
-              const index = parseInt(arrayMatch[2]);
-              current = current[arrayKey][index];
+
+            // Handle array index at the start like "[0]"
+            if (key.startsWith('[')) {
+              const match = key.match(/^\[(\d+)\]$/);
+              if (match) {
+                const index = parseInt(match[1]);
+                current = current[index];
+              }
             } else {
-              current = current[key];
+              // Handle array indices like "items[0]"
+              const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
+              if (arrayMatch) {
+                const arrayKey = arrayMatch[1];
+                const index = parseInt(arrayMatch[2]);
+                current = current[arrayKey][index];
+              } else {
+                current = current[key];
+              }
             }
           }
 
           // Set the final value
           const lastKey = keys[keys.length - 1];
-          const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/);
-          if (arrayMatch) {
-            const arrayKey = arrayMatch[1];
-            const index = parseInt(arrayMatch[2]);
-            current[arrayKey][index] = value;
+          if (lastKey.startsWith('[')) {
+            const match = lastKey.match(/^\[(\d+)\]$/);
+            if (match) {
+              const index = parseInt(match[1]);
+              current[index] = value;
+            }
           } else {
-            current[lastKey] = value;
+            const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/);
+            if (arrayMatch) {
+              const arrayKey = arrayMatch[1];
+              const index = parseInt(arrayMatch[2]);
+              current[arrayKey][index] = value;
+            } else {
+              current[lastKey] = value;
+            }
           }
         } else {
           // Simple field update

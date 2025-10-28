@@ -18,14 +18,23 @@ import {
   Minimize2,
   AlertCircle,
   Plus,
+  Wand2,
+  Info,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { createClient } from '@/lib/supabase/client';
+import ChatUpdateModal from "./ChatUpdateModal";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   created_at?: string;
+  id?: string;
+  metadata?: {
+    hasActionableInsights?: boolean;
+    insights?: any[];
+  };
 }
 
 interface Conversation {
@@ -54,6 +63,10 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
     const [conversationId, setConversationId] = useState<string | null>(null);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [error, setError] = useState("");
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedMessageForUpdate, setSelectedMessageForUpdate] = useState<Message | null>(null);
+    const [skipLoadingHistory, setSkipLoadingHistory] = useState(false);
+    const supabase = createClient();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -78,6 +91,7 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
         setConversationId(null);
         setMessages([]);
         setError("");
+        setSkipLoadingHistory(true); // Don't load old conversation
         setInputMessage(message);
         // Auto-send after a brief delay to allow UI to open
         setTimeout(() => {
@@ -89,9 +103,9 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
       },
     }));
 
-    // Load conversation history when chat opens
+    // Load conversation history when chat opens (unless opening with a pre-filled message)
     useEffect(() => {
-      if (isOpen && conversations.length === 0) {
+      if (isOpen && conversations.length === 0 && !skipLoadingHistory) {
         loadConversationHistory();
       }
     }, [isOpen]);
@@ -118,6 +132,7 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
       setConversationId(null);
       setMessages([]);
       setError("");
+      setSkipLoadingHistory(false); // Allow loading history again for normal chat
       if (inputRef.current) {
         inputRef.current.focus();
       }
@@ -144,6 +159,14 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
       setMessages((prev) => [...prev, newUserMessage]);
       setIsLoading(true);
 
+      // Add empty assistant message that will be populated as we stream
+      const assistantMessageIndex = messages.length + 1;
+      const streamingMessage: Message = {
+        role: "assistant",
+        content: "",
+      };
+      setMessages((prev) => [...prev, streamingMessage]);
+
       try {
         const response = await fetch(`/api/assessment/${assessmentId}/chat`, {
           method: "POST",
@@ -155,23 +178,97 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to send message");
+          throw new Error("Failed to send message");
         }
 
-        const data = await response.json();
+        // Handle streaming response
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let streamedContent = '';
+        let messageId = '';
+        let newConversationId = '';
 
-        // Update conversation ID if it's a new conversation
-        if (data.conversation_id && !conversationId) {
-          setConversationId(data.conversation_id);
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+
+                  if (data.type === 'conversation_id') {
+                    newConversationId = data.conversation_id;
+                    if (!conversationId) {
+                      setConversationId(newConversationId);
+                    }
+                  } else if (data.type === 'text') {
+                    streamedContent += data.text;
+                    // Update the streaming message with accumulated content
+                    setMessages((prev) => {
+                      const updated = [...prev];
+                      updated[assistantMessageIndex] = {
+                        role: "assistant",
+                        content: streamedContent,
+                      };
+                      return updated;
+                    });
+                  } else if (data.type === 'done') {
+                    messageId = data.message_id;
+                    // Update with final message_id
+                    setMessages((prev) => {
+                      const updated = [...prev];
+                      updated[assistantMessageIndex] = {
+                        role: "assistant",
+                        content: streamedContent,
+                        id: messageId,
+                      };
+                      return updated;
+                    });
+                  } else if (data.type === 'error') {
+                    throw new Error(data.error || 'Streaming error');
+                  }
+                } catch (parseError) {
+                  // Ignore JSON parse errors for incomplete chunks
+                }
+              }
+            }
+          }
         }
 
-        // Add assistant message
-        const assistantMessage: Message = {
-          role: "assistant",
-          content: data.message,
-        };
-        setMessages((prev) => [...prev, assistantMessage]);
+        // Wait a moment for insight detection to complete in the background
+        console.log('[AssessmentChat] Waiting for insight detection, message_id:', messageId);
+        if (messageId) {
+          // Poll for insights in the message metadata
+          setTimeout(async () => {
+            try {
+              const { data: messages } = await supabase
+                .from('conversation_messages')
+                .select('metadata')
+                .eq('id', messageId)
+                .single();
+
+              if (messages?.metadata?.hasActionableInsights) {
+                console.log('[AssessmentChat] Insights detected!', messages.metadata.insights);
+                // Update the message with insights
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[assistantMessageIndex] = {
+                    ...updated[assistantMessageIndex],
+                    metadata: messages.metadata,
+                  };
+                  return updated;
+                });
+              }
+            } catch (error) {
+              console.error('[AssessmentChat] Error fetching insights:', error);
+            }
+          }, 3000); // Wait 3 seconds for insight detection
+        }
 
         // Reload conversation list to update with new/updated conversation
         loadConversationHistory();
@@ -179,8 +276,123 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
         console.error("Error sending message:", err);
         setError(err instanceof Error ? err.message : "Failed to send message");
 
-        // Remove the optimistically added user message if there was an error
-        setMessages((prev) => prev.slice(0, -1));
+        // Remove the optimistically added messages if there was an error
+        setMessages((prev) => prev.slice(0, -2));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const detectInsights = async (messageId: string, messageContent: string) => {
+      console.log('[AssessmentChat] Detecting insights for message:', messageId);
+      try {
+        const response = await fetch(
+          `/api/assessment/${assessmentId}/chat/detect-insights`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messageId,
+              messageContent,
+              conversationId,
+            }),
+          }
+        );
+
+        console.log('[AssessmentChat] Detect insights response status:', response.status);
+
+        if (response.ok) {
+          const insights = await response.json();
+          console.log('[AssessmentChat] Insights detected:', insights);
+
+          if (insights.hasActionableInsights && insights.insights.length > 0) {
+            console.log('[AssessmentChat] Updating message with insights:', insights.insights.length);
+            // Update the message with insights metadata
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === messageId
+                  ? {
+                      ...msg,
+                      metadata: {
+                        hasActionableInsights: true,
+                        insights: insights.insights,
+                      },
+                    }
+                  : msg
+              )
+            );
+          } else {
+            console.log('[AssessmentChat] No actionable insights found');
+          }
+        } else {
+          console.error('[AssessmentChat] Detect insights failed:', response.statusText);
+        }
+      } catch (error) {
+        console.error("[AssessmentChat] Error detecting insights:", error);
+        // Silently fail - don't disrupt user experience
+      }
+    };
+
+    const handleApplyToResults = (message: Message) => {
+      setSelectedMessageForUpdate(message);
+      setShowUpdateModal(true);
+    };
+
+    const handleManualReview = async (message: Message) => {
+      if (!message.id) {
+        setError("Cannot review message without ID");
+        return;
+      }
+
+      setIsLoading(true);
+      try {
+        // Call detect-insights API to analyze the message
+        const response = await fetch(
+          `/api/assessment/${assessmentId}/chat/detect-insights`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messageId: message.id,
+              messageContent: message.content,
+              conversationId,
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to analyze message for insights");
+        }
+
+        const insights = await response.json();
+
+        if (insights.hasActionableInsights && insights.insights.length > 0) {
+          // Update message with insights and show modal
+          const updatedMessage = {
+            ...message,
+            metadata: {
+              hasActionableInsights: true,
+              insights: insights.insights,
+            },
+          };
+
+          // Update messages state
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === message.id ? updatedMessage : msg
+            )
+          );
+
+          // Show modal with insights
+          setSelectedMessageForUpdate(updatedMessage);
+          setShowUpdateModal(true);
+        } else {
+          setError("No actionable changes detected in this message");
+          setTimeout(() => setError(""), 3000);
+        }
+      } catch (err) {
+        console.error("Error analyzing message:", err);
+        setError(err instanceof Error ? err.message : "Failed to analyze message");
       } finally {
         setIsLoading(false);
       }
@@ -413,11 +625,43 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
                                     {msg.content}
                                   </p>
                                 ) : (
-                                  <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-p:break-words prose-li:break-words prose-code:break-words">
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                      {msg.content}
-                                    </ReactMarkdown>
-                                  </div>
+                                  <>
+                                    <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5 prose-p:break-words prose-li:break-words prose-code:break-words">
+                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {msg.content}
+                                      </ReactMarkdown>
+                                    </div>
+                                    {msg.id && msg.content && (
+                                      <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
+                                        {msg.metadata?.hasActionableInsights ? (
+                                          <button
+                                            onClick={() => handleApplyToResults(msg)}
+                                            className="flex items-center gap-2 text-xs font-medium text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
+                                          >
+                                            <Wand2 className="w-3.5 h-3.5" />
+                                            Apply to Results ({msg.metadata.insights?.length} update{msg.metadata.insights?.length !== 1 ? 's' : ''} detected)
+                                          </button>
+                                        ) : (
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              onClick={() => handleManualReview(msg)}
+                                              className="flex items-center gap-2 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                                            >
+                                              <Wand2 className="w-3.5 h-3.5" />
+                                              Review for Changes
+                                            </button>
+                                            <div className="group relative">
+                                              <Info className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 cursor-help" />
+                                              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg z-10">
+                                                AI will analyze this response for actionable changes to your assessment (quick wins, timelines, recommendations, etc.)
+                                                <div className="absolute bottom-0 left-4 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900 dark:bg-gray-700"></div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </>
                                 )}
                               </div>
                             </div>
@@ -483,6 +727,25 @@ const AssessmentChat = forwardRef<AssessmentChatHandle, AssessmentChatProps>(
             </>
           )}
         </AnimatePresence>
+
+        {/* Update Modal */}
+        {selectedMessageForUpdate && (
+          <ChatUpdateModal
+            isOpen={showUpdateModal}
+            onClose={() => {
+              setShowUpdateModal(false);
+              setSelectedMessageForUpdate(null);
+            }}
+            insights={selectedMessageForUpdate.metadata?.insights || []}
+            assessmentId={assessmentId}
+            messageId={selectedMessageForUpdate.id || ''}
+            conversationId={conversationId || ''}
+            onSuccess={() => {
+              // Optionally reload the page or update UI
+              window.location.reload();
+            }}
+          />
+        )}
       </>
     );
   },

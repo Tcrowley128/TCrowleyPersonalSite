@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // PATCH /api/assessment/[id]/results
 // Update specific fields in assessment results (for quick edits without full regeneration)
@@ -8,11 +8,13 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { id: assessmentId } = await params;
     const body = await request.json();
 
     const { field, value, path } = body; // path is for nested JSONB updates
+
+    console.log('[Quick Edit] Received:', { field, value, path });
 
     if (!field) {
       return NextResponse.json(
@@ -127,32 +129,52 @@ export async function PATCH(
 
 // Helper function to set nested values in objects
 function setNestedValue(obj: any, path: string, value: any): any {
-  const keys = path.split('.');
   const newObj = JSON.parse(JSON.stringify(obj)); // Deep clone
 
+  // Handle paths like "[0].title" or "items[0].title" or just "title"
+  const pathParts = path.split('.');
   let current = newObj;
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
 
-    // Handle array indices like items[0]
-    const arrayMatch = key.match(/^(.+)\[(\d+)\]$/);
-    if (arrayMatch) {
-      const arrayKey = arrayMatch[1];
-      const index = parseInt(arrayMatch[2]);
-      current = current[arrayKey][index];
+  for (let i = 0; i < pathParts.length - 1; i++) {
+    const part = pathParts[i];
+
+    // Handle array index at the start like "[0]"
+    if (part.startsWith('[')) {
+      const match = part.match(/^\[(\d+)\]$/);
+      if (match) {
+        const index = parseInt(match[1]);
+        current = current[index];
+      }
     } else {
-      current = current[key];
+      // Handle array indices like "items[0]"
+      const arrayMatch = part.match(/^(.+)\[(\d+)\]$/);
+      if (arrayMatch) {
+        const arrayKey = arrayMatch[1];
+        const index = parseInt(arrayMatch[2]);
+        current = current[arrayKey][index];
+      } else {
+        current = current[part];
+      }
     }
   }
 
-  const lastKey = keys[keys.length - 1];
-  const arrayMatch = lastKey.match(/^(.+)\[(\d+)\]$/);
-  if (arrayMatch) {
-    const arrayKey = arrayMatch[1];
-    const index = parseInt(arrayMatch[2]);
-    current[arrayKey][index] = value;
+  // Set the final value
+  const lastPart = pathParts[pathParts.length - 1];
+  if (lastPart.startsWith('[')) {
+    const match = lastPart.match(/^\[(\d+)\]$/);
+    if (match) {
+      const index = parseInt(match[1]);
+      current[index] = value;
+    }
   } else {
-    current[lastKey] = value;
+    const arrayMatch = lastPart.match(/^(.+)\[(\d+)\]$/);
+    if (arrayMatch) {
+      const arrayKey = arrayMatch[1];
+      const index = parseInt(arrayMatch[2]);
+      current[arrayKey][index] = value;
+    } else {
+      current[lastPart] = value;
+    }
   }
 
   return newObj;

@@ -112,8 +112,8 @@ export async function POST(
       content: message
     });
 
-    // Call Claude API
-    const response = await anthropic.messages.create({
+    // Call Claude API with streaming
+    const stream = await anthropic.messages.stream({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,
       temperature: 0.7,
@@ -121,30 +121,78 @@ export async function POST(
       messages: claudeMessages
     });
 
-    const assistantMessage = response.content[0].type === 'text'
-      ? response.content[0].text
-      : '';
+    // Create a readable stream for the response
+    const encoder = new TextEncoder();
+    let fullMessage = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
 
-    // Save assistant response with token usage
-    await supabase
-      .from('conversation_messages')
-      .insert({
-        conversation_id: currentConversationId,
-        role: 'assistant',
-        content: assistantMessage,
-        input_tokens: response.usage.input_tokens,
-        output_tokens: response.usage.output_tokens,
-        model_version: 'claude-sonnet-4-20250514'
-      });
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Send conversation_id first
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'conversation_id', conversation_id: currentConversationId })}\n\n`));
 
-    return NextResponse.json({
-      success: true,
-      message: assistantMessage,
-      conversation_id: currentConversationId,
-      usage: {
-        input_tokens: response.usage.input_tokens,
-        output_tokens: response.usage.output_tokens
+          // Stream text deltas
+          for await (const chunk of stream) {
+            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+              const text = chunk.delta.text;
+              fullMessage += text;
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'text', text })}\n\n`));
+            } else if (chunk.type === 'message_start') {
+              inputTokens = chunk.message.usage.input_tokens;
+            } else if (chunk.type === 'message_delta') {
+              outputTokens = chunk.usage.output_tokens;
+            }
+          }
+
+          // Save the complete message to database
+          const { data: savedMessage, error: saveError } = await supabase
+            .from('conversation_messages')
+            .insert({
+              conversation_id: currentConversationId,
+              role: 'assistant',
+              content: fullMessage,
+              input_tokens: inputTokens,
+              output_tokens: outputTokens,
+              model_version: 'claude-sonnet-4-20250514'
+            })
+            .select()
+            .single();
+
+          if (saveError || !savedMessage) {
+            console.error('Error saving assistant message:', saveError);
+          }
+
+          // Detect insights in the background (don't wait for it)
+          if (savedMessage?.id) {
+            detectInsights(assessment_id, savedMessage.id, fullMessage, currentConversationId).catch(err => {
+              console.error('[Chat] Error detecting insights:', err);
+            });
+          }
+
+          // Send final message with message_id
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+            type: 'done',
+            message_id: savedMessage?.id,
+            usage: { input_tokens: inputTokens, output_tokens: outputTokens }
+          })}\n\n`));
+
+          controller.close();
+        } catch (error) {
+          console.error('Streaming error:', error);
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: 'Streaming failed' })}\n\n`));
+          controller.close();
+        }
       }
+    });
+
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
 
   } catch (error) {
@@ -280,4 +328,111 @@ AVAILABLE DATA STRUCTURE:
 You have access to: maturity_assessment (with sub_categories for each pillar), quick_wins, tier1_citizen_led, tier2_hybrid, tier3_technical, existing_tool_opportunities, roadmap (30/60/90 days), change_management_plan, success_metrics, long_term_vision.
 
 Reference specific recommendations by name when answering questions. Be specific and cite details from their actual assessment.`;
+}
+
+async function detectInsights(assessmentId: string, messageId: string, messageContent: string, conversationId: string) {
+  console.log('[Chat - Detect Insights] Analyzing message for insights...');
+
+  const apiKey = process.env.AI_API_KEY || process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    console.error('[Chat - Detect Insights] No API key found');
+    return;
+  }
+
+  const anthropic = new Anthropic({ apiKey });
+  const supabase = createAdminClient();
+
+  try {
+    // Get assessment results for context
+    const { data: results } = await supabase
+      .from('assessment_results')
+      .select('*')
+      .eq('assessment_id', assessmentId)
+      .single();
+
+    if (!results) {
+      console.error('[Chat - Detect Insights] Assessment results not found');
+      return;
+    }
+
+    // Use AI to detect actionable insights
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [{
+        role: 'user',
+        content: `Analyze this AI assistant message and detect if it contains actionable insights that could update the user's assessment results.
+
+Message:
+${messageContent}
+
+Current Assessment Context:
+${JSON.stringify(results, null, 2)}
+
+Identify:
+1. Does this message suggest changes to tool recommendations, timelines, quick wins, roadmap items, priorities, or implementation details?
+2. What specific updates are suggested? Look for:
+   - New or modified quick win titles, descriptions, timelines, or priorities
+   - Tool recommendation changes (add/remove/modify tools)
+   - Timeline adjustments (estimated hours, completion dates)
+   - Roadmap modifications (phases, deliverables, milestones)
+   - Priority changes (reordering, importance shifts)
+3. What's the reason/context for each update?
+
+IMPORTANT:
+- Even if discussing existing content, if the message provides improvements, clarifications, or modifications, treat it as actionable.
+- For quick wins, look for enhanced descriptions, additional context, or refined implementation steps that could improve the existing content.
+- Set confidence to 0.8+ if the message provides specific, implementable changes.
+
+Return a JSON response with this structure:
+{
+  "hasActionableInsights": boolean,
+  "insights": [
+    {
+      "type": "tool_recommendation" | "timeline" | "quick_win" | "roadmap" | "priority",
+      "summary": "Brief summary of the insight",
+      "suggestedUpdate": {
+        "sectionPath": "path.to.field (e.g., 'quick_wins[0].description' or 'tier1_citizen_led[0].name')",
+        "currentValue": "...",
+        "suggestedValue": "...",
+        "reason": "Why this change is suggested"
+      },
+      "confidence": 0.0-1.0
+    }
+  ]
+}
+
+Only include insights with high confidence (>0.7) that are specific and actionable.`,
+      }],
+    });
+
+    const aiContent = response.content[0];
+    if (aiContent.type === 'text') {
+      // Extract JSON from AI response
+      const jsonMatch = aiContent.text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        const insights = JSON.parse(jsonMatch[0]);
+
+        // Store insights in message metadata
+        if (insights.hasActionableInsights && insights.insights.length > 0) {
+          await supabase
+            .from('conversation_messages')
+            .update({
+              metadata: {
+                hasActionableInsights: true,
+                insights: insights.insights,
+                analyzedAt: new Date().toISOString(),
+              },
+            })
+            .eq('id', messageId);
+
+          console.log('[Chat - Detect Insights] Found', insights.insights.length, 'actionable insights');
+        } else {
+          console.log('[Chat - Detect Insights] No actionable insights found');
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[Chat - Detect Insights] Error:', error);
+  }
 }
