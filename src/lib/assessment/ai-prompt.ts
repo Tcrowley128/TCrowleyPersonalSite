@@ -101,7 +101,11 @@ Generate VALID JSON with this EXACT structure:
     "pilot_approach": "Overall philosophy and strategy for piloting transformation initiatives",
     "pilot_recommendations": [{"focus_area": "", "scope": "", "duration": "", "success_criteria": [""]}],
     "tools": [{"name": "", "description": "", "cost": "", "url": "real URL", "use_case": ""}],
-    "recommended_frameworks": [{"name": "Kotter|ADKAR|Prosci", "description": "", "why_recommended": "", "getting_started": "", "resources": [{"title": "", "url": "real URL", "type": ""}]}]
+    "recommended_frameworks": [
+      {"name": "Framework 1 (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's, or other)", "description": "", "why_recommended": "", "getting_started": "", "resources": [{"title": "", "url": "real URL", "type": ""}]},
+      {"name": "Framework 2", "description": "", "why_recommended": "", "getting_started": "", "resources": [{"title": "", "url": "real URL", "type": ""}]},
+      {"name": "Framework 3 (optional)", "description": "", "why_recommended": "", "getting_started": "", "resources": [{"title": "", "url": "real URL", "type": ""}]}
+    ]
   },
   "project_tracking": {
     "recommended_approach": "",
@@ -157,9 +161,10 @@ CRITICAL GUIDELINES:
 8. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
 9. **Training Resources**: Only official docs (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
 10. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
-11. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools
-12. **UX Focus**: Include UX-specific recommendations if design questions were answered
-13. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons
+11. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools | 2-3 change management frameworks
+12. **Change Management Frameworks**: MUST recommend 2-3 different frameworks (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's) based on company context. Provide variety and explain why each framework fits their situation
+13. **UX Focus**: Include UX-specific recommendations if design questions were answered
+14. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons
 
 Return ONLY valid JSON, no markdown or explanation.`;
 
