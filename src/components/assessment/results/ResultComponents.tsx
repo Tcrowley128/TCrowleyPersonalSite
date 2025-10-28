@@ -394,13 +394,27 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
         {win.steps && win.steps.length > 0 && (
           <div>
             <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Steps:</p>
-            <ol className="list-decimal list-inside space-y-0.5">
-              {win.steps.map((step: string, i: number) => (
-                <li key={i} className="text-xs text-gray-600 dark:text-gray-400 break-words">
-                  {step}
-                </li>
-              ))}
-            </ol>
+            {onQuickEdit && isEditing ? (
+              <QuickResultEditor
+                fieldName="quick_wins"
+                value={Array.isArray(win.steps) ? win.steps.join('\n') : win.steps}
+                onSave={async (newValue) => {
+                  // Convert multiline text back to array
+                  const stepsArray = newValue.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+                  await onQuickEdit('quick_wins', stepsArray, `[${index}].steps`);
+                }}
+                label="Steps (one per line)"
+                multiline
+              />
+            ) : (
+              <ol className="list-decimal list-inside space-y-0.5">
+                {win.steps.map((step: string, i: number) => (
+                  <li key={i} className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         )}
 
