@@ -7,9 +7,17 @@ interface ProgressBarProps {
   currentStep: number;
   totalSteps: number;
   stepTitles: string[];
+  onStepClick?: (step: number) => void;
+  stepCompletionCounts?: { [key: number]: { answered: number; total: number } };
 }
 
-export default function ProgressBar({ currentStep, totalSteps, stepTitles }: ProgressBarProps) {
+export default function ProgressBar({
+  currentStep,
+  totalSteps,
+  stepTitles,
+  onStepClick,
+  stepCompletionCounts
+}: ProgressBarProps) {
   const progress = (currentStep / totalSteps) * 100;
 
   return (
@@ -32,6 +40,9 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
           const isCurrent = stepNumber === currentStep;
           const isUpcoming = stepNumber > currentStep;
 
+          const canClick = onStepClick && (isCompleted || isCurrent);
+          const completionInfo = stepCompletionCounts?.[stepNumber];
+
           return (
             <div
               key={stepNumber}
@@ -48,13 +59,17 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
                     ? '#3b82f6'
                     : '#e5e7eb'
                 }}
+                onClick={() => canClick && onStepClick(stepNumber)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 ${
                   isCompleted
                     ? 'bg-green-600'
                     : isCurrent
                     ? 'bg-blue-600'
                     : 'bg-gray-300 dark:bg-gray-600'
+                } ${
+                  canClick ? 'cursor-pointer hover:scale-110 transition-transform' : ''
                 }`}
+                title={completionInfo ? `${completionInfo.answered}/${completionInfo.total} questions answered` : undefined}
               >
                 {isCompleted ? (
                   <CheckCircle className="text-white" size={20} />
@@ -69,18 +84,25 @@ export default function ProgressBar({ currentStep, totalSteps, stepTitles }: Pro
                 )}
               </motion.div>
 
-              {/* Title */}
-              <span
-                className={`text-xs text-center hidden sm:block leading-relaxed px-1 ${
-                  isCurrent
-                    ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                    : isCompleted
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-gray-500 dark:text-gray-400'
-                }`}
-              >
-                {title}
-              </span>
+              {/* Title with completion info */}
+              <div className="flex flex-col items-center">
+                <span
+                  className={`text-xs text-center hidden sm:block leading-relaxed px-1 ${
+                    isCurrent
+                      ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                      : isCompleted
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-gray-500 dark:text-gray-400'
+                  }`}
+                >
+                  {title}
+                </span>
+                {completionInfo && (isCurrent || !isCompleted) && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
+                    {completionInfo.answered}/{completionInfo.total}
+                  </span>
+                )}
+              </div>
             </div>
           );
         })}

@@ -80,6 +80,42 @@ export default function AssessmentStart() {
   const totalSteps = assessmentSteps.length;
   const isLastStep = currentStep === totalSteps;
 
+  // Calculate step completion counts
+  const getStepCompletionCounts = () => {
+    const counts: { [key: number]: { answered: number; total: number } } = {};
+
+    assessmentSteps.forEach(step => {
+      const requiredQuestions = step.questions.filter(q => {
+        // Skip industry_other if industry is not 'other'
+        if (q.key === 'industry_other' && answers.industry !== 'other') {
+          return false;
+        }
+        // Skip erp_system_other if 'other' not selected in erp_system
+        if (q.key === 'erp_system_other') {
+          return Array.isArray(answers.erp_system) && answers.erp_system.includes('other');
+        }
+        return q.required;
+      });
+
+      const answeredQuestions = requiredQuestions.filter(q => {
+        const answer = answers[q.key];
+        if (q.type === 'multi-select') {
+          return Array.isArray(answer) && answer.length > 0;
+        }
+        return answer !== undefined && answer !== '' && answer !== null;
+      });
+
+      counts[step.id] = {
+        answered: answeredQuestions.length,
+        total: requiredQuestions.length
+      };
+    });
+
+    return counts;
+  };
+
+  const stepCompletionCounts = getStepCompletionCounts();
+
   // Check if current step is complete
   const isStepComplete = () => {
     if (!currentStepData) return false;
@@ -138,6 +174,14 @@ export default function AssessmentStart() {
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleStepClick = (step: number) => {
+    // Only allow navigating to current or completed steps
+    if (step <= currentStep) {
+      setCurrentStep(step);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -237,6 +281,8 @@ export default function AssessmentStart() {
           currentStep={currentStep}
           totalSteps={totalSteps}
           stepTitles={stepTitles}
+          onStepClick={handleStepClick}
+          stepCompletionCounts={stepCompletionCounts}
         />
 
         {/* Step Header */}

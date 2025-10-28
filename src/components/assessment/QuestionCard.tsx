@@ -14,6 +14,19 @@ interface QuestionCardProps {
 }
 
 export default function QuestionCard({ question, value, onChange, allAnswers }: QuestionCardProps) {
+  // Check if this question is answered
+  const isAnswered = () => {
+    if (question.type === 'multi-select' || question.type === 'ranking') {
+      return Array.isArray(value) && value.length > 0;
+    }
+    if (question.type === 'slider') {
+      return value !== undefined && value !== null;
+    }
+    return value !== undefined && value !== '' && value !== null;
+  };
+
+  const answered = isAnswered();
+  const showValidation = question.required;
   const [sliderValue, setSliderValue] = useState(value || question.min || 1);
 
   // Initialize slider value on mount if not already set
@@ -139,15 +152,33 @@ export default function QuestionCard({ question, value, onChange, allAnswers }: 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-slate-700"
+      className={`bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border-2 transition-colors ${
+        showValidation && answered
+          ? 'border-green-500 dark:border-green-600'
+          : 'border-gray-200 dark:border-slate-700'
+      }`}
       role="group"
       aria-labelledby={`question-${question.key}`}
     >
-      {/* Question Text */}
-      <h3 id={`question-${question.key}`} className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-        {renderTextWithTooltips(question.question)}
-        {question.required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
-      </h3>
+      {/* Question Text with Completion Indicator */}
+      <div className="flex items-start justify-between gap-3 mb-2">
+        <h3 id={`question-${question.key}`} className="text-xl font-semibold text-gray-900 dark:text-white flex-1">
+          {renderTextWithTooltips(question.question)}
+          {question.required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+        </h3>
+        {showValidation && answered && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="flex-shrink-0 bg-green-100 dark:bg-green-900/30 rounded-full p-1"
+            title="Question answered"
+          >
+            <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </motion.div>
+        )}
+      </div>
 
       {/* Description */}
       {question.description && (
