@@ -539,8 +539,9 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    const opportunityDesc = 'Leverage existing technology ecosystem to create citizen-led solutions that directly address your top pain points:';
-    slide5.addText(truncateText(opportunityDesc, 180), {
+    // Use EXACT text from assessment results database (priority_matrix.key_opportunity)
+    const exactKeyOpportunity = results.priority_matrix?.key_opportunity || 'Leverage existing technology ecosystem to create citizen-led solutions that directly address your top pain points';
+    slide5.addText(truncateText(exactKeyOpportunity, 220), {
       x: 0.5, y: 1.4, w: 9, h: 0.8,
       fontSize: 13, color: COLORS.white,
       fontFace: 'Arial',
@@ -603,10 +604,13 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    slide6.addText('30-Day Power Platform Pilot', {
+    // Use EXACT text from assessment results database (priority_matrix.recommended_starting_point)
+    const exactStartingPoint = results.priority_matrix?.recommended_starting_point || '30-Day Power Platform Pilot';
+    slide6.addText(truncateText(exactStartingPoint, 150), {
       x: 0.5, y: 1.2, w: 9, h: 0.5,
       fontSize: 20, bold: true, color: COLORS.accent,
-      fontFace: 'Arial'
+      fontFace: 'Arial',
+      wrap: true
     });
 
     // Left column - Launch details
@@ -616,8 +620,11 @@ export async function GET(
       fontFace: 'Arial'
     });
 
-    const launchFocus = 'Centralized information hub using SharePoint with Power BI dashboards';
-    slide6.addText(truncateText(launchFocus, 120), {
+    // If the starting point is detailed enough, extract launch focus from it, otherwise use default
+    const launchFocus = exactStartingPoint.length > 50
+      ? truncateText(exactStartingPoint, 120)
+      : 'Centralized information hub using SharePoint with Power BI dashboards';
+    slide6.addText(launchFocus, {
       x: 0.5, y: 2.5, w: 4, h: 0.9,
       fontSize: 11, color: COLORS.textLight,
       fontFace: 'Arial',
