@@ -17,13 +17,64 @@ export default function AssessmentStart() {
   const [assessmentId, setAssessmentId] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>('');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Initialize session
+  // Initialize session and load saved progress
   useEffect(() => {
     const sid = sessionStorage.getItem('assessment_session_id') || uuidv4();
     sessionStorage.setItem('assessment_session_id', sid);
     setSessionId(sid);
+
+    // Load saved progress from localStorage
+    const savedProgress = localStorage.getItem(`assessment_progress_${sid}`);
+    if (savedProgress) {
+      try {
+        const { answers: savedAnswers, step } = JSON.parse(savedProgress);
+        setAnswers(savedAnswers);
+        setCurrentStep(step);
+        setLastSaved(new Date());
+      } catch (err) {
+        console.error('Failed to load saved progress:', err);
+      }
+    }
   }, []);
+
+  // Auto-save progress every 30 seconds
+  useEffect(() => {
+    if (!sessionId || Object.keys(answers).length === 0) return;
+
+    const saveProgress = () => {
+      try {
+        const progressData = {
+          answers,
+          step: currentStep,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(`assessment_progress_${sessionId}`, JSON.stringify(progressData));
+        setLastSaved(new Date());
+        setIsSaving(false);
+      } catch (err) {
+        console.error('Failed to save progress:', err);
+      }
+    };
+
+    // Save immediately on change (debounced)
+    setIsSaving(true);
+    const debounceTimeout = setTimeout(() => {
+      saveProgress();
+    }, 2000);
+
+    // Also save every 30 seconds
+    const autoSaveInterval = setInterval(() => {
+      saveProgress();
+    }, 30000);
+
+    return () => {
+      clearTimeout(debounceTimeout);
+      clearInterval(autoSaveInterval);
+    };
+  }, [answers, currentStep, sessionId]);
 
   const currentStepData = assessmentSteps.find(s => s.id === currentStep);
   const totalSteps = assessmentSteps.length;
@@ -157,6 +208,11 @@ export default function AssessmentStart() {
       }
 
       const data = await response.json();
+
+      // Clear saved progress on successful submission
+      if (sessionId) {
+        localStorage.removeItem(`assessment_progress_${sessionId}`);
+      }
 
       // Redirect to results page
       router.push(`/assessment/results/${data.assessment_id}`);
@@ -295,9 +351,26 @@ export default function AssessmentStart() {
           </button>
         </div>
 
-        {/* Progress Text */}
-        <div className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-          Step {currentStep} of {totalSteps} • {Math.round((currentStep / totalSteps) * 100)}% Complete
+        {/* Progress Text and Auto-Save Indicator */}
+        <div className="text-center mt-6 space-y-2">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Step {currentStep} of {totalSteps} • {Math.round((currentStep / totalSteps) * 100)}% Complete
+          </div>
+          {lastSaved && (
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+              {isSaving ? (
+                <>
+                  <Loader2 className="animate-spin" size={12} />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Check size={12} className="text-green-600" />
+                  <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Question } from '@/lib/assessment/questions';
 import { useState, useEffect } from 'react';
 import Tooltip from './Tooltip';
+import SearchableMultiSelect from './SearchableMultiSelect';
 
 interface QuestionCardProps {
   question: Question;
@@ -210,51 +211,70 @@ export default function QuestionCard({ question, value, onChange, allAnswers }: 
         )}
 
         {/* Multi Select */}
-        {question.type === 'multi-select' && (
-          <div className="space-y-3">
-            {question.options
-              ?.filter((option) => {
-                // Filter operational areas based on selected industry
-                if (question.key === 'operational_areas' && allAnswers?.industry) {
-                  const selectedIndustry = allAnswers.industry;
-                  // Show industry-specific options OR generic options (those without industry field)
-                  return !option.industry || option.industry === selectedIndustry;
-                }
-                return true;
-              })
-              .map((option) => {
-              const isSelected = Array.isArray(value) && value.includes(option.value);
-              return (
-                <label
-                  key={option.value}
-                  className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                    isSelected
-                      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    value={option.value}
-                    checked={isSelected}
-                    onChange={() => handleMultiSelectChange(option.value)}
-                    className="mt-1 mr-3 text-blue-600 focus:ring-blue-500 rounded"
-                  />
-                  <div className="flex-1">
-                    <span className="font-medium text-gray-900 dark:text-white">
-                      {option.label}
-                    </span>
-                    {option.description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        {option.description}
-                      </p>
-                    )}
-                  </div>
-                </label>
-              );
-            })}
-          </div>
-        )}
+        {question.type === 'multi-select' && (() => {
+          // Filter options based on conditions (e.g., industry filtering)
+          const filteredOptions = question.options?.filter((option) => {
+            // Filter operational areas based on selected industry
+            if (question.key === 'operational_areas' && allAnswers?.industry) {
+              const selectedIndustry = allAnswers.industry;
+              // Show industry-specific options OR generic options (those without industry field)
+              return !option.industry || option.industry === selectedIndustry;
+            }
+            return true;
+          }) || [];
+
+          // Use searchable dropdown if 10+ options, otherwise use regular checkboxes
+          const useSearchable = filteredOptions.length >= 10;
+
+          if (useSearchable) {
+            return (
+              <SearchableMultiSelect
+                options={filteredOptions}
+                value={Array.isArray(value) ? value : []}
+                onChange={onChange}
+                placeholder="Select options..."
+                searchPlaceholder="Search options..."
+              />
+            );
+          }
+
+          // Regular checkbox list for fewer options
+          return (
+            <div className="space-y-3">
+              {filteredOptions.map((option) => {
+                const isSelected = Array.isArray(value) && value.includes(option.value);
+                return (
+                  <label
+                    key={option.value}
+                    className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      isSelected
+                        ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      value={option.value}
+                      checked={isSelected}
+                      onChange={() => handleMultiSelectChange(option.value)}
+                      className="mt-1 mr-3 text-blue-600 focus:ring-blue-500 rounded"
+                    />
+                    <div className="flex-1">
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {option.label}
+                      </span>
+                      {option.description && (
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {option.description}
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Slider */}
         {question.type === 'slider' && (
