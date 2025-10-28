@@ -564,13 +564,22 @@ YOU MUST EXTRACT AND USE ALL OF THIS DETAILED INFORMATION. Do not generate gener
 
 export async function generatePresentationContentEnhanced(
   assessmentData: AssessmentData,
-  resultsData: any
+  resultsData: any,
+  responses: any[] = []
 ): Promise<SlideContent> {
   try {
     console.log('[Content Generator] Starting enhanced content generation with web search...');
 
     const industry = assessmentData.industry || 'Technology';
     const companyName = assessmentData.company_name;
+
+    // Build responses map to extract operational areas
+    const responsesMap = responses.reduce((acc, r) => {
+      acc[r.question_key] = r.answer_value;
+      return acc;
+    }, {} as Record<string, any>);
+
+    const operationalAreas = responsesMap.operational_areas || [];
 
     // Use Claude's extended thinking model which has web search capabilities
     const message = await anthropic.messages.create({
@@ -590,6 +599,7 @@ export async function generatePresentationContentEnhanced(
 Company: ${companyName}
 Industry: ${industry}
 Assessment Date: ${new Date(assessmentData.created_at).toLocaleDateString()}
+${operationalAreas.length > 0 ? `Operational Areas: ${JSON.stringify(operationalAreas)} - IMPORTANT: Contextualize recommendations and examples specifically for these operational areas throughout the presentation` : ''}
 
 **MATURITY SCORES:**
 Overall: ${resultsData.maturity_assessment?.overall_score || 2}/5

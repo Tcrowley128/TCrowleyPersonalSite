@@ -98,10 +98,16 @@ export async function GET(
 
     const results = resultsArray[0];
 
+    // Fetch assessment responses to include operational areas
+    const { data: responses } = await supabase
+      .from('assessment_responses')
+      .select('*')
+      .eq('assessment_id', id);
+
     console.log('[PPTX Export] Generating content with Claude API (with web search)...');
 
     // Generate presentation content using Claude API with web search
-    const slideContent = await generatePresentationContentEnhanced(assessment, results);
+    const slideContent = await generatePresentationContentEnhanced(assessment, results, responses || []);
 
     console.log('[PPTX Export] Content generated with industry insights');
     console.log('[PPTX Export] Fetching images for presentation...');
