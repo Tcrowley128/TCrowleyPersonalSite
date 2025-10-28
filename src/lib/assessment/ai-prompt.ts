@@ -152,19 +152,25 @@ CRITICAL GUIDELINES:
    - Sentence 2: "Current gaps in [specific areas] limit [specific business impact]."
    - Sentence 3: "Strategic investments in [specific solutions] could accelerate the organization to a [target score]+ maturity level within [timeframe]."
 
-2. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns. For industry_benchmarks field, use web search to find real, current statistics and trends
-3. **NO HTML**: Never include HTML tags, <cite>, </cite>, or any markup in the industry_benchmarks field. Plain text only
-4. **Accurate Scoring**: Base sub-category scores on their actual responses and maturity levels. Calculate overall score as average of all 5 pillars
-5. **Real URLs Only**: Use verified URLs (https://trello.com, https://learn.microsoft.com, https://youtube.com/@GoogleWorkspace). Never fake URLs
-6. **Balanced Mix**: Include quick wins (30d), medium goals (60-90d), AND stretch goals (6-12mo)
-7. **All Pillars**: Every pillar (Data, Automation, AI, UX, People) needs ≥1 quick win and ≥2 tools
-8. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
-9. **Training Resources**: Only official docs (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
-10. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
-11. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools | 2-3 change management frameworks
-12. **Change Management Frameworks**: MUST recommend 2-3 different frameworks (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's) based on company context. Provide variety and explain why each framework fits their situation
-13. **UX Focus**: Include UX-specific recommendations if design questions were answered
-14. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons
+2. **Web Search Usage**: You have access to web search (15 uses). Use it strategically throughout ALL sections to ensure current, accurate information:
+   - **Best Practices**: Search for current industry-specific best practices for each pillar (Data, Automation, AI, UX, People)
+   - **Tool Recommendations**: Verify current tool URLs, features, pricing, and availability for tier1/tier2/tier3 tools
+   - **Change Management Frameworks**: Research latest approaches and resources for recommended frameworks
+   - **Industry Benchmarks**: Find real statistics, trends, and percentile rankings for their specific industry
+   - **Training Resources**: Verify URLs for official documentation, courses, and learning materials
+3. **Industry-Specific**: Tailor ALL recommendations with industry benchmarks, regulations (HIPAA/PCI/ISO), and proven patterns
+4. **NO HTML**: Never include HTML tags, <cite>, </cite>, or any markup in the industry_benchmarks field. Plain text only
+5. **Accurate Scoring**: Base sub-category scores on their actual responses and maturity levels. Calculate overall score as average of all 5 pillars
+6. **Real URLs Only**: Use web search to verify URLs are current and working (https://trello.com, https://learn.microsoft.com, https://youtube.com/@GoogleWorkspace). Never fake URLs
+7. **Balanced Mix**: Include quick wins (30d), medium goals (60-90d), AND stretch goals (6-12mo)
+8. **All Pillars**: Every pillar (Data, Automation, AI, UX, People) needs ≥1 quick win and ≥2 tools
+9. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
+10. **Training Resources**: Use web search to verify official docs exist (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
+11. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
+12. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools | 2-3 change management frameworks
+13. **Change Management Frameworks**: MUST recommend 2-3 different frameworks (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's) based on company context. Use web search to find current best practices and resources for each framework
+14. **UX Focus**: Include UX-specific recommendations if design questions were answered
+15. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons researched via web search
 
 Return ONLY valid JSON, no markdown or explanation.`;
 

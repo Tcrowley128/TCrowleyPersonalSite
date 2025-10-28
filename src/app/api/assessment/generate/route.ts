@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
           tools: [{
             type: "web_search_20250305" as const,
             name: "web_search",
-            max_uses: 5
+            max_uses: 15
           }]
         });
 
