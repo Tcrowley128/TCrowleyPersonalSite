@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import ProgressBar from '@/components/assessment/ProgressBar';
 import QuestionCard from '@/components/assessment/QuestionCard';
+import ReviewAnswersStep from '@/components/assessment/ReviewAnswersStep';
 import { assessmentSteps } from '@/lib/assessment/questions';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -78,7 +79,9 @@ export default function AssessmentStart() {
 
   const currentStepData = assessmentSteps.find(s => s.id === currentStep);
   const totalSteps = assessmentSteps.length;
+  const totalStepsWithReview = totalSteps + 1; // Add review step
   const isLastStep = currentStep === totalSteps;
+  const isReviewStep = currentStep === totalStepsWithReview;
 
   // Calculate step completion counts
   const getStepCompletionCounts = () => {
@@ -146,6 +149,12 @@ export default function AssessmentStart() {
   };
 
   const handleNext = () => {
+    // If on review step, submit
+    if (isReviewStep) {
+      handleSubmit();
+      return;
+    }
+
     if (!isStepComplete()) {
       setError('Please answer all required questions before continuing.');
       // Scroll to the first unanswered question
@@ -163,12 +172,9 @@ export default function AssessmentStart() {
       return;
     }
 
-    if (isLastStep) {
-      handleSubmit();
-    } else {
-      setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Move to next step (or review step if this was the last question step)
+    setCurrentStep(prev => prev + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePrevious = () => {
@@ -267,11 +273,12 @@ export default function AssessmentStart() {
     }
   };
 
-  if (!currentStepData) {
+  // Allow review step even if currentStepData is undefined
+  if (!currentStepData && !isReviewStep) {
     return <div>Loading...</div>;
   }
 
-  const stepTitles = assessmentSteps.map(s => s.title);
+  const stepTitles = [...assessmentSteps.map(s => s.title), 'Review'];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12">
@@ -279,31 +286,41 @@ export default function AssessmentStart() {
         {/* Progress Bar */}
         <ProgressBar
           currentStep={currentStep}
-          totalSteps={totalSteps}
+          totalSteps={totalStepsWithReview}
           stepTitles={stepTitles}
           onStepClick={handleStepClick}
           stepCompletionCounts={stepCompletionCounts}
         />
 
-        {/* Step Header */}
-        <motion.div
-          key={`header-${currentStep}`}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {currentStepData.title}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {currentStepData.subtitle}
-          </p>
-        </motion.div>
+        {/* Review Step */}
+        {isReviewStep ? (
+          <ReviewAnswersStep
+            answers={answers}
+            onEdit={(stepId) => setCurrentStep(stepId)}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        ) : (
+          <>
+            {/* Step Header */}
+            <motion.div
+              key={`header-${currentStep}`}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-8"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                {currentStepData?.title}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {currentStepData?.subtitle}
+              </p>
+            </motion.div>
 
-        {/* Questions */}
-        <div className="space-y-6 mb-8">
-          <AnimatePresence mode="wait">
-            {currentStepData.questions
+            {/* Questions */}
+            <div className="space-y-6 mb-8">
+              <AnimatePresence mode="wait">
+                {currentStepData?.questions
               .filter(question => {
                 // Only show industry_other field when industry is 'other'
                 if (question.key === 'industry_other') {
@@ -340,84 +357,81 @@ export default function AssessmentStart() {
                   />
                 );
               })}
-          </AnimatePresence>
-        </div>
+              </AnimatePresence>
+            </div>
 
-        {/* Error Message */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-4"
-          >
-            {error}
-          </motion.div>
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-              currentStep === 1
-                ? 'opacity-50 cursor-not-allowed bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
-                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-gray-600'
-            }`}
-          >
-            <ArrowLeft size={20} />
-            Previous
-          </button>
-
-          <button
-            onClick={handleNext}
-            disabled={isSubmitting}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-              isSubmitting
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:shadow-lg'
-            } bg-gradient-to-r from-blue-600 to-purple-600 text-white`}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin" size={20} />
-                Generating Results...
-              </>
-            ) : isLastStep ? (
-              <>
-                <Check size={20} />
-                Submit & Get Results
-              </>
-            ) : (
-              <>
-                Next
-                <ArrowRight size={20} />
-              </>
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg mb-4"
+              >
+                {error}
+              </motion.div>
             )}
-          </button>
-        </div>
 
-        {/* Progress Text and Auto-Save Indicator */}
-        <div className="text-center mt-6 space-y-2">
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            Step {currentStep} of {totalSteps} • {Math.round((currentStep / totalSteps) * 100)}% Complete
-          </div>
-          {lastSaved && (
-            <div className="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500">
-              {isSaving ? (
-                <>
-                  <Loader2 className="animate-spin" size={12} />
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Check size={12} className="text-green-600" />
-                  <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span>
-                </>
+            {/* Navigation Buttons */}
+            <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  currentStep === 1
+                    ? 'opacity-50 cursor-not-allowed bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-gray-600'
+                }`}
+              >
+                <ArrowLeft size={20} />
+                Previous
+              </button>
+
+              <button
+                onClick={handleNext}
+                disabled={isSubmitting}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                  isSubmitting
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:shadow-lg'
+                } bg-gradient-to-r from-blue-600 to-purple-600 text-white`}
+              >
+                {isLastStep ? (
+                  <>
+                    Review Answers
+                    <ArrowRight size={20} />
+                  </>
+                ) : (
+                  <>
+                    Next
+                    <ArrowRight size={20} />
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Progress Text and Auto-Save Indicator */}
+            <div className="text-center mt-6 space-y-2">
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Step {currentStep} of {totalSteps} • {Math.round((currentStep / totalSteps) * 100)}% Complete
+              </div>
+              {lastSaved && (
+                <div className="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-500">
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="animate-spin" size={12} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check size={12} className="text-green-600" />
+                      <span>Draft saved {new Date(lastSaved).toLocaleTimeString()}</span>
+                    </>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
