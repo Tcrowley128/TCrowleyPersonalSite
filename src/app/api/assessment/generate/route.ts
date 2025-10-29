@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
       try {
         message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 32000,
+          max_tokens: 24000,
           temperature: 0.7,
           system: promptParts.systemInstructions,
           messages: [
