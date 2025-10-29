@@ -382,7 +382,7 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filtered60Days && filtered60Days.length > 0 ? (
             (showAll60Days ? filtered60Days : filtered60Days.slice(0, 4)).map((win: any, index: number) => (
-              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} accentColor="blue" />
             ))
           ) : (
             <p className="text-gray-500 col-span-2">No 60-day solutions available {selectedArea !== 'all' ? 'for this operational area' : ''}</p>
@@ -432,7 +432,7 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filtered90Days && filtered90Days.length > 0 ? (
             (showAll90Days ? filtered90Days : filtered90Days.slice(0, 4)).map((win: any, index: number) => (
-              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} accentColor="purple" />
             ))
           ) : (
             <p className="text-gray-500 col-span-2">No 90+ day solutions available {selectedArea !== 'all' ? 'for this operational area' : ''}</p>
@@ -465,7 +465,7 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
   );
 }
 
-function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
+function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow' }: any) {
   const [isEditing, setIsEditing] = useState(false);
   const difficultyColors: Record<'LOW' | 'MEDIUM' | 'HIGH', string> = {
     LOW: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -473,11 +473,31 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit }: any) {
     HIGH: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
   };
 
+  const accentColors: Record<string, { border: string; badge: string; text: string }> = {
+    yellow: {
+      border: 'border-yellow-500',
+      badge: 'bg-yellow-100 dark:bg-yellow-900/30',
+      text: 'text-yellow-600 dark:text-yellow-400'
+    },
+    blue: {
+      border: 'border-blue-500',
+      badge: 'bg-blue-100 dark:bg-blue-900/30',
+      text: 'text-blue-600 dark:text-blue-400'
+    },
+    purple: {
+      border: 'border-purple-500',
+      badge: 'bg-purple-100 dark:bg-purple-900/30',
+      text: 'text-purple-600 dark:text-purple-400'
+    }
+  };
+
+  const colors = accentColors[accentColor] || accentColors.yellow;
+
   return (
-    <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-yellow-500 rounded-lg p-4">
+    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${colors.border} rounded-lg p-4`}>
       {/* Header with number, title/description, and action buttons */}
       <div className="flex items-start gap-3 mb-3">
-        <div className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
+        <div className={`${colors.badge} ${colors.text} w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5`}>
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
