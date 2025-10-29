@@ -189,10 +189,13 @@ export async function POST(request: NextRequest) {
     let message;
     let retryCount = 0;
     const maxRetries = 3;
+    let responseText = '';
+    let finalMessage: any = null;
 
     while (retryCount <= maxRetries) {
       try {
-        message = await anthropic.messages.create({
+        // Use streaming to handle long responses
+        const stream = await anthropic.messages.stream({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 24000,
           temperature: 0.7,
@@ -210,12 +213,23 @@ export async function POST(request: NextRequest) {
           }]
         });
 
+        // Collect response text from stream
+        responseText = '';
+        for await (const chunk of stream) {
+          if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+            responseText += chunk.delta.text;
+          }
+        }
+
+        // Get final message with usage stats
+        finalMessage = await stream.finalMessage();
+
         // Log cache usage
         console.log('Cache usage:', {
-          cache_creation_input_tokens: (message.usage as any).cache_creation_input_tokens || 0,
-          cache_read_input_tokens: (message.usage as any).cache_read_input_tokens || 0,
-          input_tokens: message.usage.input_tokens,
-          output_tokens: message.usage.output_tokens
+          cache_creation_input_tokens: (finalMessage.usage as any).cache_creation_input_tokens || 0,
+          cache_read_input_tokens: (finalMessage.usage as any).cache_read_input_tokens || 0,
+          input_tokens: finalMessage.usage.input_tokens,
+          output_tokens: finalMessage.usage.output_tokens
         });
 
         break; // Success, exit retry loop
@@ -232,23 +246,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!message) {
+    if (!finalMessage) {
       throw new Error('Failed to generate assessment after multiple retries');
     }
 
     // Check if response was truncated
-    if (message.stop_reason === 'max_tokens') {
+    if (finalMessage.stop_reason === 'max_tokens') {
       console.error('Claude response was truncated due to max_tokens limit');
-      console.error('Token usage:', message.usage);
+      console.error('Token usage:', finalMessage.usage);
       throw new Error('Assessment generation was incomplete due to length. Please try regenerating again.');
-    }
-
-    // Extract the JSON response (handle tool use in content array)
-    let responseText = '';
-    for (const block of message.content) {
-      if (block.type === 'text') {
-        responseText += block.text;
-      }
     }
 
     // Removed debug logging
@@ -267,8 +273,8 @@ export async function POST(request: NextRequest) {
     } catch (parseError) {
       console.error('Failed to parse Claude response:', parseError);
       console.error('Response length:', responseText.length);
-      console.error('Stop reason:', message.stop_reason);
-      console.error('Token usage:', message.usage);
+      console.error('Stop reason:', finalMessage.stop_reason);
+      console.error('Token usage:', finalMessage.usage);
       throw new Error('Failed to parse AI response. The response may have been truncated.');
     }
 
@@ -335,8 +341,8 @@ export async function POST(request: NextRequest) {
       // Metadata
       generated_by: 'claude',
       model_version: 'claude-sonnet-4-20250514',
-      prompt_tokens: message.usage.input_tokens,
-      completion_tokens: message.usage.output_tokens,
+      prompt_tokens: finalMessage.usage.input_tokens,
+      completion_tokens: finalMessage.usage.output_tokens,
       generated_at: new Date().toISOString()
     };
 
