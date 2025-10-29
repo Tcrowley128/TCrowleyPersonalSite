@@ -253,10 +253,10 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
   const filterByArea = (solutions: any[]) => {
     if (selectedArea === 'all') return solutions;
     return solutions.filter((win: any) => {
-      const areaLabel = areaLabels[selectedArea];
-      const searchText = [win.title, win.description].join(' ').toLowerCase();
+      const areaLabel = areaLabels[selectedArea] || '';
+      const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
       return searchText.includes(areaLabel.toLowerCase()) ||
-             searchText.includes(selectedArea.toLowerCase().replace(/_/g, ' '));
+             searchText.includes((selectedArea || '').toLowerCase().replace(/_/g, ' '));
     });
   };
 
@@ -297,10 +297,10 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
                 <option value="all">All Solutions ({quickWins?.length || 0})</option>
                 {safeOperationalAreas.map((area: string) => {
                   const count = quickWins?.filter((win: any) => {
-                    const areaLabel = areaLabels[area];
-                    const searchText = [win.title, win.description].join(' ').toLowerCase();
+                    const areaLabel = areaLabels[area] || '';
+                    const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
                     return searchText.includes(areaLabel.toLowerCase()) ||
-                           searchText.includes(area.toLowerCase().replace(/_/g, ' '));
+                           searchText.includes((area || '').toLowerCase().replace(/_/g, ' '));
                   }).length || 0;
                   return (
                     <option key={area} value={area}>
@@ -2655,11 +2655,11 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
 
       // Create keyword list with both full phrase and individual significant words
       const allKeywords = [
-        areaLabel.toLowerCase(), // Full label
-        areaValue.toLowerCase().replace(/_/g, ' '), // Full value with spaces
+        (areaLabel || '').toLowerCase(), // Full label
+        (areaValue || '').toLowerCase().replace(/_/g, ' '), // Full value with spaces
         ...significantLabelWords, // Significant label words
         ...significantValueWords  // Significant value words
-      ];
+      ].filter(Boolean); // Remove empty strings
 
       // Remove duplicates
       const uniqueKeywords = [...new Set(allKeywords)];
@@ -2668,8 +2668,8 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
       // 1. If full phrase matches, it's a match
       // 2. If any significant word matches (non-generic), it's a match
       // 3. For multi-word areas, need at least 1 significant word match OR the full phrase
-      const hasFullPhraseMatch = textToSearch.includes(areaLabel.toLowerCase()) ||
-                                 textToSearch.includes(areaValue.toLowerCase().replace(/_/g, ' '));
+      const hasFullPhraseMatch = textToSearch.includes((areaLabel || '').toLowerCase()) ||
+                                 textToSearch.includes((areaValue || '').toLowerCase().replace(/_/g, ' '));
 
       const significantMatches = [
         ...significantLabelWords.filter(word => textToSearch.includes(word)),
