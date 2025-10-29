@@ -267,6 +267,7 @@ export const assessmentSteps: AssessmentStep[] = [
           { value: 'alteryx', label: 'Alteryx or similar data prep tools' },
           { value: 'cognigy', label: 'Cognigy (AI chatbot platform)' },
           { value: 'outsystems', label: 'OutSystems (low-code application platform)' },
+          { value: 'gen_ai_llms', label: 'Gen AI / LLMs (ChatGPT, Claude, Gemini, etc.)' },
           { value: 'none', label: 'None of these' }
         ]
       },
