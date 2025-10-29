@@ -130,18 +130,18 @@ export async function POST(request: NextRequest) {
         results: resultsWithMetadata,
         cached: true,
         regeneration_count: existingResults.regeneration_count || 0,
-        regenerations_remaining: 3 - (existingResults.regeneration_count || 0)
+        regenerations_remaining: 2 - (existingResults.regeneration_count || 0)
       });
     }
 
     // Check regeneration limit
     if (regenerate && existingResults) {
       const currentCount = existingResults.regeneration_count || 0;
-      if (currentCount >= 3) {
+      if (currentCount >= 2) {
         return NextResponse.json(
           {
             error: 'Regeneration limit reached',
-            details: 'You have reached the maximum of 3 regenerations for this assessment.',
+            details: 'You have reached the maximum of 2 regenerations for this assessment.',
             regeneration_count: currentCount
           },
           { status: 403 }
@@ -426,7 +426,7 @@ export async function POST(request: NextRequest) {
       results: resultsWithMetadata,
       cached: false,
       regeneration_count: newRegenerationCount,
-      regenerations_remaining: 3 - newRegenerationCount,
+      regenerations_remaining: 2 - newRegenerationCount,
       email_sent: !regenerate && assessment.email ? true : false,
       usage: {
         input_tokens: message.usage.input_tokens,
