@@ -50,7 +50,7 @@ export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }:
       </div>
 
       {/* Executive Summary - Clean Design */}
-      <div className="bg-white dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
+      <div className="bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Target className="text-blue-600" />
           Executive Summary
