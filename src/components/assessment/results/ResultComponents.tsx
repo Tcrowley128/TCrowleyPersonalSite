@@ -2618,9 +2618,9 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
 
   // Function to extract top 3 recommendations for a specific operational area
   const getTopRecommendationsForArea = (areaValue: string): string[] => {
-    if (!results) return [];
+    if (!results || !areaValue) return [];
 
-    const areaLabel = areaLabels[areaValue] || areaValue;
+    const areaLabel = areaLabels[areaValue] || areaValue || '';
     const recommendations: string[] = [];
 
     // Search through all recommendation types - ensure they're arrays
@@ -2645,8 +2645,8 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
       ].filter(Boolean).join(' ').toLowerCase();
 
       // Create more flexible matching - split area label into individual significant words
-      const areaLabelWords = areaLabel.toLowerCase().split(/[\s&,]+/).filter(w => w.length > 2);
-      const areaValueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
+      const areaLabelWords = (areaLabel || '').toLowerCase().split(/[\s&,]+/).filter(w => w.length > 2);
+      const areaValueWords = (areaValue || '').toLowerCase().split('_').filter(w => w.length > 2);
 
       // Remove common generic words that don't help with matching
       const genericWords = ['services', 'management', 'operations', 'support', 'platform', 'general'];

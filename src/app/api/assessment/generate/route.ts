@@ -424,8 +424,8 @@ export async function POST(request: NextRequest) {
       regenerations_remaining: 2 - newRegenerationCount,
       email_sent: !regenerate && assessment.email ? true : false,
       usage: {
-        input_tokens: message.usage.input_tokens,
-        output_tokens: message.usage.output_tokens
+        input_tokens: finalMessage.usage.input_tokens,
+        output_tokens: finalMessage.usage.output_tokens
       }
     });
 

@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { use } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Loader2, Target, Zap, TrendingUp, Users, Shield,
   Calendar, Download, Mail, RefreshCw, CheckCircle,
   Lightbulb, BarChart3, X, Edit2, MoreVertical,
-  History, FileText, Briefcase
+  History, FileText, Briefcase, Rocket
 } from 'lucide-react';
 import {
   OverviewTab,
@@ -32,6 +33,7 @@ interface ResultsPageProps {
 
 export default function AssessmentResults({ params }: ResultsPageProps) {
   const { id } = use(params);
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [results, setResults] = useState<any>(null);
@@ -53,6 +55,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showMenuTip, setShowMenuTip] = useState(true);
   const [showVersionModal, setShowVersionModal] = useState(false);
+  const [isStartingJourney, setIsStartingJourney] = useState(false);
   const chatRef = useRef<AssessmentChatHandle>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -165,6 +168,34 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate. Please try again.');
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleStartJourney = async () => {
+    setIsStartingJourney(true);
+    setError('');
+
+    try {
+      // Generate projects from assessment recommendations
+      const response = await fetch(`/api/assessment/${id}/generate-projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to start journey');
+      }
+
+      const data = await response.json();
+      console.log(`Created ${data.projects_created} projects from assessment`);
+
+      // Navigate to journey workspace
+      router.push(`/assessment/journey/${id}`);
+    } catch (err) {
+      console.error('Error starting journey:', err);
+      setError(err instanceof Error ? err.message : 'Failed to start journey. Please try again.');
+      setIsStartingJourney(false);
     }
   };
 
@@ -679,6 +710,24 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
               {showActionsMenu && (
                 <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-xl z-50">
                   <div className="py-1">
+                    <button
+                      onClick={() => {
+                        handleStartJourney();
+                        setShowActionsMenu(false);
+                      }}
+                      disabled={isStartingJourney}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 border-b-2 border-blue-200 dark:border-blue-800"
+                    >
+                      <Rocket className={`text-blue-600 ${isStartingJourney ? 'animate-bounce' : ''}`} size={18} />
+                      <div className="flex-1">
+                        <div className="font-semibold text-blue-600 dark:text-blue-400">
+                          {isStartingJourney ? 'Starting Journey...' : 'Start Your Journey'}
+                        </div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                          {isStartingJourney ? 'Creating projects...' : 'Track progress and manage projects'}
+                        </div>
+                      </div>
+                    </button>
                     <button
                       onClick={() => {
                         handleDownloadPDF();
