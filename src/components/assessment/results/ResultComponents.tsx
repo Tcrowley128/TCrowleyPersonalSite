@@ -2619,12 +2619,36 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
       // Create more flexible matching - split area label into individual significant words
       const areaLabelWords = areaLabel.toLowerCase().split(/[\s&,]+/).filter(w => w.length > 2);
       const areaValueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
-      const allKeywords = [...new Set([...areaLabelWords, ...areaValueWords, areaLabel.toLowerCase(), areaValue.toLowerCase().replace(/_/g, ' ')])];
 
-      // Check if any area keyword appears in the text (need at least 2 word matches for multi-word areas, or 1 for single-word)
-      const matchCount = allKeywords.filter(keyword => textToSearch.includes(keyword)).length;
-      const requiresMultipleMatches = areaLabelWords.length > 1;
-      const hasMatch = requiresMultipleMatches ? matchCount >= 2 : matchCount >= 1;
+      // Remove common generic words that don't help with matching
+      const genericWords = ['services', 'management', 'operations', 'support', 'platform', 'general'];
+      const significantLabelWords = areaLabelWords.filter(w => !genericWords.includes(w));
+      const significantValueWords = areaValueWords.filter(w => !genericWords.includes(w));
+
+      // Create keyword list with both full phrase and individual significant words
+      const allKeywords = [
+        areaLabel.toLowerCase(), // Full label
+        areaValue.toLowerCase().replace(/_/g, ' '), // Full value with spaces
+        ...significantLabelWords, // Significant label words
+        ...significantValueWords  // Significant value words
+      ];
+
+      // Remove duplicates
+      const uniqueKeywords = [...new Set(allKeywords)];
+
+      // Smart matching logic:
+      // 1. If full phrase matches, it's a match
+      // 2. If any significant word matches (non-generic), it's a match
+      // 3. For multi-word areas, need at least 1 significant word match OR the full phrase
+      const hasFullPhraseMatch = textToSearch.includes(areaLabel.toLowerCase()) ||
+                                 textToSearch.includes(areaValue.toLowerCase().replace(/_/g, ' '));
+
+      const significantMatches = [
+        ...significantLabelWords.filter(word => textToSearch.includes(word)),
+        ...significantValueWords.filter(word => textToSearch.includes(word))
+      ];
+
+      const hasMatch = hasFullPhraseMatch || significantMatches.length > 0;
 
       if (hasMatch) {
         const recText = item.title || item.tool_name || item.description;

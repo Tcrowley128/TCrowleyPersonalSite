@@ -870,15 +870,22 @@ export async function GET(
     });
 
     // ======================
-    // SLIDE 14: SECTION DIVIDER - Quick Wins
+    // SLIDE 14: SECTION DIVIDER - Solutions (30 Days)
     // ======================
-    addSectionDivider('03', 'Quick Wins', '30-day high-impact actions', 'quick_wins');
+    addSectionDivider('03', '30-Day Solutions', 'Quick wins & immediate impact', 'quick_wins');
 
     // ======================
-    // SLIDES 15-16: QUICK WINS (split into 2 slides, 3 per slide)
+    // SLIDES 15-16: 30-DAY SOLUTIONS (split into 2 slides, 3 per slide)
     // ======================
-    const quickWins = slideContent.quickWins || [];
-    const quickWinsPages = [quickWins.slice(0, 3), quickWins.slice(3, 6)];
+    const allQuickWins = slideContent.quickWins || [];
+
+    // Filter by timeframe
+    const quickWins30Days = allQuickWins.filter((qw: any) =>
+      qw.timeframe === '30_days' || qw.implementation_time === '30_days' ||
+      (!qw.timeframe && !qw.implementation_time)
+    );
+
+    const quickWinsPages = [quickWins30Days.slice(0, 3), quickWins30Days.slice(3, 6)];
 
     quickWinsPages.forEach((pageWins, pageIdx) => {
       if (pageWins.length === 0) return;
@@ -886,7 +893,7 @@ export async function GET(
       const slideQW = pptx.addSlide();
       slideQW.background = { color: COLORS.darkBg };
 
-      slideQW.addText('Quick Wins - 30-Day Action Plan', {
+      slideQW.addText('30-Day Solutions - Immediate Impact', {
         x: 0.5, y: 0.3, w: 9, h: 0.5,
         fontSize: 24, bold: true, color: COLORS.white,
         fontFace: 'Arial'
@@ -950,9 +957,188 @@ export async function GET(
         qwY += 1.4;
       });
 
-      // Add branding to Quick Wins slide
+      // Add branding to 30-day solutions slide
       addBranding(slideQW);
     });
+
+    // ======================
+    // 60-DAY SOLUTIONS SECTION
+    // ======================
+    const quickWins60Days = allQuickWins.filter((qw: any) =>
+      qw.timeframe === '60_days' || qw.implementation_time === '60_days'
+    );
+
+    if (quickWins60Days.length > 0) {
+      // SECTION DIVIDER - 60-Day Solutions
+      addSectionDivider('03B', '60-Day Solutions', 'Medium-term initiatives', 'quick_wins');
+
+      // 60-DAY SOLUTIONS CONTENT SLIDES (split into 2 slides, 3 per slide)
+      const quickWins60Pages = [quickWins60Days.slice(0, 3), quickWins60Days.slice(3, 6)];
+
+      quickWins60Pages.forEach((pageWins, pageIdx) => {
+        if (pageWins.length === 0) return;
+
+        const slideQW60 = pptx.addSlide();
+        slideQW60.background = { color: COLORS.darkBg };
+
+        slideQW60.addText('60-Day Solutions - Building Momentum', {
+          x: 0.5, y: 0.3, w: 9, h: 0.5,
+          fontSize: 24, bold: true, color: COLORS.white,
+          fontFace: 'Arial'
+        });
+
+        let qwY = 1.1;
+        pageWins.forEach((qw: any, idx: number) => {
+          const winNumber = (pageIdx * 3) + idx + 1;
+
+          // Card background
+          slideQW60.addShape(pptx.ShapeType.roundRect, {
+            x: 0.5, y: qwY, w: 9, h: 1.2,
+            fill: { color: COLORS.cardBg },
+            line: { color: COLORS.accent, width: 1 }
+          });
+
+          // Number badge
+          addNumberBadge(slideQW60, 0.7, qwY + 0.15, winNumber.toString(), 0.5);
+
+          // Title with truncation
+          const qwTitle = qw.title || qw.name || `60-Day Solution ${winNumber}`;
+          slideQW60.addText(truncateText(qwTitle, 70), {
+            x: 1.4, y: qwY + 0.15, w: 7.6, h: 0.35,
+            fontSize: 15, bold: true, color: COLORS.white,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          // Timeline, Effort, Impact badges
+          const badges = [
+            { label: `Timeline: ${qw.timeline || '4-8 weeks'}`, x: 1.4 },
+            { label: `Effort: ${qw.effort || 'MEDIUM'}`, x: 3.2 },
+            { label: `Impact: ${qw.impact || 'HIGH'}`, x: 4.5 }
+          ];
+
+          badges.forEach(badge => {
+            slideQW60.addText(badge.label, {
+              x: badge.x, y: qwY + 0.55, w: 1.5, h: 0.2,
+              fontSize: 8, bold: true, color: COLORS.accent,
+              fontFace: 'Arial'
+            });
+          });
+
+          // Description with truncation
+          slideQW60.addText(truncateText(qw.description || qw.action || '', 120), {
+            x: 1.4, y: qwY + 0.75, w: 7.6, h: 0.25,
+            fontSize: 10, color: COLORS.white,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          // Expected Outcome with truncation
+          const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
+          slideQW60.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
+            x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
+            fontSize: 9, color: COLORS.textLight, italic: true,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          qwY += 1.4;
+        });
+
+        // Add branding to 60-day solutions slide
+        addBranding(slideQW60);
+      });
+    }
+
+    // ======================
+    // 90+ DAY SOLUTIONS SECTION
+    // ======================
+    const quickWins90Days = allQuickWins.filter((qw: any) =>
+      qw.timeframe === '90_days' || qw.implementation_time === '90_days' ||
+      qw.timeframe === '90_plus_days' || qw.implementation_time === '90_plus_days'
+    );
+
+    if (quickWins90Days.length > 0) {
+      // SECTION DIVIDER - 90+ Day Solutions
+      addSectionDivider('03C', '90+ Day Solutions', 'Long-term transformation', 'quick_wins');
+
+      // 90+ DAY SOLUTIONS CONTENT SLIDES (split into 2 slides, 3 per slide)
+      const quickWins90Pages = [quickWins90Days.slice(0, 3), quickWins90Days.slice(3, 6)];
+
+      quickWins90Pages.forEach((pageWins, pageIdx) => {
+        if (pageWins.length === 0) return;
+
+        const slideQW90 = pptx.addSlide();
+        slideQW90.background = { color: COLORS.darkBg };
+
+        slideQW90.addText('90+ Day Solutions - Strategic Transformation', {
+          x: 0.5, y: 0.3, w: 9, h: 0.5,
+          fontSize: 24, bold: true, color: COLORS.white,
+          fontFace: 'Arial'
+        });
+
+        let qwY = 1.1;
+        pageWins.forEach((qw: any, idx: number) => {
+          const winNumber = (pageIdx * 3) + idx + 1;
+
+          // Card background
+          slideQW90.addShape(pptx.ShapeType.roundRect, {
+            x: 0.5, y: qwY, w: 9, h: 1.2,
+            fill: { color: COLORS.cardBg },
+            line: { color: COLORS.accent, width: 1 }
+          });
+
+          // Number badge
+          addNumberBadge(slideQW90, 0.7, qwY + 0.15, winNumber.toString(), 0.5);
+
+          // Title with truncation
+          const qwTitle = qw.title || qw.name || `90+ Day Solution ${winNumber}`;
+          slideQW90.addText(truncateText(qwTitle, 70), {
+            x: 1.4, y: qwY + 0.15, w: 7.6, h: 0.35,
+            fontSize: 15, bold: true, color: COLORS.white,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          // Timeline, Effort, Impact badges
+          const badges = [
+            { label: `Timeline: ${qw.timeline || '3+ months'}`, x: 1.4 },
+            { label: `Effort: ${qw.effort || 'MEDIUM'}`, x: 3.2 },
+            { label: `Impact: ${qw.impact || 'HIGH'}`, x: 4.5 }
+          ];
+
+          badges.forEach(badge => {
+            slideQW90.addText(badge.label, {
+              x: badge.x, y: qwY + 0.55, w: 1.5, h: 0.2,
+              fontSize: 8, bold: true, color: COLORS.accent,
+              fontFace: 'Arial'
+            });
+          });
+
+          // Description with truncation
+          slideQW90.addText(truncateText(qw.description || qw.action || '', 120), {
+            x: 1.4, y: qwY + 0.75, w: 7.6, h: 0.25,
+            fontSize: 10, color: COLORS.white,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          // Expected Outcome with truncation
+          const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
+          slideQW90.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
+            x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
+            fontSize: 9, color: COLORS.textLight, italic: true,
+            fontFace: 'Arial',
+            wrap: true
+          });
+
+          qwY += 1.4;
+        });
+
+        // Add branding to 90+ day solutions slide
+        addBranding(slideQW90);
+      });
+    }
 
     // ======================
     // SLIDE 17: SECTION DIVIDER - 90-Day Implementation Plan
