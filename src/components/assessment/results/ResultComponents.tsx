@@ -181,7 +181,7 @@ function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 text-center">
+    <div className="bg-gray-100 dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600 text-center">
       <div className={`w-12 h-12 rounded-lg ${colors[color]} flex items-center justify-center mb-3 mx-auto`}>
         <Icon size={24} />
       </div>
