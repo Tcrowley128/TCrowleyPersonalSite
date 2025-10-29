@@ -7,7 +7,7 @@ import {
   Loader2, Target, Zap, TrendingUp, Users, Shield,
   Calendar, Download, Mail, RefreshCw, CheckCircle,
   Lightbulb, BarChart3, X, Edit2, MoreVertical,
-  History, FileText
+  History, FileText, Briefcase
 } from 'lucide-react';
 import {
   OverviewTab,
@@ -16,7 +16,8 @@ import {
   RoadmapTab,
   MaturityTab,
   LongTermVisionTab,
-  ChangeManagementTab
+  ChangeManagementTab,
+  OperationalAreasTab
 } from '@/components/assessment/results/ResultComponents';
 import SnakeGame from '@/components/assessment/SnakeGame';
 import AssessmentChat, { AssessmentChatHandle } from '@/components/assessment/AssessmentChat';
@@ -72,6 +73,13 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
       }
 
       const data = await response.json();
+      console.log('DEBUG - Frontend received from API:', {
+        hasResults: !!data.results,
+        operational_areas: data.results?.operational_areas,
+        operational_areas_type: typeof data.results?.operational_areas,
+        operational_areas_isArray: Array.isArray(data.results?.operational_areas),
+        operational_areas_length: data.results?.operational_areas?.length
+      });
       setResults(data.results);
       setRegenerationCount(data.regeneration_count || 0);
       setRegenerationsRemaining(data.regenerations_remaining ?? 2);
@@ -231,6 +239,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
       // Define all tabs to capture
       const tabsToCapture = [
         { id: 'overview', label: 'Overview' },
+        { id: 'operational-areas', label: 'Operational Focus Areas' },
         { id: 'quick-wins', label: 'Quick Wins' },
         { id: 'recommendations', label: 'Tech Recommendations' },
         { id: 'roadmap', label: 'Roadmap' },
@@ -522,12 +531,13 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Target },
-    { id: 'quick-wins', label: 'Quick Wins', icon: Zap },
-    { id: 'recommendations', label: 'Tech Recommendations', icon: Lightbulb },
+    { id: 'operational-areas', label: 'Focus Areas', icon: Briefcase },
+    { id: 'solutions', label: 'Solutions', icon: Zap },
+    { id: 'recommendations', label: 'Technology', icon: Lightbulb },
     { id: 'roadmap', label: 'Roadmap', icon: Calendar },
-    { id: 'maturity', label: 'Maturity', icon: BarChart3 },
-    { id: 'long-term', label: 'Long-term Vision', icon: TrendingUp },
-    { id: 'change-mgmt', label: 'Change Management', icon: Users }
+    { id: 'maturity', label: 'Maturity Scores', icon: BarChart3 },
+    { id: 'long-term', label: 'Vision', icon: TrendingUp },
+    { id: 'change-mgmt', label: 'Change Mgmt', icon: Users }
   ];
 
   if (isLoading || isGenerating) {
@@ -884,11 +894,21 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                 </TabContent>
               )}
 
-              {activeTab === 'quick-wins' && (
-                <TabContent key="quick-wins">
+              {activeTab === 'operational-areas' && (
+                <TabContent key="operational-areas">
+                  <OperationalAreasTab
+                    operationalAreas={results.operational_areas || []}
+                    results={results}
+                    onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
+                  />
+                </TabContent>
+              )}
+
+              {activeTab === 'solutions' && (
+                <TabContent key="solutions">
                   <QuickWinsTab
                     quickWins={quickWins}
-                    existing={existingOpportunities}
+                    operationalAreas={results.operational_areas || []}
                     onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                     onQuickEdit={handleQuickEdit}
                   />
@@ -901,6 +921,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     tier1={tier1}
                     tier2={tier2}
                     tier3={tier3}
+                    existing={existingOpportunities}
                     onAskAI={(message: string) => chatRef.current?.openWithMessage(message)}
                   />
                 </TabContent>

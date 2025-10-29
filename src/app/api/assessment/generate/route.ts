@@ -89,29 +89,59 @@ export async function POST(request: NextRequest) {
         .eq('id', assessment_id)
         .single();
 
+      // Fetch operational areas from responses
+      const { data: responses } = await supabase
+        .from('assessment_responses')
+        .select('*')
+        .eq('assessment_id', assessment_id);
+
+      const operationalAreasResponse = responses?.find((r: any) => r.question_key === 'operational_areas');
+      let operationalAreas = operationalAreasResponse?.answer_value || [];
+
+      // Handle case where operational_areas is stored as a comma-separated string
+      if (typeof operationalAreas === 'string') {
+        operationalAreas = operationalAreas.split(',').map((area: string) => area.trim()).filter(Boolean);
+      }
+
+      // Ensure it's an array
+      if (!Array.isArray(operationalAreas)) {
+        operationalAreas = [];
+      }
+
+      console.log('DEBUG - Cached results operational areas:', {
+        assessment_id,
+        found: !!operationalAreasResponse,
+        operationalAreas,
+        rawValue: operationalAreasResponse?.answer_value,
+        rawType: typeof operationalAreasResponse?.answer_value,
+        responsesCount: responses?.length
+      });
+
       const resultsWithMetadata = {
         ...existingResults,
         company_name: assessment?.company_name,
         company_size: assessment?.company_size,
-        industry: assessment?.industry
+        industry: assessment?.industry,
+        operational_areas: operationalAreas
       };
 
       return NextResponse.json({
         success: true,
         results: resultsWithMetadata,
         cached: true,
-        regeneration_count: existingResults.regeneration_count || 0
+        regeneration_count: existingResults.regeneration_count || 0,
+        regenerations_remaining: 10 - (existingResults.regeneration_count || 0)
       });
     }
 
-    // Check regeneration limit
+    // Check regeneration limit (temporarily increased to 10 for testing)
     if (regenerate && existingResults) {
       const currentCount = existingResults.regeneration_count || 0;
-      if (currentCount >= 2) {
+      if (currentCount >= 10) {
         return NextResponse.json(
           {
             error: 'Regeneration limit reached',
-            details: 'You have reached the maximum of 2 regenerations for this assessment.',
+            details: 'You have reached the maximum of 10 regenerations for this assessment.',
             regeneration_count: currentCount
           },
           { status: 403 }
@@ -145,6 +175,13 @@ export async function POST(request: NextRequest) {
 
     // Build prompt with caching support
     const promptParts = buildAssessmentPrompt(assessment, responses || []);
+
+    // TEMP DEBUG: Log prompt to verify cache version and operational area requirements
+    console.log('=== PROMPT DEBUG ===');
+    console.log('System instructions preview:', promptParts.systemInstructions[1].text.substring(0, 500));
+    console.log('User message preview:', promptParts.userMessage.substring(0, 300));
+    console.log('Has cache control:', !!promptParts.systemInstructions[1].cache_control);
+    console.log('===================');
 
     // Call Claude API with retry logic for rate limits and prompt caching
     console.log('Calling Claude API for assessment:', assessment_id);
@@ -329,11 +366,33 @@ export async function POST(request: NextRequest) {
     }
 
     // Add assessment metadata to results for frontend/PDF use
+    const operationalAreasResponse = responses?.find((r: any) => r.question_key === 'operational_areas');
+    let operationalAreas = operationalAreasResponse?.answer_value || [];
+
+    // Handle case where operational_areas is stored as a comma-separated string
+    if (typeof operationalAreas === 'string') {
+      operationalAreas = operationalAreas.split(',').map((area: string) => area.trim()).filter(Boolean);
+    }
+
+    // Ensure it's an array
+    if (!Array.isArray(operationalAreas)) {
+      operationalAreas = [];
+    }
+
+    console.log('DEBUG - New results operational areas:', {
+      assessment_id,
+      found: !!operationalAreasResponse,
+      operationalAreas,
+      rawValue: operationalAreasResponse?.answer_value,
+      rawType: typeof operationalAreasResponse?.answer_value
+    });
+
     const resultsWithMetadata = {
       ...savedResults,
       company_name: assessment.company_name,
       company_size: assessment.company_size,
-      industry: assessment.industry
+      industry: assessment.industry,
+      operational_areas: operationalAreas
     };
 
     // Send email automatically on first generation (not regenerations)
@@ -367,7 +426,7 @@ export async function POST(request: NextRequest) {
       results: resultsWithMetadata,
       cached: false,
       regeneration_count: newRegenerationCount,
-      regenerations_remaining: 2 - newRegenerationCount,
+      regenerations_remaining: 10 - newRegenerationCount,
       email_sent: !regenerate && assessment.email ? true : false,
       usage: {
         input_tokens: message.usage.input_tokens,

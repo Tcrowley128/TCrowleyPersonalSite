@@ -194,19 +194,125 @@ function StatCard({ title, value, icon: Icon, color }: StatCardProps) {
 // ============================================================================
 // QUICK WINS TAB
 // ============================================================================
-export function QuickWinsTab({ quickWins, existing, onAskAI, onQuickEdit }: any) {
+export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit }: any) {
+  const [selectedArea, setSelectedArea] = useState<string>('all');
+  const [showAll30Days, setShowAll30Days] = useState<boolean>(false);
+  const [showAll60Days, setShowAll60Days] = useState<boolean>(false);
+  const [showAll90Days, setShowAll90Days] = useState<boolean>(false);
+
+  // Ensure operationalAreas is an array
+  const safeOperationalAreas = Array.isArray(operationalAreas) ? operationalAreas : [];
+
+  // Categorize solutions by timeframe
+  const solutions30Days = quickWins?.filter((win: any) =>
+    win.timeframe === '30_days' || win.implementation_time === '30_days' || (!win.timeframe && !win.implementation_time)
+  ) || [];
+  const solutions60Days = quickWins?.filter((win: any) =>
+    win.timeframe === '60_days' || win.implementation_time === '60_days'
+  ) || [];
+  const solutions90Days = quickWins?.filter((win: any) =>
+    win.timeframe === '90_days' || win.implementation_time === '90_days' || win.timeframe === '90_plus_days' || win.implementation_time === '90_plus_days'
+  ) || [];
+
+  // Map operational area values to labels (same as OperationalAreasTab)
+  const areaLabels: Record<string, string> = {
+    retail_banking: 'Retail Banking', commercial_banking: 'Commercial Banking',
+    loans_lending: 'Loans & Lending', card_payments: 'Card Payments',
+    wealth_management: 'Wealth Management', investment_banking: 'Investment Banking',
+    compliance_risk: 'Compliance & Risk', mortgage: 'Mortgage Services',
+    patient_care: 'Patient Care', billing_revenue: 'Billing & Revenue',
+    clinical_ops: 'Clinical Operations', lab_diagnostics: 'Lab & Diagnostics',
+    pharmacy: 'Pharmacy Services', medical_records: 'Medical Records',
+    scheduling: 'Patient Scheduling', production: 'Production',
+    supply_chain: 'Supply Chain', quality_assurance: 'Quality Assurance',
+    maintenance: 'Maintenance', logistics: 'Logistics',
+    procurement: 'Procurement', planning: 'Production Planning',
+    storefront: 'Storefront', ecommerce: 'E-commerce',
+    inventory: 'Inventory', customer_service: 'Customer Service',
+    marketing_retail: 'Marketing', merchandising: 'Merchandising',
+    fulfillment: 'Order Fulfillment', product_dev: 'Product Development',
+    engineering: 'Engineering', customer_success: 'Customer Success',
+    devops: 'DevOps', sales_tech: 'Sales',
+    support: 'Technical Support', client_services: 'Client Services',
+    consulting: 'Consulting', project_mgmt: 'Project Management',
+    accounting: 'Accounting', legal: 'Legal Services',
+    admissions: 'Admissions', student_services: 'Student Services',
+    academic_programs: 'Academic Programs', facilities: 'Facilities',
+    research: 'Research', fundraising: 'Fundraising',
+    program_delivery: 'Program Delivery', volunteer_mgmt: 'Volunteer Management',
+    donor_relations: 'Donor Relations', advocacy: 'Advocacy',
+    public_services: 'Public Services', permits_licensing: 'Permits & Licensing',
+    regulatory: 'Regulatory', citizen_engagement: 'Citizen Engagement',
+    infrastructure: 'Infrastructure', sales: 'Sales',
+    marketing: 'Marketing', operations: 'Operations',
+    finance: 'Finance', hr: 'Human Resources',
+    it: 'IT / Technology', customer_service_gen: 'Customer Service'
+  };
+
+  // Helper function to filter by operational area
+  const filterByArea = (solutions: any[]) => {
+    if (selectedArea === 'all') return solutions;
+    return solutions.filter((win: any) => {
+      const areaLabel = areaLabels[selectedArea];
+      const searchText = [win.title, win.description].join(' ').toLowerCase();
+      return searchText.includes(areaLabel.toLowerCase()) ||
+             searchText.includes(selectedArea.toLowerCase().replace(/_/g, ' '));
+    });
+  };
+
+  // Filter solutions by operational area for each timeframe
+  const filtered30Days = filterByArea(solutions30Days);
+  const filtered60Days = filterByArea(solutions60Days);
+  const filtered90Days = filterByArea(solutions90Days);
+
+  // Reset show all when filter changes
+  useEffect(() => {
+    setShowAll30Days(false);
+    setShowAll60Days(false);
+    setShowAll90Days(false);
+  }, [selectedArea]);
+
   return (
     <div className="space-y-8">
       {/* Overall Header */}
       <div className="text-center mb-8">
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 inline-flex items-center justify-center gap-2">
           <span className="-mt-0.5">⚡</span>
-          <span>Quick Wins</span>
+          <span>Solutions Timeline</span>
         </h3>
-        <p className="text-gray-600 dark:text-gray-400">Start here for immediate impact with minimal effort</p>
+        <p className="text-gray-600 dark:text-gray-400">Phased approach from quick wins to long-term transformation</p>
       </div>
 
-      {/* Quick Wins Section */}
+      {/* Filter by Operational Area (Global) */}
+      {safeOperationalAreas.length > 0 && (
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            Filter by Area:
+          </label>
+          <select
+            value={selectedArea}
+            onChange={(e) => setSelectedArea(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Solutions ({quickWins?.length || 0})</option>
+            {safeOperationalAreas.map((area: string) => {
+              const count = quickWins?.filter((win: any) => {
+                const areaLabel = areaLabels[area];
+                const searchText = [win.title, win.description].join(' ').toLowerCase();
+                return searchText.includes(areaLabel.toLowerCase()) ||
+                       searchText.includes(area.toLowerCase().replace(/_/g, ' '));
+              }).length || 0;
+              return (
+                <option key={area} value={area}>
+                  {areaLabels[area] || area} ({count})
+                </option>
+              );
+            })}
+          </select>
+        </div>
+      )}
+
+      {/* 30 Days Section */}
       <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
         <div className="mb-6">
           <h4 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
@@ -217,48 +323,144 @@ export function QuickWinsTab({ quickWins, existing, onAskAI, onQuickEdit }: any)
 
         {/* Recap Section */}
         <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-yellow-500 rounded-lg p-4 mb-6">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Recommended Approach:</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Quick Wins:</p>
           <p className="text-sm text-gray-800 dark:text-gray-300">
             These are your highest-priority actions with the best effort-to-impact ratio. Start with one or two that align with your team's current bandwidth and skills. Each quick win builds momentum for larger transformation initiatives.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {quickWins && quickWins.length > 0 ? (
-            quickWins.map((win: any, index: number) => (
+          {filtered30Days && filtered30Days.length > 0 ? (
+            (showAll30Days ? filtered30Days : filtered30Days.slice(0, 4)).map((win: any, index: number) => (
               <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
             ))
           ) : (
-            <p className="text-gray-500">No quick wins available</p>
+            <p className="text-gray-500 col-span-2">No 30-day solutions available {selectedArea !== 'all' ? 'for this operational area' : ''}</p>
           )}
         </div>
+
+        {/* Show More Button */}
+        {filtered30Days && filtered30Days.length > 4 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowAll30Days(!showAll30Days)}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors inline-flex items-center gap-2"
+            >
+              {showAll30Days ? (
+                <>
+                  <ChevronUp size={20} />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={20} />
+                  Show More ({filtered30Days.length - 4} more solutions)
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Existing Tool Opportunities */}
-      {existing && existing.length > 0 && (
-        <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
-          <div className="mb-6">
-            <h4 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
-              <span className="-mt-0.5">💎</span>
-              <span>Hidden Gems You Already Own</span>
-            </h4>
-          </div>
-
-          {/* Recap Section */}
-          <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-emerald-500 rounded-lg p-4 mb-6">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Recommended Approach:</p>
-            <p className="text-sm text-gray-800 dark:text-gray-300">
-              You're already paying for these tools - maximizing their value requires zero new budget. These features often deliver surprising ROI because your team is already familiar with the platform. Start with the capabilities that solve your most pressing pain points.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {existing.map((opp: any, index: number) => (
-              <ExistingToolCard key={index} opportunity={opp} onAskAI={onAskAI} />
-            ))}
-          </div>
+      {/* 60 Days Section */}
+      <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
+        <div className="mb-6">
+          <h4 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
+            <span className="-mt-0.5">📈</span>
+            <span>60 Days to Impact</span>
+          </h4>
         </div>
-      )}
+
+        {/* Recap Section */}
+        <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-blue-500 rounded-lg p-4 mb-6">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Medium-term Solutions:</p>
+          <p className="text-sm text-gray-800 dark:text-gray-300">
+            These initiatives require more planning and coordination but deliver substantial impact. They often involve process changes, team training, or integration work that builds on your quick wins.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {filtered60Days && filtered60Days.length > 0 ? (
+            (showAll60Days ? filtered60Days : filtered60Days.slice(0, 4)).map((win: any, index: number) => (
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
+            ))
+          ) : (
+            <p className="text-gray-500 col-span-2">No 60-day solutions available {selectedArea !== 'all' ? 'for this operational area' : ''}</p>
+          )}
+        </div>
+
+        {/* Show More Button */}
+        {filtered60Days && filtered60Days.length > 4 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowAll60Days(!showAll60Days)}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors inline-flex items-center gap-2"
+            >
+              {showAll60Days ? (
+                <>
+                  <ChevronUp size={20} />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={20} />
+                  Show More ({filtered60Days.length - 4} more solutions)
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 90+ Days Section */}
+      <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
+        <div className="mb-6">
+          <h4 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
+            <span className="-mt-0.5">🚀</span>
+            <span>90+ Days to Impact</span>
+          </h4>
+        </div>
+
+        {/* Recap Section */}
+        <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-purple-500 rounded-lg p-4 mb-6">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Long-term Transformation:</p>
+          <p className="text-sm text-gray-800 dark:text-gray-300">
+            These strategic initiatives deliver transformational impact but require significant investment in planning, change management, and execution. They should be tackled once you've built momentum with quick wins.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {filtered90Days && filtered90Days.length > 0 ? (
+            (showAll90Days ? filtered90Days : filtered90Days.slice(0, 4)).map((win: any, index: number) => (
+              <QuickWinCard key={index} win={win} index={index} onAskAI={onAskAI} onQuickEdit={onQuickEdit} />
+            ))
+          ) : (
+            <p className="text-gray-500 col-span-2">No 90+ day solutions available {selectedArea !== 'all' ? 'for this operational area' : ''}</p>
+          )}
+        </div>
+
+        {/* Show More Button */}
+        {filtered90Days && filtered90Days.length > 4 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setShowAll90Days(!showAll90Days)}
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors inline-flex items-center gap-2"
+            >
+              {showAll90Days ? (
+                <>
+                  <ChevronUp size={20} />
+                  Show Less
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={20} />
+                  Show More ({filtered90Days.length - 4} more solutions)
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -536,7 +738,7 @@ function ExistingToolCard({ opportunity, onAskAI }: any) {
 // ============================================================================
 // RECOMMENDATIONS TAB
 // ============================================================================
-export function RecommendationsTab({ tier1, tier2, tier3, onAskAI }: any) {
+export function RecommendationsTab({ tier1, tier2, tier3, existing, onAskAI }: any) {
   return (
     <div className="space-y-8">
       {/* Overall Header */}
@@ -547,6 +749,32 @@ export function RecommendationsTab({ tier1, tier2, tier3, onAskAI }: any) {
         </h3>
         <p className="text-gray-600 dark:text-gray-400">Curated recommendations organized by implementation complexity</p>
       </div>
+
+      {/* Hidden Gems Section */}
+      {existing && existing.length > 0 && (
+        <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
+          <div className="mb-6">
+            <h4 className="text-xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
+              <span className="-mt-0.5">💎</span>
+              <span>Hidden Gems You Already Own</span>
+            </h4>
+          </div>
+
+          {/* Recap Section */}
+          <div className="bg-gray-100 dark:bg-slate-800 border-l-4 border-emerald-500 rounded-lg p-4 mb-6">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Maximize Existing Tools:</p>
+            <p className="text-sm text-gray-800 dark:text-gray-300">
+              You're already paying for these tools - maximizing their value requires zero new budget. These features often deliver surprising ROI because your team is already familiar with the platform. Start with the capabilities that solve your most pressing pain points.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {existing.map((opp: any, index: number) => (
+              <ExistingToolCard key={index} opportunity={opp} onAskAI={onAskAI} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Tier 1: Citizen-Led */}
       {tier1 && tier1.length > 0 && (
@@ -2263,6 +2491,290 @@ function ProjectTrackingToolCard({ tool }: any) {
               <TrainingResourceLink key={i} resource={resource} />
             ))}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================================
+// OPERATIONAL AREAS TAB
+// ============================================================================
+export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any) {
+  // Ensure operationalAreas is an array
+  const safeOperationalAreas = Array.isArray(operationalAreas) ? operationalAreas : [];
+
+  // DEBUG: Log what we received
+  console.log('OperationalAreasTab received:', {
+    operationalAreas,
+    safeOperationalAreas,
+    isArray: Array.isArray(operationalAreas),
+    type: typeof operationalAreas
+  });
+
+  // Map operational area values to labels
+  const areaLabels: Record<string, string> = {
+    // Financial Services
+    retail_banking: 'Retail Banking',
+    commercial_banking: 'Commercial Banking',
+    loans_lending: 'Loans & Lending',
+    card_payments: 'Card Payments & Processing',
+    wealth_management: 'Wealth Management',
+    investment_banking: 'Investment Banking',
+    compliance_risk: 'Compliance & Risk Management',
+    mortgage: 'Mortgage Services',
+    // Healthcare
+    patient_care: 'Patient Care & Treatment',
+    billing_revenue: 'Billing & Revenue Cycle',
+    clinical_ops: 'Clinical Operations',
+    lab_diagnostics: 'Lab & Diagnostics',
+    pharmacy: 'Pharmacy Services',
+    medical_records: 'Medical Records & EHR',
+    scheduling: 'Patient Scheduling',
+    // Manufacturing
+    production: 'Production & Assembly',
+    supply_chain: 'Supply Chain Management',
+    quality_assurance: 'Quality Assurance',
+    maintenance: 'Equipment Maintenance',
+    logistics: 'Logistics & Distribution',
+    procurement: 'Procurement & Sourcing',
+    planning: 'Production Planning',
+    // Retail / E-commerce
+    storefront: 'Storefront Operations',
+    ecommerce: 'E-commerce Platform',
+    inventory: 'Inventory Management',
+    customer_service: 'Customer Service',
+    marketing_retail: 'Marketing & Promotions',
+    merchandising: 'Merchandising',
+    fulfillment: 'Order Fulfillment',
+    // Technology / Software
+    product_dev: 'Product Development',
+    engineering: 'Engineering & R&D',
+    customer_success: 'Customer Success',
+    devops: 'DevOps & Infrastructure',
+    sales_tech: 'Sales & Business Development',
+    support: 'Technical Support',
+    // Professional Services
+    client_services: 'Client Services & Delivery',
+    consulting: 'Consulting & Advisory',
+    project_mgmt: 'Project Management',
+    accounting: 'Accounting & Finance',
+    legal: 'Legal Services',
+    // Education
+    admissions: 'Admissions & Enrollment',
+    student_services: 'Student Services',
+    academic_programs: 'Academic Programs',
+    facilities: 'Facilities Management',
+    research: 'Research & Innovation',
+    // Non-profit
+    fundraising: 'Fundraising & Development',
+    program_delivery: 'Program Delivery',
+    volunteer_mgmt: 'Volunteer Management',
+    donor_relations: 'Donor Relations',
+    advocacy: 'Advocacy & Outreach',
+    // Government
+    public_services: 'Public Services',
+    permits_licensing: 'Permits & Licensing',
+    regulatory: 'Regulatory & Compliance',
+    citizen_engagement: 'Citizen Engagement',
+    infrastructure: 'Infrastructure Management',
+    // Generic/Cross-Industry
+    sales: 'Sales',
+    marketing: 'Marketing',
+    operations: 'Operations',
+    finance: 'Finance & Accounting',
+    hr: 'Human Resources',
+    it: 'IT / Technology',
+    customer_service_gen: 'Customer Service'
+  };
+
+  // Function to extract top 3 recommendations for a specific operational area
+  const getTopRecommendationsForArea = (areaValue: string): string[] => {
+    if (!results) return [];
+
+    const areaLabel = areaLabels[areaValue] || areaValue;
+    const recommendations: string[] = [];
+
+    // Search through all recommendation types - ensure they're arrays
+    const searchSources = [
+      ...(Array.isArray(results?.tier1_citizen_led) ? results.tier1_citizen_led : []),
+      ...(Array.isArray(results?.tier2_hybrid) ? results.tier2_hybrid : []),
+      ...(Array.isArray(results?.tier3_technical) ? results.tier3_technical : []),
+      ...(Array.isArray(results?.quick_wins) ? results.quick_wins : [])
+    ];
+
+    // Extract recommendations that mention this area
+    searchSources.forEach((item: any) => {
+      if (!item) return;
+
+      const textToSearch = [
+        item.title,
+        item.description,
+        item.justification,
+        item.tool_name,
+        item.use_case,
+        item.operational_area
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      // Create more flexible matching - split area label into individual significant words
+      const areaLabelWords = areaLabel.toLowerCase().split(/[\s&,]+/).filter(w => w.length > 2);
+      const areaValueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
+      const allKeywords = [...new Set([...areaLabelWords, ...areaValueWords, areaLabel.toLowerCase(), areaValue.toLowerCase().replace(/_/g, ' ')])];
+
+      // Check if any area keyword appears in the text (need at least 2 word matches for multi-word areas, or 1 for single-word)
+      const matchCount = allKeywords.filter(keyword => textToSearch.includes(keyword)).length;
+      const requiresMultipleMatches = areaLabelWords.length > 1;
+      const hasMatch = requiresMultipleMatches ? matchCount >= 2 : matchCount >= 1;
+
+      if (hasMatch) {
+        const recText = item.title || item.tool_name || item.description;
+        if (recText && !recommendations.includes(recText)) {
+          recommendations.push(recText);
+        }
+      }
+    });
+
+    // Return top 3
+    return recommendations.slice(0, 3);
+  };
+
+  if (safeOperationalAreas.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          No Operational Areas Selected
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          You didn't select any specific operational areas during the assessment.
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          All recommendations in this roadmap are tailored to your overall business needs.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
+          <Target className="text-blue-600" />
+          Your Operational Focus Areas
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400">
+          Recommendations throughout this roadmap are contextualized for these specific areas
+        </p>
+      </div>
+
+      {/* Info Banner */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <AlertCircle className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" size={20} />
+          <div className="flex-1">
+            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+              Area-Specific Recommendations
+            </h4>
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              Throughout your Solutions, Tech Recommendations, Roadmap, and Change Management sections,
+              you'll find specific callouts and recommendations tailored to these operational areas.
+              Look for mentions like "For {areaLabels[operationalAreas[0]]}" or "In {areaLabels[operationalAreas[0]]} operations."
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Operational Areas Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {safeOperationalAreas.map((areaValue: string, index: number) => {
+          const topRecommendations = getTopRecommendationsForArea(areaValue);
+
+          return (
+            <div
+              key={index}
+              className="bg-white dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-6 hover:border-blue-500 transition-colors"
+            >
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {areaLabels[areaValue] || areaValue}
+                    </h4>
+                  </div>
+                </div>
+                <CheckCircle2 className="text-green-600 dark:text-green-400 flex-shrink-0" size={24} />
+              </div>
+
+              {topRecommendations.length > 0 ? (
+                <div className="space-y-2 mb-4">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Top Recommendations:
+                  </p>
+                  <ul className="space-y-2">
+                    {topRecommendations.map((rec, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                        <Zap className="text-yellow-600 flex-shrink-0 mt-0.5" size={14} />
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Your recommendations are tailored to address the unique challenges and opportunities in this operational area.
+                </p>
+              )}
+
+              {onAskAI && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                  <AskAIButton
+                    onClick={() => onAskAI(`What are the most impactful digital transformation initiatives specifically for ${areaLabels[areaValue] || areaValue}? What tools and strategies should we prioritize for this area?`)}
+                    label={`Ask about ${areaLabels[areaValue] || areaValue}`}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* How to Use This Information */}
+      <div className="bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-gray-600 rounded-xl p-6">
+        <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+          <Sparkles className="text-purple-600" size={20} />
+          How These Areas Shape Your Roadmap
+        </h4>
+        <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+          <div className="flex items-start gap-2">
+            <Zap className="text-yellow-600 flex-shrink-0 mt-0.5" size={16} />
+            <p><strong>Solutions:</strong> Prioritized based on impact in your selected operational areas</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <Star className="text-blue-600 flex-shrink-0 mt-0.5" size={16} />
+            <p><strong>Tech Recommendations:</strong> Tools selected for their relevance to your specific operations</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <TrendingUp className="text-green-600 flex-shrink-0 mt-0.5" size={16} />
+            <p><strong>Roadmap:</strong> Implementation sequence designed around your operational priorities</p>
+          </div>
+          <div className="flex items-start gap-2">
+            <Users className="text-purple-600 flex-shrink-0 mt-0.5" size={16} />
+            <p><strong>Change Management:</strong> Training and adoption strategies tailored to these areas</p>
+          </div>
+        </div>
+      </div>
+
+      {onAskAI && (
+        <div className="text-center pt-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Have questions about how to implement these recommendations in your specific operational context?
+          </p>
+          <AskAIButton
+            onClick={() => onAskAI(`How should I prioritize digital transformation initiatives across these operational areas: ${safeOperationalAreas.map((a: string) => areaLabels[a] || a).join(', ')}? Which areas should I focus on first?`)}
+            label="Ask AI About Prioritization"
+          />
         </div>
       )}
     </div>

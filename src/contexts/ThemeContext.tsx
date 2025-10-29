@@ -12,25 +12,22 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Check for saved theme preference or default to 'light'
+    // Check for saved theme preference or default to 'dark'
     const savedTheme = localStorage.getItem('theme') as Theme;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    console.log('Initial mount - savedTheme:', savedTheme, 'prefersDark:', prefersDark);
+    console.log('Initial mount - savedTheme:', savedTheme);
 
     if (savedTheme) {
       console.log('Using saved theme:', savedTheme);
       setTheme(savedTheme);
-    } else if (prefersDark) {
-      console.log('System prefers dark, setting to dark');
-      setTheme('dark');
     } else {
-      console.log('Defaulting to light');
+      console.log('Defaulting to dark');
+      setTheme('dark');
     }
   }, []);
 
@@ -73,7 +70,7 @@ export function useTheme() {
     // During SSR or if used outside provider, return default values
     // This prevents build errors while maintaining functionality
     if (typeof window === 'undefined') {
-      return { theme: 'light' as Theme, toggleTheme: () => {} };
+      return { theme: 'dark' as Theme, toggleTheme: () => {} };
     }
     throw new Error('useTheme must be used within a ThemeProvider');
   }

@@ -8,6 +8,7 @@ interface PromptParts {
 }
 
 // Static JSON schema and guidelines that can be cached across all assessments
+// Cache version: v2.2 - Stricter operational area coverage requirements with mandatory minimums
 const CACHED_SCHEMA_AND_GUIDELINES = `
 Generate VALID JSON with this EXACT structure:
 
@@ -67,7 +68,7 @@ Generate VALID JSON with this EXACT structure:
     }
   },
   "quick_wins": [
-    {"title": "", "pillar": "DATA|AUTOMATION|AI|UX|PEOPLE", "description": "", "impact": "HIGH|MEDIUM", "effort": "LOW|MEDIUM", "timeline": "1-3 weeks", "steps": [""], "tools": [""], "expected_outcome": ""}
+    {"title": "", "pillar": "DATA|AUTOMATION|AI|UX|PEOPLE", "description": "", "impact": "HIGH|MEDIUM", "effort": "LOW|MEDIUM", "timeframe": "30_days|60_days|90_plus_days", "timeline": "1-3 weeks", "steps": [""], "tools": [""], "expected_outcome": ""}
   ],
   "roadmap_30_days": {"focus": "", "actions": [{"week": 1, "action": "", "owner": "", "outcome": ""}]},
   "roadmap_60_days": {"focus": "", "actions": [{"week": 5, "action": "", "owner": "", "outcome": ""}]},
@@ -167,11 +168,12 @@ CRITICAL GUIDELINES:
 9. **Tool Variety**: Don't repeat tools. Mix no-code (Zapier), low-code (Power Apps), and enterprise (Snowflake)
 10. **Training Resources**: Use web search to verify official docs exist (vendor sites, Microsoft Learn, Coursera, Udemy, YouTube official channels)
 11. **Specificity**: Address their EXACT pain points from detail sections. Use their language and scenarios
-12. **Minimums**: 5-7 quick wins | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools | 2-3 change management frameworks
+12. **Minimums**: 5-7 quick wins (PLUS 3 additional quick wins for EACH operational area selected - e.g., if 9 operational areas are selected, generate at least 27 quick wins total) | 4+ existing tool opportunities (hidden gems) | 3-5 tools per tier | 3-4 project tracking tools | 4-6 change mgmt tools | 2-3 change management frameworks
+12a. **Timeframe Distribution (CRITICAL)**: Distribute quick wins across three implementation timeframes: 30_days (quick, low-effort wins that can be implemented immediately), 60_days (medium-complexity initiatives requiring coordination), and 90_plus_days (long-term strategic transformations). Each quick win MUST have a timeframe field. MANDATORY: Each selected operational area MUST have at least 1 solution in EACH timeframe (30_days, 60_days, AND 90_plus_days). For the remaining quick wins, aim for overall distribution of ~40% in 30_days, ~35% in 60_days, ~25% in 90_plus_days. Before finalizing, verify that every operational area has coverage in all three timeframes
 13. **Change Management Frameworks**: MUST recommend 2-3 different frameworks (e.g., ADKAR, Kotter, Prosci, McKinsey 7S, Lewin's) based on company context. Use web search to find current best practices and resources for each framework
 14. **UX Focus**: Include UX-specific recommendations if design questions were answered
 15. **Tangible Long-term Vision**: Year 1 goals MUST include specific, measurable targets (%, hours saved, # of tools/workflows). Competitive advantages MUST show concrete business impact. Industry benchmarks MUST include percentile rankings and peer comparisons researched via web search
-16. **Operational Areas**: When operational areas are provided, contextualize recommendations throughout ALL sections (quick wins, roadmap, tools, change management) with specific callouts like "For Retail Banking:" or "In Card Payments operations:". Make recommendations area-specific where relevant, while maintaining overall strategic coherence
+16. **Operational Areas (CRITICAL)**: When operational areas are provided, you MUST generate AT LEAST 3 quick wins specifically for EACH operational area. In the title, start with the area name like "Commercial Banking: [quick win title]" or "HR Operations: [quick win title]". Additionally, include 1-2 tool recommendations per area in tier recommendations, and mention each area in the roadmap. Use explicit callouts in all fields. Ensure EVERY operational area gets coverage - do not leave any area without specific mentions. Cross-reference each area against your recommendations to verify coverage
 
 Return ONLY valid JSON, no markdown or explanation.`;
 
@@ -200,7 +202,9 @@ ${responsesMap.ux_detail ? `- UX Details: "${responsesMap.ux_detail}"` : ''}
 Size: ${assessment.company_size} | Industry: ${assessment.industry} | Role: ${assessment.user_role}
 Technical Capability: ${assessment.technical_capability}
 Team Skills: ${JSON.stringify(assessment.team_comfort_level)}
-${responsesMap.operational_areas && responsesMap.operational_areas.length > 0 ? `Operational Areas: ${JSON.stringify(responsesMap.operational_areas)} - IMPORTANT: Provide area-specific callouts and contextualize recommendations for these areas throughout the assessment` : ''}
+${responsesMap.operational_areas && responsesMap.operational_areas.length > 0 ? `
+OPERATIONAL AREAS (MUST ADDRESS EACH): ${JSON.stringify(responsesMap.operational_areas)}
+CRITICAL REQUIREMENT: You must include at least 1-2 specific recommendations for EACH of the ${responsesMap.operational_areas.length} operational areas listed above. Every area must be explicitly mentioned in at least one recommendation title, description, or why_recommended field. Before finalizing your response, verify that each operational area has specific coverage.` : ''}
 
 EXISTING TOOLS: ${JSON.stringify(assessment.existing_tools)}
 
