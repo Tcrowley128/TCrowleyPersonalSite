@@ -2723,7 +2723,7 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
           return (
             <div
               key={index}
-              className="bg-white dark:bg-slate-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-6 hover:border-blue-500 transition-colors"
+              className="bg-gray-100 dark:bg-slate-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl p-6 hover:border-blue-500 transition-colors"
             >
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div className="flex-1">
