@@ -274,43 +274,45 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
 
   return (
     <div className="space-y-8">
-      {/* Overall Header */}
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 inline-flex items-center justify-center gap-2">
-          <span className="-mt-0.5">⚡</span>
-          <span>Solutions Timeline</span>
-        </h3>
+      {/* Overall Header with Filter */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white inline-flex items-center gap-2">
+            <span className="-mt-0.5">⚡</span>
+            <span>Solutions Timeline</span>
+          </h3>
+
+          {/* Filter by Operational Area */}
+          {safeOperationalAreas.length > 0 && (
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                Filter by Area:
+              </label>
+              <select
+                value={selectedArea}
+                onChange={(e) => setSelectedArea(e.target.value)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="all">All Solutions ({quickWins?.length || 0})</option>
+                {safeOperationalAreas.map((area: string) => {
+                  const count = quickWins?.filter((win: any) => {
+                    const areaLabel = areaLabels[area];
+                    const searchText = [win.title, win.description].join(' ').toLowerCase();
+                    return searchText.includes(areaLabel.toLowerCase()) ||
+                           searchText.includes(area.toLowerCase().replace(/_/g, ' '));
+                  }).length || 0;
+                  return (
+                    <option key={area} value={area}>
+                      {areaLabels[area] || area} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
+        </div>
         <p className="text-gray-600 dark:text-gray-400">Phased approach from quick wins to long-term transformation</p>
       </div>
-
-      {/* Filter by Operational Area (Global) */}
-      {safeOperationalAreas.length > 0 && (
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
-            Filter by Area:
-          </label>
-          <select
-            value={selectedArea}
-            onChange={(e) => setSelectedArea(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">All Solutions ({quickWins?.length || 0})</option>
-            {safeOperationalAreas.map((area: string) => {
-              const count = quickWins?.filter((win: any) => {
-                const areaLabel = areaLabels[area];
-                const searchText = [win.title, win.description].join(' ').toLowerCase();
-                return searchText.includes(areaLabel.toLowerCase()) ||
-                       searchText.includes(area.toLowerCase().replace(/_/g, ' '));
-              }).length || 0;
-              return (
-                <option key={area} value={area}>
-                  {areaLabels[area] || area} ({count})
-                </option>
-              );
-            })}
-          </select>
-        </div>
-      )}
 
       {/* 30 Days Section */}
       <div className="bg-white dark:bg-slate-700 border-2 border-gray-300 dark:border-gray-600 rounded-xl p-6">
