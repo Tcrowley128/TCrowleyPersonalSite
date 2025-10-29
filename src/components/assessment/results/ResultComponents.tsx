@@ -2141,9 +2141,9 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     />
                   )}
                 </div>
-                <ul className="list-disc list-inside space-y-2">
+                <ul className="list-disc list-outside ml-5 space-y-2">
                   {successMetrics['30_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
+                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm pl-1">
                       {onQuickEdit && isEditingMetrics ? (
                         <QuickResultEditor
                           fieldName="success_metrics"
@@ -2176,9 +2176,9 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     />
                   )}
                 </div>
-                <ul className="list-disc list-inside space-y-2">
+                <ul className="list-disc list-outside ml-5 space-y-2">
                   {successMetrics['60_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
+                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm pl-1">
                       {onQuickEdit && isEditingMetrics ? (
                         <QuickResultEditor
                           fieldName="success_metrics"
@@ -2211,9 +2211,9 @@ export function ChangeManagementTab({ changeMgmt, successMetrics, projectTrackin
                     />
                   )}
                 </div>
-                <ul className="list-disc list-inside space-y-2">
+                <ul className="list-disc list-outside ml-5 space-y-2">
                   {successMetrics['90_day_kpis'].map((kpi: string, i: number) => (
-                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm">
+                    <li key={i} className="text-gray-700 dark:text-gray-300 text-sm pl-1">
                       {onQuickEdit && isEditingMetrics ? (
                         <QuickResultEditor
                           fieldName="success_metrics"
