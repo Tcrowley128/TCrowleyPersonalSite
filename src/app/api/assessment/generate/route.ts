@@ -194,7 +194,7 @@ export async function POST(request: NextRequest) {
       try {
         message = await anthropic.messages.create({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 16000,
+          max_tokens: 32000,
           temperature: 0.7,
           system: promptParts.systemInstructions,
           messages: [
@@ -238,7 +238,9 @@ export async function POST(request: NextRequest) {
 
     // Check if response was truncated
     if (message.stop_reason === 'max_tokens') {
-      console.warn('Claude response was truncated due to max_tokens limit');
+      console.error('Claude response was truncated due to max_tokens limit');
+      console.error('Token usage:', message.usage);
+      throw new Error('Assessment generation was incomplete due to length. Please try regenerating again.');
     }
 
     // Extract the JSON response (handle tool use in content array)
@@ -259,20 +261,7 @@ export async function POST(request: NextRequest) {
 
       // Try to extract JSON object
       const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
-      let jsonString = jsonMatch ? jsonMatch[0] : cleanedText;
-
-      // If JSON is incomplete, try to close it
-      if (message.stop_reason === 'max_tokens') {
-        // Count open braces and brackets
-        const openBraces = (jsonString.match(/\{/g) || []).length;
-        const closeBraces = (jsonString.match(/\}/g) || []).length;
-        const openBrackets = (jsonString.match(/\[/g) || []).length;
-        const closeBrackets = (jsonString.match(/\]/g) || []).length;
-
-        // Add missing closing characters
-        jsonString += ']'.repeat(Math.max(0, openBrackets - closeBrackets));
-        jsonString += '}'.repeat(Math.max(0, openBraces - closeBraces));
-      }
+      const jsonString = jsonMatch ? jsonMatch[0] : cleanedText;
 
       parsedResults = JSON.parse(jsonString);
     } catch (parseError) {
