@@ -254,9 +254,34 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
     if (selectedArea === 'all') return solutions;
     return solutions.filter((win: any) => {
       const areaLabel = areaLabels[selectedArea] || '';
-      const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
-      return searchText.includes(areaLabel.toLowerCase()) ||
-             searchText.includes((selectedArea || '').toLowerCase().replace(/_/g, ' '));
+      const areaValue = selectedArea || '';
+
+      // Comprehensive search across all text fields
+      const searchText = [
+        win.title,
+        win.description,
+        win.solution,
+        win.why_recommended,
+        win.justification,
+        win.use_case,
+        win.operational_area,
+        win.category
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      // Split area label into words for partial matching
+      const areaWords = areaLabel.toLowerCase().split(/[\s&,/]+/).filter(w => w.length > 2);
+      const valueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
+
+      // Full phrase match
+      const hasFullMatch = searchText.includes(areaLabel.toLowerCase()) ||
+                          searchText.includes(areaValue.replace(/_/g, ' ').toLowerCase());
+
+      // Partial word match - match if ANY significant word from the area appears
+      const hasPartialMatch = [...areaWords, ...valueWords].some(word =>
+        searchText.includes(word)
+      );
+
+      return hasFullMatch || hasPartialMatch;
     });
   };
 
@@ -298,9 +323,34 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
                 {safeOperationalAreas.map((area: string) => {
                   const count = quickWins?.filter((win: any) => {
                     const areaLabel = areaLabels[area] || '';
-                    const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
-                    return searchText.includes(areaLabel.toLowerCase()) ||
-                           searchText.includes((area || '').toLowerCase().replace(/_/g, ' '));
+                    const areaValue = area || '';
+
+                    // Comprehensive search across all text fields
+                    const searchText = [
+                      win.title,
+                      win.description,
+                      win.solution,
+                      win.why_recommended,
+                      win.justification,
+                      win.use_case,
+                      win.operational_area,
+                      win.category
+                    ].filter(Boolean).join(' ').toLowerCase();
+
+                    // Split area label into words for partial matching
+                    const areaWords = areaLabel.toLowerCase().split(/[\s&,/]+/).filter((w: string) => w.length > 2);
+                    const valueWords = areaValue.toLowerCase().split('_').filter((w: string) => w.length > 2);
+
+                    // Full phrase match
+                    const hasFullMatch = searchText.includes(areaLabel.toLowerCase()) ||
+                                        searchText.includes(areaValue.replace(/_/g, ' ').toLowerCase());
+
+                    // Partial word match
+                    const hasPartialMatch = [...areaWords, ...valueWords].some((word: string) =>
+                      searchText.includes(word)
+                    );
+
+                    return hasFullMatch || hasPartialMatch;
                   }).length || 0;
                   return (
                     <option key={area} value={area}>
