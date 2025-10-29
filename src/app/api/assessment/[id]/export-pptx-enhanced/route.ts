@@ -877,7 +877,8 @@ export async function GET(
     // ======================
     // SLIDES 15-16: 30-DAY SOLUTIONS (split into 2 slides, 3 per slide)
     // ======================
-    const allQuickWins = slideContent.quickWins || [];
+    // Use actual database results which have timeframe fields, not AI-generated content
+    const allQuickWins = results.quick_wins || [];
 
     // Filter by timeframe
     const quickWins30Days = allQuickWins.filter((qw: any) =>
@@ -946,7 +947,7 @@ export async function GET(
         });
 
         // Expected Outcome with truncation - balanced spacing
-        const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
+        const outcome = qw.expected_outcome || qw.expectedOutcome || qw.outcome || 'Measurable improvement';
         slideQW.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
           x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
           fontSize: 9, color: COLORS.textLight, italic: true,
@@ -1034,7 +1035,7 @@ export async function GET(
           });
 
           // Expected Outcome with truncation
-          const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
+          const outcome = qw.expected_outcome || qw.expectedOutcome || qw.outcome || 'Measurable improvement';
           slideQW60.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
             x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
             fontSize: 9, color: COLORS.textLight, italic: true,
@@ -1124,7 +1125,7 @@ export async function GET(
           });
 
           // Expected Outcome with truncation
-          const outcome = qw.expectedOutcome || qw.outcome || 'Measurable improvement';
+          const outcome = qw.expected_outcome || qw.expectedOutcome || qw.outcome || 'Measurable improvement';
           slideQW90.addText(`Expected Outcome: ${truncateText(outcome, 100)}`, {
             x: 1.4, y: qwY + 1.0, w: 7.6, h: 0.18,
             fontSize: 9, color: COLORS.textLight, italic: true,
