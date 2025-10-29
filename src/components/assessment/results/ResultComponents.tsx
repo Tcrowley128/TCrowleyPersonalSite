@@ -60,9 +60,9 @@ export function OverviewTab({ maturity, priority, quickWinsCount, onQuickEdit }:
           <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
             <p className="font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
               <Zap className="text-green-600" size={18} />
-              Quick Wins Ready: {quickWinsCount}
+              Potential Solutions: {quickWinsCount}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Immediate opportunities you can implement in the next 30 days</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Actionable recommendations spanning 30-day quick wins, 60-day initiatives, and 90+ day transformations</p>
           </div>
 
           <div className="pb-4 border-b border-gray-200 dark:border-gray-600">
@@ -2713,23 +2713,6 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
         <p className="text-gray-600 dark:text-gray-400">
           Recommendations throughout this roadmap are contextualized for these specific areas
         </p>
-      </div>
-
-      {/* Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <AlertCircle className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" size={20} />
-          <div className="flex-1">
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-              Area-Specific Recommendations
-            </h4>
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              Throughout your Solutions, Tech Recommendations, Roadmap, and Change Management sections,
-              you'll find specific callouts and recommendations tailored to these operational areas.
-              Look for mentions like "For {areaLabels[operationalAreas[0]]}" or "In {areaLabels[operationalAreas[0]]} operations."
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Operational Areas Grid */}
