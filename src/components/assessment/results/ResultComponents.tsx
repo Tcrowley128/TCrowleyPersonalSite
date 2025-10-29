@@ -783,7 +783,7 @@ export function RecommendationsTab({ tier1, tier2, tier3, existing, onAskAI }: a
             title="💡 Citizen-Led Solutions"
             subtitle="No IT required - business users can implement these"
             tools={tier1}
-            tierColor="green"
+            tierColor="amber"
             onAskAI={onAskAI}
           />
         </div>
@@ -2263,7 +2263,8 @@ function TierSection({ title, subtitle, tools, tierColor, onAskAI }: any) {
   const emoji = emojiMatch ? emojiMatch[1] : null;
   const titleText = emojiMatch ? emojiMatch[2] : title;
 
-  const tierAccentColors: Record<'green' | 'blue' | 'purple', string> = {
+  const tierAccentColors: Record<'amber' | 'green' | 'blue' | 'purple', string> = {
+    amber: 'border-l-4 border-amber-500',
     green: 'border-l-4 border-green-500',
     blue: 'border-l-4 border-blue-500',
     purple: 'border-l-4 border-purple-500'
@@ -2271,7 +2272,8 @@ function TierSection({ title, subtitle, tools, tierColor, onAskAI }: any) {
 
   const borderColor = tierAccentColors[tierColor as keyof typeof tierAccentColors] || tierAccentColors.blue;
 
-  const tierRecaps: Record<'green' | 'blue' | 'purple', string> = {
+  const tierRecaps: Record<'amber' | 'green' | 'blue' | 'purple', string> = {
+    amber: 'These are quick-win tools that your business users can adopt without IT involvement. They\'re typically low-cost, fast to implement, and deliver immediate value.',
     green: 'These are quick-win tools that your business users can adopt without IT involvement. They\'re typically low-cost, fast to implement, and deliver immediate value.',
     blue: 'These solutions require coordination between business and IT teams. They offer stronger capabilities than citizen-led tools while remaining relatively accessible.',
     purple: 'These are enterprise-grade solutions requiring significant IT resources and development expertise. They provide the most comprehensive capabilities for complex needs.'
@@ -2316,7 +2318,8 @@ function ToolCard({ tool, tierColor, onAskAI }: any) {
     '$$$$': '🏦'
   };
 
-  const tierBorderColors: Record<'green' | 'blue' | 'purple', string> = {
+  const tierBorderColors: Record<'amber' | 'green' | 'blue' | 'purple', string> = {
+    amber: 'border-amber-500',
     green: 'border-green-500',
     blue: 'border-blue-500',
     purple: 'border-purple-500'
