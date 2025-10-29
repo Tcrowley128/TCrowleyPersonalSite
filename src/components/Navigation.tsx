@@ -1,5 +1,6 @@
 'use client';
 
+// Force rebuild to clear Vercel cache - 2025-10-29
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, Shield, LogOut } from 'lucide-react';
