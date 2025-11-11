@@ -26,6 +26,8 @@ import AssessmentAnswersEditor from '@/components/assessment/AssessmentAnswersEd
 import VersionSelector from '@/components/assessment/VersionSelector';
 import ResultsSkeleton from '@/components/assessment/ResultsSkeleton';
 import Confetti from '@/components/assessment/Confetti';
+import { JourneyLoadingScreen } from '@/components/journey/JourneyLoadingScreen';
+import { FloatingAIButton } from '@/components/journey/FloatingAIButton';
 
 interface ResultsPageProps {
   params: Promise<{ id: string }>;
@@ -56,6 +58,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showMenuTip, setShowMenuTip] = useState(true);
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [isStartingJourney, setIsStartingJourney] = useState(false);
+  const [hasExistingProjects, setHasExistingProjects] = useState(false);
   const chatRef = useRef<AssessmentChatHandle>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -98,9 +101,22 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     }
   }, [id]);
 
+  const checkExistingProjects = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/assessment/${id}/projects`);
+      if (response.ok) {
+        const data = await response.json();
+        setHasExistingProjects(data.projects && data.projects.length > 0);
+      }
+    } catch (err) {
+      console.error('Error checking existing projects:', err);
+    }
+  }, [id]);
+
   useEffect(() => {
     generateResults();
-  }, [generateResults]);
+    checkExistingProjects();
+  }, [generateResults, checkExistingProjects]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -176,7 +192,13 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     setError('');
 
     try {
-      // Generate projects from assessment recommendations
+      // If projects already exist, just navigate to the journey page
+      if (hasExistingProjects) {
+        router.push(`/assessment/journey/${id}`);
+        return;
+      }
+
+      // Otherwise, generate projects from assessment recommendations
       const response = await fetch(`/api/assessment/${id}/generate-projects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -644,6 +666,9 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     <div className="min-h-screen bg-white dark:bg-slate-900 py-12 overflow-x-hidden">
       {showConfetti && <Confetti />}
 
+      {/* Journey Loading Screen */}
+      <JourneyLoadingScreen isVisible={isStartingJourney} />
+
       {/* PDF Generation Progress Toast */}
       {isDownloadingPDF && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -721,10 +746,16 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                       <Rocket className={`text-blue-600 ${isStartingJourney ? 'animate-bounce' : ''}`} size={18} />
                       <div className="flex-1">
                         <div className="font-semibold text-blue-600 dark:text-blue-400">
-                          {isStartingJourney ? 'Starting Journey...' : 'Start Your Journey'}
+                          {isStartingJourney
+                            ? (hasExistingProjects ? 'Opening Journey...' : 'Starting Journey...')
+                            : (hasExistingProjects ? 'Go to Transformation Journey' : 'Start Your Journey')
+                          }
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
-                          {isStartingJourney ? 'Creating projects...' : 'Track progress and manage projects'}
+                          {isStartingJourney
+                            ? (hasExistingProjects ? 'Loading your projects...' : 'Creating projects...')
+                            : (hasExistingProjects ? 'Continue managing your projects' : 'Track progress and manage projects')
+                          }
                         </div>
                       </div>
                     </button>
@@ -1014,6 +1045,11 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
         {/* AI Chat Assistant */}
         <AssessmentChat ref={chatRef} assessmentId={id} />
+
+        {/* Floating AI Button */}
+        <FloatingAIButton
+          onClick={() => chatRef.current?.openWithMessage("")}
+        />
 
         {/* Email Modal */}
         {showEmailModal && (

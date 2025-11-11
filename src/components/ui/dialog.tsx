@@ -50,7 +50,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 export function DialogContent({ className = '', children }: DialogContentProps) {
   return (
     <div
-      className={`bg-white dark:bg-slate-800 rounded-lg shadow-xl ${className}`}
+      className={`bg-white dark:bg-slate-800 rounded-lg shadow-2xl ${className}`}
     >
       {children}
     </div>

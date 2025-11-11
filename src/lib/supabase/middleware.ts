@@ -32,15 +32,22 @@ export async function updateSession(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Protect admin routes - redirect to login if no session
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    console.log('🔒 Middleware checking /admin route');
+  // Define protected routes that require authentication
+  const protectedRoutes = ['/admin', '/assessment', '/projects'];
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Protect routes - redirect to login if no session
+  if (isProtectedRoute) {
+    console.log('🔒 Middleware checking protected route:', request.nextUrl.pathname);
     console.log('Session exists:', !!session);
 
     if (!session) {
       console.log('❌ No session - redirecting to /login');
       const url = request.nextUrl.clone();
       url.pathname = '/login';
+      url.searchParams.set('redirect', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
 
@@ -52,10 +59,11 @@ export async function updateSession(request: NextRequest) {
       console.log('❌ No user or error - redirecting to /login');
       const url = request.nextUrl.clone();
       url.pathname = '/login';
+      url.searchParams.set('redirect', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
 
-    console.log('✅ Access granted to /admin');
+    console.log('✅ Access granted to', request.nextUrl.pathname);
   }
 
   return supabaseResponse;
