@@ -17,7 +17,7 @@ interface PBI {
 
 interface HierarchicalPBICardProps {
   pbi: PBI;
-  children?: PBI[];
+  childPbis?: PBI[];
   childrenMap?: Map<string, PBI[]>;
   selectedPbis: Set<string>;
   level: number;
@@ -26,7 +26,7 @@ interface HierarchicalPBICardProps {
   onEdit?: (pbiId: string) => void;
 }
 
-export function HierarchicalPBICard({ pbi, children = [], childrenMap, selectedPbis, level, isSelected, onToggleSelect, onEdit }: HierarchicalPBICardProps) {
+export function HierarchicalPBICard({ pbi, childPbis = [], childrenMap, selectedPbis, level, isSelected, onToggleSelect, onEdit }: HierarchicalPBICardProps) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const typeConfig = {
@@ -66,7 +66,7 @@ export function HierarchicalPBICard({ pbi, children = [], childrenMap, selectedP
 
   const currentStatus = statusConfig[pbi.status as keyof typeof statusConfig] || statusConfig.new;
   const isDone = pbi.status === 'done';
-  const hasChildren = children.length > 0;
+  const hasChildren = childPbis.length > 0;
 
   return (
     <div className="space-y-2">
@@ -144,14 +144,14 @@ export function HierarchicalPBICard({ pbi, children = [], childrenMap, selectedP
           <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-gray-300 via-gray-300 to-transparent dark:from-gray-600 dark:via-gray-600" />
 
           <div className="pl-6 space-y-2">
-            {children.map((child, index) => (
+            {childPbis.map((child, index) => (
               <div key={child.id} className="relative">
                 {/* Horizontal connector */}
                 <div className="absolute left-0 top-1/2 w-6 h-px bg-gray-300 dark:bg-gray-600" />
 
                 <HierarchicalPBICard
                   pbi={child}
-                  children={childrenMap?.get(child.id) || []}
+                  childPbis={childrenMap?.get(child.id) || []}
                   childrenMap={childrenMap}
                   selectedPbis={selectedPbis}
                   level={level + 1}

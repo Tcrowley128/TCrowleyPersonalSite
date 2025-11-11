@@ -506,7 +506,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
                 <HierarchicalPBICard
                   key={pbi.id}
                   pbi={pbi}
-                  children={childrenMap.get(pbi.id) || []}
+                  childPbis={childrenMap.get(pbi.id) || []}
                   childrenMap={childrenMap}
                   selectedPbis={selectedPbis}
                   level={0}
