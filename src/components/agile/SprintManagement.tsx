@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, AlertCircle, Plus, Play, Calendar, Settings, Layout, LayoutGrid, AlertTriangle, CheckCircle2, MessageSquare } from 'lucide-react';
+import { Loader2, AlertCircle, Plus, Play, Calendar, Settings, Layout, LayoutGrid, AlertTriangle, CheckCircle2, MessageSquare, CalendarPlus } from 'lucide-react';
 import { SprintBoard } from './SprintBoard';
 import { BacklogView } from './BacklogView';
 import { RisksView } from './RisksView';
@@ -40,7 +40,7 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
   const [error, setError] = useState<string | null>(null);
   const [showStartSprintModal, setShowStartSprintModal] = useState<false | { selectedPbiIds: string[], totalStoryPoints: number }>(false);
   const [showProjectDetailsModal, setShowProjectDetailsModal] = useState(false);
-  const [view, setView] = useState<'backlog' | 'sprint' | 'risks' | 'completed' | 'retros'>('backlog');
+  const [view, setView] = useState<'backlog' | 'sprint' | 'planning' | 'risks' | 'completed' | 'retros'>('backlog');
 
   useEffect(() => {
     fetchActiveSprint();
@@ -135,6 +135,22 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
             )}
           </button>
           <button
+            onClick={() => setView('planning')}
+            className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
+              view === 'planning'
+                ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+            }`}
+          >
+            <CalendarPlus size={18} />
+            Plan Future Sprint
+            {activeSprint && (
+              <span className="ml-1 px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+                New
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setView('risks')}
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'risks'
@@ -191,6 +207,16 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
       {/* Sprint Board View */}
       {view === 'sprint' && activeSprint && (
         <SprintBoard projectId={projectId} sprintId={activeSprint.id} />
+      )}
+
+      {/* Sprint Planning View */}
+      {view === 'planning' && (
+        <SprintPlanningView
+          projectId={projectId}
+          activeSprint={activeSprint}
+          onStartSprint={handleStartSprint}
+          onRefresh={fetchActiveSprint}
+        />
       )}
 
       {/* Sprint Board Empty State */}

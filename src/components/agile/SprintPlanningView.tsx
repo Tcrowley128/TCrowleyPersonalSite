@@ -31,10 +31,12 @@ interface Sprint {
 
 interface SprintPlanningViewProps {
   projectId: string;
-  onStartSprint: (sprintId: string) => void;
+  activeSprint?: any;
+  onStartSprint: (selectedPbiIds: string[], totalStoryPoints: number) => void;
+  onRefresh: () => void;
 }
 
-export function SprintPlanningView({ projectId, onStartSprint }: SprintPlanningViewProps) {
+export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onRefresh }: SprintPlanningViewProps) {
   const [pbis, setPbis] = useState<PBI[]>([]);
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,6 +187,10 @@ export function SprintPlanningView({ projectId, onStartSprint }: SprintPlanningV
   }
 
   const backlogPBIs = getBacklogPBIs();
+  // Filter out active sprints from planning view - only show planned sprints
+  const plannedSprints = sprints.filter(sprint =>
+    sprint.status !== 'active' && sprint.status !== 'completed'
+  );
 
   return (
     <DndContext
@@ -197,9 +203,14 @@ export function SprintPlanningView({ projectId, onStartSprint }: SprintPlanningV
         {/* Header with Create Sprint Button */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Sprint Planning</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {activeSprint ? 'Plan Future Sprint' : 'Sprint Planning'}
+            </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Drag and drop PBIs between backlog and sprints to plan ahead
+              {activeSprint
+                ? `Plan ahead for your next sprint while "${activeSprint.name}" is running. Drag and drop PBIs to organize future work.`
+                : 'Drag and drop PBIs between backlog and sprints to plan ahead'
+              }
             </p>
           </div>
           {!showCreateSprint ? (
@@ -268,8 +279,19 @@ export function SprintPlanningView({ projectId, onStartSprint }: SprintPlanningV
             </div>
           </SortableContext>
 
-          {/* Sprint Columns */}
-          {sprints.map((sprint) => {
+          {/* Sprint Columns - Only show planned sprints */}
+          {plannedSprints.length === 0 && (
+            <div className="lg:col-span-2 xl:col-span-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-700 p-8 text-center">
+              <CalendarPlus className="w-12 h-12 mx-auto mb-4 text-blue-600 dark:text-blue-400" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                No Future Sprints Planned
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Create a new sprint to start planning future work
+              </p>
+            </div>
+          )}
+          {plannedSprints.map((sprint) => {
             const sprintPBIs = getSprintPBIs(sprint.id);
             return (
               <SortableContext
