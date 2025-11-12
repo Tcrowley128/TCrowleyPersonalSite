@@ -113,7 +113,7 @@ export function HierarchicalPBICard({ pbi, childPbis = [], childrenMap, selected
             </h4>
             {hasChildren && (
               <span className="text-xs text-gray-500 dark:text-gray-400">
-                ({children.length} {children.length === 1 ? 'item' : 'items'})
+                ({childPbis.length} {childPbis.length === 1 ? 'item' : 'items'})
               </span>
             )}
           </div>
