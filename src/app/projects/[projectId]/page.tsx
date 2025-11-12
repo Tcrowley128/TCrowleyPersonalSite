@@ -108,34 +108,34 @@ export default function ProjectSprintManagement() {
   console.log('Project data:', project); // Debug log
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
+    <>
       <Navigation />
-      <div className="flex-1 overflow-y-auto pt-16">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Header Section - Clean Plain Text */}
           <div className="mb-8 space-y-4">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={handleBack}
-                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Back to Journey</span>
-              </button>
-              <button
-                onClick={handleOpenChat}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">AI Scrum Master</span>
-              </button>
-            </div>
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back to Journey</span>
+            </button>
             <div className="border-l-4 border-blue-600 pl-4 py-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {project.title}
-              </h1>
+              <div className="flex items-center justify-between gap-4">
+                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                  {project.title}
+                </h1>
+                <button
+                  onClick={handleOpenChat}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg flex-shrink-0"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="text-sm font-medium">AI Scrum Master</span>
+                </button>
+              </div>
               {project.description && (
-                <p className="text-base text-gray-600 dark:text-gray-400 max-w-3xl">
+                <p className="text-base text-gray-600 dark:text-gray-400 max-w-3xl mt-2">
                   {project.description}
                 </p>
               )}
@@ -152,6 +152,6 @@ export default function ProjectSprintManagement() {
 
       {/* Project Chat */}
       <ProjectChat ref={projectChatRef} projectId={projectId} />
-    </div>
+    </>
   );
 }

@@ -227,14 +227,14 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                 className={chatPanelStyles}
               >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
+                <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-3 sm:p-4 flex items-center justify-between flex-shrink-0">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <Target className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
                     <div className="min-w-0">
                       <h3 className="font-bold text-base sm:text-lg truncate">
                         AI Scrum Master
                       </h3>
-                      <p className="text-xs text-green-100 hidden sm:block">
+                      <p className="text-xs text-blue-100 hidden sm:block">
                         Your agile project assistant
                       </p>
                     </div>
@@ -274,7 +274,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                      <Target className="w-12 h-12 text-green-600 dark:text-green-400 mb-4" />
+                      <Target className="w-12 h-12 text-blue-600 dark:text-blue-400 mb-4" />
                       <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
                         Welcome to Your AI Scrum Master!
                       </h4>
@@ -291,7 +291,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                             <button
                               key={i}
                               onClick={() => setInputMessage(question)}
-                              className="w-full text-left text-xs bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 text-green-900 dark:text-green-300 p-2 rounded-lg transition-colors"
+                              className="w-full text-left text-xs bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-900 dark:text-blue-300 p-2 rounded-lg transition-colors"
                             >
                               {question}
                             </button>
@@ -308,14 +308,14 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                           <div
                             className={`max-w-[80%] rounded-2xl px-4 py-2 break-words overflow-wrap-anywhere ${
                               msg.role === "user"
-                                ? "bg-green-600 text-white"
+                                ? "bg-blue-600 text-white"
                                 : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white"
                             }`}
                           >
                             {msg.role === "assistant" && (
                               <div className="flex items-center gap-2 mb-1">
-                                <Sparkles className="w-3 h-3 text-green-600 dark:text-green-400" />
-                                <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                                <Sparkles className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
                                   AI Scrum Master
                                 </span>
                               </div>
@@ -338,7 +338,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                         <div className="flex justify-start">
                           <div className="bg-gray-100 dark:bg-slate-700 rounded-2xl px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <Loader2 className="w-4 h-4 animate-spin text-green-600" />
+                              <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                               <span className="text-sm text-gray-600 dark:text-gray-400">
                                 AI Scrum Master is thinking...
                               </span>
@@ -370,7 +370,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                       onKeyDown={handleKeyDown}
                       placeholder="Ask about sprint planning, user stories, or risks..."
                       disabled={isLoading}
-                      className="flex-1 resize-none bg-gray-100 dark:bg-slate-700 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-green-600 dark:focus:ring-green-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50"
+                      className="flex-1 resize-none bg-gray-100 dark:bg-slate-700 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50"
                       rows={2}
                     />
                     <button
