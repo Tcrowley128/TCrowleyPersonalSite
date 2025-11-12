@@ -232,7 +232,7 @@ export default function Hero() {
             {/* Login/Register Buttons - Only show if user is not logged in */}
             {!user && (
               <motion.div
-                className="flex flex-col items-center gap-4 pt-8"
+                className="flex flex-col items-center gap-4 pt-8 pb-20"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 0.9 }}

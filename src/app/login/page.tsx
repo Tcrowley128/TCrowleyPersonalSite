@@ -56,8 +56,8 @@ export default function LoginPage() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 dark:bg-blue-500 rounded-full mb-4">
               <Lock className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Login</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Sign in to access the admin panel</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Sign In</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Access your account and digital tools</p>
           </div>
 
           {/* Error Message */}
