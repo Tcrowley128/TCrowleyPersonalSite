@@ -181,6 +181,27 @@ export async function POST(
             }
           }
 
+          // Notify that we're analyzing for suggestions
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'analyzing' })}\n\n`));
+
+          // Analyze the response for actionable insights
+          try {
+            const insights = await analyzeForInsights(fullMessage, projects, pbis, sprints, risks, anthropic);
+
+            if (insights && insights.length > 0) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                type: 'metadata',
+                metadata: {
+                  hasActionableInsights: true,
+                  insights
+                }
+              })}\n\n`));
+            }
+          } catch (analysisError) {
+            console.error('Error analyzing for insights:', analysisError);
+            // Continue without insights if analysis fails
+          }
+
           // Save the complete message to database
           const { data: savedMessage, error: saveError } = await supabase
             .from('conversation_messages')
@@ -449,4 +470,95 @@ CONTEXT-AWARE RESPONSES:
 - Compare current state to assessment recommendations to show transformation impact
 
 You have complete visibility into their transformation journey. Use this context to provide specific, actionable, and data-driven advice.`;
+}
+
+async function analyzeForInsights(
+  assistantMessage: string,
+  projects: any[],
+  pbis: any[],
+  sprints: any[],
+  risks: any[],
+  anthropic: any
+): Promise<any[]> {
+  try {
+    const analysisPrompt = `You are an expert at analyzing AI assistant responses and extracting actionable insights for transformation journey management.
+
+Given the following AI assistant response, identify any SPECIFIC, ACTIONABLE recommendations that could be directly applied to the transformation journey data.
+
+JOURNEY CONTEXT:
+- Projects: ${projects.length} total
+- PBIs: ${pbis.length} total
+- Sprints: ${sprints.length} total
+- Risks: ${risks.length} total
+
+AI ASSISTANT'S RESPONSE:
+${assistantMessage}
+
+TASK: Extract ONLY concrete, actionable suggestions from the response that can be automatically applied. For each suggestion, provide:
+
+1. **type**: The entity type (project, pbi, user_story, sprint, risk, new_pbi, new_user_story, new_project)
+2. **action**: Either "update" (modify existing) or "create" (create new)
+3. **suggestedUpdate**:
+   - entityId: The ID of the entity to update (null if creating new)
+   - entityName: A clear name/title for the entity
+   - field: The field to update (e.g., "status", "priority", "progress_percentage", "story_points", "goal")
+   - currentValue: The current value (or null if creating new)
+   - suggestedValue: The new recommended value
+   - reason: A brief explanation of why this change is recommended
+
+IMPORTANT:
+- ONLY extract suggestions that are EXPLICIT in the assistant's response
+- Do NOT infer or make up suggestions that weren't clearly stated
+- If the assistant was just answering a question or providing information without recommendations, return an empty array
+- Focus on suggestions that modify projects, PBIs, sprints, or risks
+- For status changes, only extract if the assistant gave SPECIFIC new status for SPECIFIC items
+- Return a JSON array of insights
+
+Return ONLY valid JSON in this exact format:
+[
+  {
+    "type": "project",
+    "action": "update",
+    "suggestedUpdate": {
+      "entityId": "actual-project-id",
+      "entityName": "Project Title",
+      "field": "status",
+      "currentValue": "not_started",
+      "suggestedValue": "in_progress",
+      "reason": "Team has resources available and dependencies are resolved"
+    }
+  }
+]
+
+If there are no actionable suggestions, return: []`;
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: analysisPrompt
+        }
+      ]
+    });
+
+    const content = response.content[0].text;
+
+    // Extract JSON from the response
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.log('[analyzeForInsights] No JSON array found in response');
+      return [];
+    }
+
+    const insights = JSON.parse(jsonMatch[0]);
+    console.log('[analyzeForInsights] Extracted insights:', insights.length);
+
+    return Array.isArray(insights) ? insights : [];
+  } catch (error) {
+    console.error('[analyzeForInsights] Error:', error);
+    return [];
+  }
 }

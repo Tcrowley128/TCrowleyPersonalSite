@@ -61,6 +61,7 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isAnalyzingForSuggestions, setIsAnalyzingForSuggestions] = useState(false);
     const [conversationId, setConversationId] = useState<string | null>(null);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [error, setError] = useState("");
@@ -181,6 +182,7 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
         const decoder = new TextDecoder();
         let streamedContent = '';
         let messageId = '';
+        let messageMetadata: any = {};
         let newConversationId = '';
 
         if (reader) {
@@ -208,26 +210,41 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
                       updated[assistantMessageIndex] = {
                         role: "assistant",
                         content: streamedContent,
+                        metadata: messageMetadata,
+                      };
+                      return updated;
+                    });
+                  } else if (data.type === 'analyzing') {
+                    // AI is analyzing for suggestions
+                    setIsAnalyzingForSuggestions(true);
+                  } else if (data.type === 'metadata') {
+                    // Received metadata with insights
+                    messageMetadata = data.metadata;
+                    setIsAnalyzingForSuggestions(false);
+                    setMessages((prev) => {
+                      const updated = [...prev];
+                      updated[assistantMessageIndex] = {
+                        role: "assistant",
+                        content: streamedContent,
+                        metadata: messageMetadata,
                       };
                       return updated;
                     });
                   } else if (data.type === 'done') {
                     messageId = data.message_id;
+                    setIsAnalyzingForSuggestions(false);
                     setMessages((prev) => {
                       const updated = [...prev];
                       updated[assistantMessageIndex] = {
                         role: "assistant",
                         content: streamedContent,
                         id: messageId,
+                        metadata: messageMetadata,
                       };
                       return updated;
                     });
-
-                    // Detect actionable insights after message is complete
-                    if (messageId && streamedContent) {
-                      detectInsights(messageId, streamedContent, newConversationId || conversationId || '');
-                    }
                   } else if (data.type === 'error') {
+                    setIsAnalyzingForSuggestions(false);
                     throw new Error(data.error || 'Streaming error');
                   }
                 } catch (parseError) {
@@ -539,6 +556,18 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
                                   <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                                   <span className="text-sm text-gray-600 dark:text-gray-400">
                                     Tyler's AI is thinking...
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          {isAnalyzingForSuggestions && (
+                            <div className="flex justify-start">
+                              <div className="bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-2xl px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <Wand2 className="w-4 h-4 animate-pulse text-purple-600 dark:text-purple-400" />
+                                  <span className="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                                    Analyzing for actionable suggestions...
                                   </span>
                                 </div>
                               </div>

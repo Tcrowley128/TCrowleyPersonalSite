@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, DragStartEvent, useDroppable } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragOverlay, closestCorners, pointerWithin, PointerSensor, useSensor, useSensors, DragStartEvent, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus } from 'lucide-react';
+import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus, AlertTriangle } from 'lucide-react';
 import { SortablePBICard } from './SortablePBICard';
+import { ActivateSprintModal } from './ActivateSprintModal';
 
 interface PBI {
   id: string;
@@ -43,6 +44,8 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
   const [activePBI, setActivePBI] = useState<PBI | null>(null);
   const [showCreateSprint, setShowCreateSprint] = useState(false);
   const [newSprintName, setNewSprintName] = useState('');
+  const [activatingSprintId, setActivatingSprintId] = useState<string | null>(null);
+  const [deletingSprintId, setDeletingSprintId] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -106,19 +109,24 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
   };
 
   const handleDeleteSprint = async (sprintId: string) => {
-    if (!confirm('Delete this sprint? All PBIs will be moved back to the backlog.')) return;
-
     try {
       const response = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
         method: 'DELETE'
       });
 
       if (response.ok) {
+        setDeletingSprintId(null);
         fetchData();
       }
     } catch (error) {
       console.error('Error deleting sprint:', error);
     }
+  };
+
+  const handleSprintActivated = () => {
+    setActivatingSprintId(null);
+    fetchData();
+    onRefresh();
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -135,18 +143,78 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
     const pbiId = active.id as string;
     const overId = over.id as string;
 
-    // Determine if dropping on backlog or a sprint
+    console.log('Drag ended:', {
+      pbiId,
+      overId,
+      activeId: active.id,
+      overIdDuplicate: over.id,
+      overData: over.data
+    });
+
+    // Find the PBI being dragged
+    const draggedPBI = pbis.find(p => p.id === pbiId);
+    if (!draggedPBI) {
+      console.log('ERROR: Could not find dragged PBI:', pbiId);
+      return;
+    }
+
+    console.log('Dragged PBI current sprint:', draggedPBI.sprint_id);
+
+    // Determine target sprint ID based on what was dropped on
     let targetSprintId: string | null = null;
 
+    // Check if dropped directly on a droppable container
     if (overId === 'backlog') {
+      console.log('Dropped on backlog droppable container');
       targetSprintId = null;
     } else if (overId.startsWith('sprint-')) {
+      console.log('Dropped on sprint droppable container:', overId);
       targetSprintId = overId.replace('sprint-', '');
     } else {
-      // Dropped on another PBI, find which sprint/backlog it belongs to
+      // Dropped on a PBI - need to find which sprint container this PBI belongs to
+      console.log('Dropped on a PBI card:', overId);
       const targetPBI = pbis.find(p => p.id === overId);
-      targetSprintId = targetPBI?.sprint_id || null;
+
+      if (targetPBI) {
+        targetSprintId = targetPBI.sprint_id || null;
+        console.log('Target PBI belongs to sprint:', targetSprintId);
+      } else {
+        // Check if the overId might be a sprint container we missed
+        if (overId.includes('sprint')) {
+          console.log('Assuming this is a sprint container');
+          const match = overId.match(/sprint-(.+)/);
+          if (match) {
+            targetSprintId = match[1];
+          }
+        } else {
+          console.log('ERROR: Could not determine target - invalid drop');
+          return;
+        }
+      }
     }
+
+    console.log('Target sprint ID determined:', targetSprintId);
+    console.log('Current sprint vs Target:', {
+      current: draggedPBI.sprint_id,
+      target: targetSprintId,
+      areEqual: draggedPBI.sprint_id === targetSprintId
+    });
+
+    // Only update if the sprint assignment changed
+    if (draggedPBI.sprint_id === targetSprintId) {
+      console.log('No sprint change needed - already in target location', {
+        currentSprint: draggedPBI.sprint_id,
+        targetSprint: targetSprintId
+      });
+      return;
+    }
+
+    console.log('✅ Updating PBI sprint assignment:', {
+      pbiId,
+      pbiTitle: draggedPBI.title,
+      from: draggedPBI.sprint_id || 'backlog',
+      to: targetSprintId || 'backlog'
+    });
 
     // Update PBI sprint assignment
     try {
@@ -157,7 +225,10 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
       });
 
       if (response.ok) {
+        console.log('Successfully updated PBI sprint');
         fetchData();
+      } else {
+        console.error('Failed to update PBI:', response.status);
       }
     } catch (error) {
       console.error('Error updating PBI:', error);
@@ -165,12 +236,12 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
   };
 
   const getSprintPBIs = (sprintId: string) => {
-    return pbis.filter(pbi => pbi.sprint_id === sprintId)
+    return pbis.filter(pbi => pbi.sprint_id === sprintId && pbi.item_type === 'user_story')
       .sort((a, b) => a.backlog_order - b.backlog_order);
   };
 
   const getBacklogPBIs = () => {
-    return pbis.filter(pbi => !pbi.sprint_id)
+    return pbis.filter(pbi => !pbi.sprint_id && pbi.item_type === 'user_story')
       .sort((a, b) => a.backlog_order - b.backlog_order);
   };
 
@@ -180,8 +251,15 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
 
   // Droppable wrapper component
   function DroppableContainer({ id, children }: { id: string; children: React.ReactNode }) {
-    const { setNodeRef } = useDroppable({ id });
-    return <div ref={setNodeRef} className="h-full">{children}</div>;
+    const { setNodeRef, isOver } = useDroppable({ id });
+    return (
+      <div
+        ref={setNodeRef}
+        className={`h-full ${isOver ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+      >
+        {children}
+      </div>
+    );
   }
 
   if (loading) {
@@ -201,9 +279,12 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={pointerWithin}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onDragOver={(event) => {
+        console.log('Drag over:', { activeId: event.active.id, overId: event.over?.id });
+      }}
     >
       <div className="space-y-6">
         {/* Header with Create Sprint Button */}
@@ -222,7 +303,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           {!showCreateSprint ? (
             <button
               onClick={() => setShowCreateSprint(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               <Plus size={20} />
               Create Sprint
@@ -239,7 +320,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
               />
               <button
                 onClick={handleCreateSprint}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 Save
               </button>
@@ -301,13 +382,16 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           )}
           {plannedSprints.map((sprint) => {
             const sprintPBIs = getSprintPBIs(sprint.id);
+            const droppableId = `sprint-${sprint.id}`;
+
             return (
-              <DroppableContainer key={sprint.id} id={`sprint-${sprint.id}`}>
-                <SortableContext
-                  items={sprintPBIs.map(p => p.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[400px] h-full">
+              <div key={sprint.id} className="h-full">
+                <DroppableContainer id={droppableId}>
+                  <SortableContext
+                    items={sprintPBIs.map(p => p.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[400px] h-full">
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -317,7 +401,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                       <div className="flex items-center gap-1">
                         {sprint.status === 'planned' && (
                           <button
-                            onClick={() => onStartSprint(sprint.id)}
+                            onClick={() => setActivatingSprintId(sprint.id)}
                             className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
                             title="Start Sprint"
                           >
@@ -325,7 +409,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                           </button>
                         )}
                         <button
-                          onClick={() => handleDeleteSprint(sprint.id)}
+                          onClick={() => setDeletingSprintId(sprint.id)}
                           className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                           title="Delete Sprint"
                         >
@@ -351,7 +435,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                       </p>
                     )}
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 min-h-[200px] relative">
                     {sprintPBIs.map((pbi, index) => (
                       <SortablePBICard
                         key={pbi.id}
@@ -361,15 +445,15 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                         onToggleSelect={() => {}}
                       />
                     ))}
-                    {sprintPBIs.length === 0 && (
-                      <div className="text-center text-gray-400 dark:text-gray-600 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                        Drop PBIs here
-                      </div>
-                    )}
+                    {/* Always render a drop zone at the end for empty space */}
+                    <div className={`${sprintPBIs.length === 0 ? 'min-h-[200px]' : 'min-h-[50px]'} text-center text-gray-400 dark:text-gray-600 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg ${sprintPBIs.length > 0 ? 'mt-2' : ''}`}>
+                      {sprintPBIs.length === 0 ? 'Drop PBIs here' : 'Drop more items here'}
+                    </div>
                   </div>
-                  </div>
-                </SortableContext>
-              </DroppableContainer>
+                </div>
+                  </SortableContext>
+                </DroppableContainer>
+              </div>
             );
           })}
         </div>
@@ -383,6 +467,72 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           </div>
         )}
       </DragOverlay>
+
+      {/* Activate Sprint Modal */}
+      {activatingSprintId && (() => {
+        const sprint = sprints.find(s => s.id === activatingSprintId);
+        if (!sprint) return null;
+        const sprintPBIs = getSprintPBIs(sprint.id);
+        const totalPoints = getTotalStoryPoints(sprintPBIs);
+        return (
+          <ActivateSprintModal
+            projectId={projectId}
+            sprint={sprint}
+            sprintPBIs={sprintPBIs}
+            totalStoryPoints={totalPoints}
+            onClose={() => setActivatingSprintId(null)}
+            onSprintActivated={handleSprintActivated}
+          />
+        );
+      })()}
+
+      {/* Delete Sprint Confirmation Modal */}
+      {deletingSprintId && (() => {
+        const sprint = sprints.find(s => s.id === deletingSprintId);
+        if (!sprint) return null;
+        const sprintPBIs = getSprintPBIs(sprint.id);
+        return (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-slate-800 rounded-lg max-w-md w-full p-6 shadow-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Delete Sprint</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">This action cannot be undone</p>
+                </div>
+              </div>
+              <div className="mb-6">
+                <p className="text-gray-700 dark:text-gray-300 mb-3">
+                  Are you sure you want to delete <strong>{sprint.name}</strong>?
+                </p>
+                {sprintPBIs.length > 0 && (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      <strong>{sprintPBIs.length} user {sprintPBIs.length === 1 ? 'story' : 'stories'}</strong> will be moved back to the backlog.
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  onClick={() => setDeletingSprintId(null)}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDeleteSprint(deletingSprintId)}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  Delete Sprint
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </DndContext>
   );
 }

@@ -82,7 +82,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
               filter === 'all'
-                ? 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
+                ? 'bg-blue-600 hover:bg-blue-700 text-white'
                 : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
             }`}
           >
@@ -96,7 +96,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
                 onClick={() => setFilter(status.value)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                   filter === status.value
-                    ? 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
                     : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
                 }`}
               >
@@ -122,7 +122,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
           {onAddProject && (
             <button
               onClick={onAddProject}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors whitespace-nowrap"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors whitespace-nowrap"
             >
               <Plus size={20} />
               Add Project
@@ -144,7 +144,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="mt-4 px-4 py-2 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+              className="mt-4 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               Clear Search
             </button>

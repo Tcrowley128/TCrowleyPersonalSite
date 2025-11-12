@@ -108,6 +108,27 @@ export async function POST(
             }
           }
 
+          // Notify that we're analyzing for suggestions
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'analyzing' })}\n\n`));
+
+          // Analyze the response for actionable insights
+          try {
+            const insights = await analyzeForInsights(fullMessage, project, pbis, sprints, risks, anthropic);
+
+            if (insights && insights.length > 0) {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+                type: 'metadata',
+                metadata: {
+                  hasActionableInsights: true,
+                  insights
+                }
+              })}\n\n`));
+            }
+          } catch (analysisError) {
+            console.error('Error analyzing for insights:', analysisError);
+            // Continue without insights if analysis fails
+          }
+
           // Send done signal
           controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`));
           controller.close();
@@ -132,6 +153,77 @@ export async function POST(
     return NextResponse.json(
       {
         error: 'Failed to process chat message',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// GET endpoint to retrieve conversation history
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ projectId: string }> }
+) {
+  try {
+    const { projectId } = await params;
+
+    // Get user if authenticated
+    const userSupabase = await createClient();
+    const { data: { user } } = await userSupabase.auth.getUser();
+
+    const supabase = createAdminClient();
+
+    // Get project conversations for this project
+    let query = supabase
+      .from('project_conversations')
+      .select(`
+        id,
+        title,
+        created_at,
+        updated_at
+      `)
+      .eq('project_id', projectId);
+
+    // Only filter by user if authenticated
+    if (user) {
+      query = query.or(`user_id.eq.${user.id},user_id.is.null`);
+    } else {
+      query = query.is('user_id', null);
+    }
+
+    const { data: conversations, error: convError } = await query.order('updated_at', { ascending: false });
+
+    if (convError) {
+      throw convError;
+    }
+
+    // Get messages for each conversation
+    const conversationsWithMessages = await Promise.all(
+      (conversations || []).map(async (conv) => {
+        const { data: messages } = await supabase
+          .from('project_conversation_messages')
+          .select('*')
+          .eq('conversation_id', conv.id)
+          .order('created_at', { ascending: true });
+
+        return {
+          ...conv,
+          messages: messages || []
+        };
+      })
+    );
+
+    return NextResponse.json({
+      success: true,
+      conversations: conversationsWithMessages
+    });
+
+  } catch (error) {
+    console.error('Error fetching project chat history:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch chat history',
         details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
@@ -301,4 +393,95 @@ IMPORTANT DATA ISOLATION:
 - If asked about other projects, politely clarify your scope is limited to this project
 
 You are a supportive, knowledgeable Scrum Master helping the team deliver value iteratively and continuously improve.`;
+}
+
+async function analyzeForInsights(
+  assistantMessage: string,
+  project: any,
+  pbis: any[],
+  sprints: any[],
+  risks: any[],
+  anthropic: any
+): Promise<any[]> {
+  try {
+    const analysisPrompt = `You are an expert at analyzing AI assistant responses and extracting actionable insights for project management.
+
+Given the following AI Scrum Master response, identify any SPECIFIC, ACTIONABLE recommendations that could be directly applied to the project data.
+
+PROJECT CONTEXT:
+- Project: ${project.title}
+- PBIs: ${pbis.length} total
+- Sprints: ${sprints.length} total
+- Risks: ${risks.length} total
+
+AI SCRUM MASTER'S RESPONSE:
+${assistantMessage}
+
+TASK: Extract ONLY concrete, actionable suggestions from the response that can be automatically applied. For each suggestion, provide:
+
+1. **type**: The entity type (pbi, user_story, sprint, risk, new_pbi, new_user_story)
+2. **action**: Either "update" (modify existing) or "create" (create new)
+3. **suggestedUpdate**:
+   - entityId: The ID of the entity to update (null if creating new)
+   - entityName: A clear name/title for the entity
+   - field: The field to update (e.g., "story_points", "priority", "description", "title", "goal")
+   - currentValue: The current value (or null if creating new)
+   - suggestedValue: The new recommended value
+   - reason: A brief explanation of why this change is recommended
+
+IMPORTANT:
+- ONLY extract suggestions that are EXPLICIT in the assistant's response
+- Do NOT infer or make up suggestions that weren't clearly stated
+- If the assistant was just answering a question or providing information without recommendations, return an empty array
+- Focus on suggestions that modify PBIs, sprints, or risks
+- For story point estimates, only extract if the assistant gave SPECIFIC numbers for SPECIFIC items
+- Return a JSON array of insights
+
+Return ONLY valid JSON in this exact format:
+[
+  {
+    "type": "pbi",
+    "action": "update",
+    "suggestedUpdate": {
+      "entityId": "actual-pbi-id-from-project",
+      "entityName": "PBI Title",
+      "field": "story_points",
+      "currentValue": "3",
+      "suggestedValue": "5",
+      "reason": "Complexity increased due to API integration requirements"
+    }
+  }
+]
+
+If there are no actionable suggestions, return: []`;
+
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      temperature: 0,
+      messages: [
+        {
+          role: 'user',
+          content: analysisPrompt
+        }
+      ]
+    });
+
+    const content = response.content[0].text;
+
+    // Extract JSON from the response
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      console.log('[analyzeForInsights] No JSON array found in response');
+      return [];
+    }
+
+    const insights = JSON.parse(jsonMatch[0]);
+    console.log('[analyzeForInsights] Extracted insights:', insights.length);
+
+    return Array.isArray(insights) ? insights : [];
+  } catch (error) {
+    console.error('[analyzeForInsights] Error:', error);
+    return [];
+  }
 }

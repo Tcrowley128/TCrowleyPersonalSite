@@ -17,15 +17,30 @@ import {
   Minimize2,
   AlertCircle,
   Target,
+  Wand2,
+  Plus,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ProjectUpdateModal from "./ProjectUpdateModal";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   created_at?: string;
   id?: string;
+  metadata?: {
+    hasActionableInsights?: boolean;
+    insights?: any[];
+  };
+}
+
+interface Conversation {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  messages: Message[];
 }
 
 interface ProjectChatProps {
@@ -43,7 +58,13 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputMessage, setInputMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [isAnalyzingForSuggestions, setIsAnalyzingForSuggestions] = useState(false);
+    const [conversationId, setConversationId] = useState<string | null>(null);
+    const [conversations, setConversations] = useState<Conversation[]>([]);
     const [error, setError] = useState("");
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [skipLoadingHistory, setSkipLoadingHistory] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -59,13 +80,22 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
       }
     }, [isOpen]);
 
+    // Load conversation history when chat opens
+    useEffect(() => {
+      if (isOpen && conversations.length === 0 && !skipLoadingHistory) {
+        loadConversationHistory();
+      }
+    }, [isOpen]);
+
     // Expose method to parent component
     useImperativeHandle(ref, () => ({
       openWithMessage: (message: string) => {
         setIsOpen(true);
         setIsExpanded(true);
+        setConversationId(null);
         setMessages([]);
         setError("");
+        setSkipLoadingHistory(true);
         setInputMessage(message);
         setTimeout(() => {
           setInputMessage(message);
@@ -75,6 +105,54 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
         }, 300);
       },
     }));
+
+    const loadConversationHistory = async () => {
+      try {
+        const response = await fetch(`/api/projects/${projectId}/chat`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (data.conversations && data.conversations.length > 0) {
+          setConversations(data.conversations);
+          const latestConv = data.conversations[0];
+          setConversationId(latestConv.id);
+          setMessages(latestConv.messages || []);
+        }
+      } catch (err) {
+        console.error("Error loading conversation:", err);
+      }
+    };
+
+    const loadConversationList = async () => {
+      try {
+        const response = await fetch(`/api/projects/${projectId}/chat`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        if (data.conversations && data.conversations.length > 0) {
+          setConversations(data.conversations);
+          // Don't overwrite messages - keep the current state with metadata
+        }
+      } catch (err) {
+        console.error("Error loading conversation list:", err);
+      }
+    };
+
+    const startNewConversation = () => {
+      setConversationId(null);
+      setMessages([]);
+      setError("");
+      setSkipLoadingHistory(false);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    };
+
+    const loadConversation = (conv: Conversation) => {
+      setConversationId(conv.id);
+      setMessages(conv.messages || []);
+      setError("");
+    };
 
     const sendMessageWithContent = async (messageContent: string) => {
       if (!messageContent.trim() || isLoading) return;
@@ -103,6 +181,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             message: userMessage,
+            conversation_id: conversationId,
           }),
         });
 
@@ -113,6 +192,8 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
         let streamedContent = '';
+        let messageMetadata: any = {};
+        let newConversationId = '';
 
         if (reader) {
           while (true) {
@@ -127,19 +208,43 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                 try {
                   const data = JSON.parse(line.slice(6));
 
-                  if (data.type === 'text') {
+                  if (data.type === 'conversation_id') {
+                    newConversationId = data.conversation_id;
+                    if (!conversationId) {
+                      setConversationId(newConversationId);
+                    }
+                  } else if (data.type === 'text') {
                     streamedContent += data.text;
                     setMessages((prev) => {
                       const updated = [...prev];
                       updated[assistantMessageIndex] = {
                         role: "assistant",
                         content: streamedContent,
+                        metadata: messageMetadata,
+                      };
+                      return updated;
+                    });
+                  } else if (data.type === 'analyzing') {
+                    // AI is analyzing for suggestions
+                    setIsAnalyzingForSuggestions(true);
+                  } else if (data.type === 'metadata') {
+                    // Received metadata with insights
+                    messageMetadata = data.metadata;
+                    setIsAnalyzingForSuggestions(false);
+                    setMessages((prev) => {
+                      const updated = [...prev];
+                      updated[assistantMessageIndex] = {
+                        role: "assistant",
+                        content: streamedContent,
+                        metadata: messageMetadata,
                       };
                       return updated;
                     });
                   } else if (data.type === 'done') {
                     // Streaming complete
+                    setIsAnalyzingForSuggestions(false);
                   } else if (data.type === 'error') {
+                    setIsAnalyzingForSuggestions(false);
                     throw new Error(data.error || 'Streaming error');
                   }
                 } catch (parseError) {
@@ -149,6 +254,9 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
             }
           }
         }
+
+        // Reload conversation list (but don't overwrite current messages)
+        await loadConversationList();
       } catch (err) {
         console.error("Error sending message:", err);
         setError(err instanceof Error ? err.message : "Failed to send message");
@@ -270,8 +378,53 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                   </p>
                 </div>
 
-                {/* Messages Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {/* Main Content Area */}
+                <div className="flex-1 flex overflow-hidden">
+                  {/* Conversation History Sidebar - Hidden on mobile */}
+                  <div className="hidden md:flex w-64 border-r border-gray-200 dark:border-gray-700 flex-col bg-gray-50 dark:bg-slate-900">
+                    <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                      <button
+                        onClick={startNewConversation}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                        New Conversation
+                      </button>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-2">
+                      {conversations.length === 0 ? (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center py-4">
+                          No conversations yet
+                        </p>
+                      ) : (
+                        <div className="space-y-1">
+                          {conversations.map((conv) => (
+                            <button
+                              key={conv.id}
+                              onClick={() => loadConversation(conv)}
+                              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                                conv.id === conversationId
+                                  ? "bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 border border-blue-200 dark:border-blue-800"
+                                  : "hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-700 dark:text-gray-300"
+                              }`}
+                            >
+                              <div className="font-medium truncate mb-0.5">
+                                {conv.title}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {new Date(conv.updated_at).toLocaleDateString()}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Messages Area */}
+                  <div className="flex-1 flex flex-col overflow-hidden">
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center px-4">
                       <Target className="w-12 h-12 text-blue-600 dark:text-blue-400 mb-4" />
@@ -290,7 +443,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                           .map((question, i) => (
                             <button
                               key={i}
-                              onClick={() => setInputMessage(question)}
+                              onClick={() => sendMessageWithContent(question)}
                               className="w-full text-left text-xs bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-900 dark:text-blue-300 p-2 rounded-lg transition-colors"
                             >
                               {question}
@@ -303,7 +456,7 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                       {messages.map((msg, index) => (
                         <div
                           key={index}
-                          className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
                         >
                           <div
                             className={`max-w-[80%] rounded-2xl px-4 py-2 break-words overflow-wrap-anywhere ${
@@ -332,6 +485,19 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                               </div>
                             )}
                           </div>
+                          {/* Apply Suggestions Button */}
+                          {msg.role === "assistant" && msg.metadata?.hasActionableInsights && (
+                            <button
+                              onClick={() => {
+                                setSelectedMessage(msg);
+                                setShowUpdateModal(true);
+                              }}
+                              className="mt-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-xs rounded-lg transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                            >
+                              <Wand2 className="w-3 h-3" />
+                              Apply {msg.metadata.insights?.length || 0} Suggestion{msg.metadata.insights?.length !== 1 ? 's' : ''}
+                            </button>
+                          )}
                         </div>
                       ))}
                       {isLoading && (
@@ -346,53 +512,80 @@ const ProjectChat = forwardRef<ProjectChatHandle, ProjectChatProps>(
                           </div>
                         </div>
                       )}
+                      {isAnalyzingForSuggestions && (
+                        <div className="flex justify-start">
+                          <div className="bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-200 dark:border-purple-800 rounded-2xl px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <Wand2 className="w-4 h-4 animate-pulse text-purple-600 dark:text-purple-400" />
+                              <span className="text-sm text-purple-700 dark:text-purple-300 font-medium">
+                                Analyzing for actionable suggestions...
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </>
                   )}
                   <div ref={messagesEndRef} />
-                </div>
+                    </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800 flex-shrink-0">
-                    <p className="text-xs text-red-800 dark:text-red-200">
-                      {error}
-                    </p>
-                  </div>
-                )}
+                    {/* Error Message */}
+                    {error && (
+                      <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20 border-t border-red-200 dark:border-red-800 flex-shrink-0">
+                        <p className="text-xs text-red-800 dark:text-red-200">
+                          {error}
+                        </p>
+                      </div>
+                    )}
 
-                {/* Input Area */}
-                <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
-                  <div className="flex gap-2">
-                    <textarea
-                      ref={inputRef}
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      placeholder="Ask about sprint planning, user stories, or risks..."
-                      disabled={isLoading}
-                      className="flex-1 resize-none bg-gray-100 dark:bg-slate-700 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50"
-                      rows={2}
-                    />
-                    <button
-                      onClick={sendMessage}
-                      disabled={!inputMessage.trim() || isLoading}
-                      className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-gray-700 dark:text-gray-200 p-3 rounded-xl transition-colors disabled:cursor-not-allowed self-end"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Send className="w-5 h-5" />
-                      )}
-                    </button>
+                    {/* Input Area */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex-shrink-0">
+                      <div className="flex gap-2">
+                        <textarea
+                          ref={inputRef}
+                          value={inputMessage}
+                          onChange={(e) => setInputMessage(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          placeholder="Ask about sprint planning, user stories, or risks..."
+                          disabled={isLoading}
+                          className="flex-1 resize-none bg-gray-100 dark:bg-slate-700 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent dark:text-white placeholder-gray-500 dark:placeholder-gray-400 disabled:opacity-50"
+                          rows={2}
+                        />
+                        <button
+                          onClick={sendMessage}
+                          disabled={!inputMessage.trim() || isLoading}
+                          className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-gray-700 dark:text-gray-200 p-3 rounded-xl transition-colors disabled:cursor-not-allowed self-end"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <Send className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Press Enter to send, Shift+Enter for new line
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    Press Enter to send, Shift+Enter for new line
-                  </p>
                 </div>
               </motion.div>
             </>
           )}
         </AnimatePresence>
+
+        {/* Update Modal */}
+        {selectedMessage && (
+          <ProjectUpdateModal
+            isOpen={showUpdateModal}
+            onClose={() => {
+              setShowUpdateModal(false);
+              setSelectedMessage(null);
+            }}
+            message={selectedMessage}
+            projectId={projectId}
+          />
+        )}
       </>
     );
   },

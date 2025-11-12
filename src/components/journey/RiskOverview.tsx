@@ -206,7 +206,7 @@ export function RiskOverview({ assessmentId, projects, onAskAI }: RiskOverviewPr
                     setShowProjectDropdown(!showProjectDropdown);
                   }
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors font-medium text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium text-sm"
               >
                 <Plus size={16} />
                 Add Risk

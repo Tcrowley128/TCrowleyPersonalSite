@@ -443,7 +443,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
     const todayPercent = (todayOffset / totalDays) * 100;
 
     return {
-      projects: projectsWithDates, // Show all filtered projects
+      projects: projectsWithDates,
       monthMarkers,
       todayPercent: Math.max(0, Math.min(100, todayPercent)),
       totalProjects: projectsWithDates.length
@@ -523,7 +523,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
           {hasActiveFilters && (
             <button
               onClick={clearAllFilters}
-              className="text-xs px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors flex items-center gap-1"
+              className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-1"
             >
               <span>Clear All Filters</span>
             </button>

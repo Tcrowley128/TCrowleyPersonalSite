@@ -199,10 +199,11 @@ export default function JourneyWorkspace() {
   const inProgressProjects = projects.filter(p => p.status === 'in_progress');
 
   return (
-    <div className="h-full">
-      <div className="max-w-7xl mx-auto px-4 py-8 h-full flex flex-col">
-        {/* Header */}
-        <div className="mb-8">
+    <div className="h-full flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
@@ -307,8 +308,8 @@ export default function JourneyWorkspace() {
           />
         )}
 
-        {/* Content Area - Scrollable */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4 pb-6">
+        {/* Content Area */}
+        <div className="pb-6">
           {/* Dashboard Section */}
           {activeSection === 'dashboard' && (
             <DashboardView
@@ -458,6 +459,7 @@ export default function JourneyWorkspace() {
               />
             </div>
           )}
+        </div>
         </div>
       </div>
 

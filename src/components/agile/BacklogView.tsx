@@ -287,7 +287,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
           <div className="flex items-center justify-center gap-2">
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
             >
               <Plus size={18} />
               Add Item
@@ -353,7 +353,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors text-sm"
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
                 >
                   <Plus size={16} />
                   <span className="hidden sm:inline">Add Item</span>
@@ -374,7 +374,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
                 <button
                   onClick={() => onStartSprint(Array.from(selectedPbis), selectedStoryPoints)}
                   disabled={selectedPbis.size === 0}
-                  className="flex items-center gap-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   <Play size={16} />
                   <span className="hidden lg:inline">Start Sprint</span>

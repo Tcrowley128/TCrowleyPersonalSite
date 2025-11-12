@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import RetroBoard from "@/components/retro/RetroBoard";
 import { Loader2 } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 export default function RetroPage({
   params,
@@ -75,6 +76,7 @@ export default function RetroPage({
           onBack={handleBack}
         />
       </div>
+      <Footer />
     </div>
   );
 }
