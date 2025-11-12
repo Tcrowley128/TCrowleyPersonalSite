@@ -47,19 +47,21 @@ export async function POST(
       .single();
 
     // Fetch journey data - projects, sprints, PBIs, risks
-    const { data: projects } = await supabase
+    const { data: projectsData } = await supabase
       .from('assessment_projects')
       .select('*')
       .eq('assessment_id', assessment_id)
       .order('created_at', { ascending: false });
+    const projects = projectsData || [];
 
-    const { data: risks } = await supabase
+    const { data: risksData } = await supabase
       .from('assessment_risks')
       .select('*')
       .eq('assessment_id', assessment_id);
+    const risks = risksData || [];
 
     // Get PBIs for all projects
-    const projectIds = (projects || []).map(p => p.id);
+    const projectIds = projects.map(p => p.id);
     let pbis: any[] = [];
     let sprints: any[] = [];
 
