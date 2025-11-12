@@ -513,7 +513,7 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
                                         {msg.content}
                                       </ReactMarkdown>
                                     </div>
-                                    {msg.id && msg.content && msg.metadata?.hasActionableInsights && (
+                                    {msg.id && msg.content && msg.metadata?.hasActionableInsights && msg.metadata?.insights && (
                                       <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
                                         <button
                                           onClick={() => handleApplyToJourney(msg)}
