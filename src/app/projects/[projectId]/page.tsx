@@ -108,12 +108,12 @@ export default function ProjectSprintManagement() {
   console.log('Project data:', project); // Debug log
 
   return (
-    <>
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
       <Navigation />
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 pt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="flex-1 overflow-hidden pt-16">
+        <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
           {/* Header Section - Clean Plain Text */}
-          <div className="mb-8 space-y-4">
+          <div className="mb-6 space-y-4 flex-shrink-0">
             <button
               onClick={handleBack}
               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -142,16 +142,18 @@ export default function ProjectSprintManagement() {
             </div>
           </div>
 
-          {/* Sprint Management */}
-          <SprintManagement
-            projectId={projectId}
-            onAskAI={handleAskAI}
-          />
+          {/* Sprint Management - Scrollable Content */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+            <SprintManagement
+              projectId={projectId}
+              onAskAI={handleAskAI}
+            />
+          </div>
         </div>
       </div>
 
       {/* Project Chat */}
       <ProjectChat ref={projectChatRef} projectId={projectId} />
-    </>
+    </div>
   );
 }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Loader2, Plus, Calendar, Play, Trash2, Edit2 } from 'lucide-react';
+import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus } from 'lucide-react';
 import { SortablePBICard } from './SortablePBICard';
 
 interface PBI {
