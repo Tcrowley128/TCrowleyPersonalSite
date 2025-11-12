@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, MessageCircle } from 'lucide-react';
 import { SprintManagement } from '@/components/agile/SprintManagement';
 import { useAuth } from '@/contexts/AuthContext';
 import Navigation from '@/components/Navigation';
+import ProjectChat, { ProjectChatHandle } from '@/components/project/ProjectChat';
 
 interface Project {
   id: string;
@@ -25,6 +26,7 @@ export default function ProjectSprintManagement() {
   const { user } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
+  const projectChatRef = useRef<ProjectChatHandle>(null);
 
   useEffect(() => {
     fetchProject();
@@ -59,9 +61,16 @@ export default function ProjectSprintManagement() {
   };
 
   const handleAskAI = (message: string) => {
-    // Navigate to journey with AI chat open
-    if (project?.assessment_id) {
-      router.push(`/assessment/journey/${project.assessment_id}?section=sprints&project=${projectId}&chat=true&message=${encodeURIComponent(message)}`);
+    // Open project-specific AI chat
+    if (projectChatRef.current) {
+      projectChatRef.current.openWithMessage(message);
+    }
+  };
+
+  const handleOpenChat = () => {
+    const chatTrigger = document.querySelector('[data-project-chat-trigger]') as HTMLButtonElement;
+    if (chatTrigger) {
+      chatTrigger.click();
     }
   };
 
@@ -105,13 +114,22 @@ export default function ProjectSprintManagement() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Header Section - Clean Plain Text */}
           <div className="mb-8 space-y-4">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Journey</span>
-            </button>
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span className="font-medium">Back to Journey</span>
+              </button>
+              <button
+                onClick={handleOpenChat}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">AI Scrum Master</span>
+              </button>
+            </div>
             <div className="border-l-4 border-blue-600 pl-4 py-2">
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                 {project.title}
@@ -131,6 +149,9 @@ export default function ProjectSprintManagement() {
           />
         </div>
       </div>
+
+      {/* Project Chat */}
+      <ProjectChat ref={projectChatRef} projectId={projectId} />
     </div>
   );
 }
