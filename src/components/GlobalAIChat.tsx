@@ -35,13 +35,9 @@ export default function GlobalAIChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Show button after scrolling
+  // Show button immediately (always visible)
   useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 300);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    setIsVisible(true);
   }, []);
 
   // Auto-scroll to bottom
