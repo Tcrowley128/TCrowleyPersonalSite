@@ -177,20 +177,25 @@ export default function WorkPage() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Featured Projects</h2>
             </div>
 
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-6 md:grid-cols-2 gap-8">
               {accomplishments.map((accomplishment, index) => {
-                const isLarge = index === 0 || index === 3; // Make first and fourth cards larger
+                // First 2 cards (Assessment Tool & Journey Platform) = 3 cols each (half width)
+                // Cards 3 & 4 = 3 cols each (half width)
+                // Cards 5+ = 2 cols each (third width)
+                let colSpan = 'lg:col-span-2'; // Default 3 columns (1/3 width)
+                if (index <= 1) {
+                  colSpan = 'lg:col-span-3'; // First two cards take half width
+                } else if (index === 2 || index === 3) {
+                  colSpan = 'lg:col-span-3'; // Cards 3 & 4 take half width
+                }
+
                 return (
                   <motion.div
                     key={accomplishment.id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
-                    className={`
-                      ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
-                      bg-white dark:bg-slate-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                      border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group
-                    `}
+                    className={`${colSpan} bg-white dark:bg-slate-700 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group flex flex-col`}
                   >
                     {/* Refined header with subtle styling */}
                     <div className="bg-gray-50 dark:bg-slate-600 border-b border-gray-100 dark:border-gray-700 p-6">
@@ -225,8 +230,8 @@ export default function WorkPage() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-6">
-                      <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    <div className="p-6 flex-1 flex flex-col">
+                      <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed flex-1">
                         {accomplishment.description}
                       </p>
 

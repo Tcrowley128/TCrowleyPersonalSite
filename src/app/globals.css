@@ -24,12 +24,28 @@
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100%;
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Root app container needs height for full-screen layouts like journey */
+#__next, [data-nextjs-scroll-focus-boundary] {
+  height: 100%;
 }
 
 /* Dark mode scrollbar */

@@ -274,6 +274,93 @@ export default function AssessmentLanding() {
         </motion.div>
       </section>
 
+      {/* Journey Platform Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-slate-800 dark:to-slate-900 rounded-3xl my-16">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={containerVariants}
+          className="text-center"
+        >
+          <motion.div
+            variants={itemVariants}
+            className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-4 py-2 rounded-full text-sm font-medium mb-6"
+          >
+            <Sparkles size={16} />
+            What Happens Next?
+          </motion.div>
+
+          <motion.h2
+            variants={itemVariants}
+            className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6"
+          >
+            Turn Insights Into Action with the
+            <br />
+            <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              Transformation Journey Platform
+            </span>
+          </motion.h2>
+
+          <motion.p
+            variants={itemVariants}
+            className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+          >
+            Your assessment is just the beginning. Register to unlock our comprehensive Journey Management Platform
+            that helps you plan, track, and execute your entire digital transformation initiative.
+          </motion.p>
+
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <motion.div variants={itemVariants} className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <Target className="text-blue-600 dark:text-blue-400" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Project Portfolio Management</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Organize and track multiple transformation initiatives with comprehensive project views, risk tracking, and progress monitoring
+              </p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <Users className="text-purple-600 dark:text-purple-400" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Team Collaboration Tools</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Sprint planning, backlog management, task assignments, and team retrospectives - all in one platform
+              </p>
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md">
+              <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <Sparkles className="text-green-600 dark:text-green-400" size={24} />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AI-Powered Assistant</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">
+                Get intelligent insights, recommendations, and guidance throughout your transformation journey with our AI assistant
+              </p>
+            </motion.div>
+          </div>
+
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/signup">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+              >
+                Register to Access Platform
+                <ArrowRight size={20} />
+              </motion.button>
+            </Link>
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
+              <CheckCircle size={16} className="text-green-600" />
+              <span>Free assessment included with registration</span>
+            </div>
+          </motion.div>
+        </motion.div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-600 py-16">
         <motion.div

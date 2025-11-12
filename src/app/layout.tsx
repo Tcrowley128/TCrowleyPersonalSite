@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,9 +44,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${caveat.variable} antialiased bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
       >
         <ThemeProvider>
-          {children}
-          <Analytics />
-          <SpeedInsights />
+          <AuthProvider>
+            {children}
+            <Analytics />
+            <SpeedInsights />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

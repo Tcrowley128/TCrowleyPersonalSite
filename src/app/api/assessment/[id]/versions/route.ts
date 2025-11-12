@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // GET /api/assessment/[id]/versions
 // List all versions of an assessment
@@ -8,8 +8,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { id: assessmentId } = await params;
+
+    console.log('[versions API] Fetching versions for assessment:', assessmentId);
 
     // Fetch all versions
     const { data: versions, error } = await supabase
@@ -19,18 +21,20 @@ export async function GET(
       .order('version_number', { ascending: false });
 
     if (error) {
-      console.error('Error fetching versions:', error);
+      console.error('[versions API] Error fetching versions:', error);
       return NextResponse.json(
-        { error: 'Failed to fetch versions' },
+        { error: 'Failed to fetch versions', details: error.message },
         { status: 500 }
       );
     }
+
+    console.log('[versions API] Found versions:', versions?.length || 0);
 
     return NextResponse.json({
       versions: versions || [],
     });
   } catch (error) {
-    console.error('Unexpected error in GET /api/assessment/[id]/versions:', error);
+    console.error('[versions API] Unexpected error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -45,7 +49,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { id: assessmentId } = await params;
     const body = await request.json();
 

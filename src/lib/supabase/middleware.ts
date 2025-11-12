@@ -32,15 +32,26 @@ export async function updateSession(request: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  // Protect admin routes - redirect to login if no session
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    console.log('🔒 Middleware checking /admin route');
+  // Define protected routes that require authentication
+  const protectedRoutes = ['/admin', '/assessment', '/projects'];
+  const adminRoutes = ['/admin'];
+  const isProtectedRoute = protectedRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+  const isAdminRoute = adminRoutes.some(route =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
+  // Protect routes - redirect to login if no session
+  if (isProtectedRoute) {
+    console.log('🔒 Middleware checking protected route:', request.nextUrl.pathname);
     console.log('Session exists:', !!session);
 
     if (!session) {
       console.log('❌ No session - redirecting to /login');
       const url = request.nextUrl.clone();
       url.pathname = '/login';
+      url.searchParams.set('redirect', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
 
@@ -52,10 +63,27 @@ export async function updateSession(request: NextRequest) {
       console.log('❌ No user or error - redirecting to /login');
       const url = request.nextUrl.clone();
       url.pathname = '/login';
+      url.searchParams.set('redirect', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
 
-    console.log('✅ Access granted to /admin');
+    // Check if this is an admin route and restrict to admin email only
+    if (isAdminRoute) {
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      if (!adminEmail) {
+        console.error('⚠️ ADMIN_EMAIL not configured in environment variables');
+      }
+
+      if (adminEmail && user.email !== adminEmail) {
+        console.log('❌ Non-admin user trying to access admin route - redirecting to home');
+        const url = request.nextUrl.clone();
+        url.pathname = '/';
+        return NextResponse.redirect(url);
+      }
+    }
+
+    console.log('✅ Access granted to', request.nextUrl.pathname);
   }
 
   return supabaseResponse;

@@ -12,12 +12,12 @@ export default function AssessmentLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="h-full flex flex-col overflow-hidden">
       <Navigation />
-      <main className="pt-16">
+      <main className="flex-1 pt-16 bg-gray-50 dark:bg-slate-900 overflow-y-auto overflow-x-hidden">
         {children}
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
