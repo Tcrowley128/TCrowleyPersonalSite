@@ -65,13 +65,13 @@ export async function POST(
 
     if (projectIds.length > 0) {
       const { data: pbisData } = await supabase
-        .from('project_pbis')
+        .from('product_backlog_items')
         .select('*')
         .in('project_id', projectIds);
       pbis = pbisData || [];
 
       const { data: sprintsData } = await supabase
-        .from('project_sprints')
+        .from('sprints')
         .select('*')
         .in('project_id', projectIds);
       sprints = sprintsData || [];
