@@ -65,6 +65,7 @@ interface Project {
   documentation_links: any;
   lessons_learned: string | null;
   comments: any;
+  comment_count?: number;
   notes: string | null;
 
   // Metadata
@@ -283,7 +284,7 @@ export function ProjectDetailsModal({ project, onClose, onUpdate }: ProjectDetai
           >
             <MessageSquare size={16} className="inline mr-2" />
             Comments
-            {project.comment_count > 0 && (
+            {(project.comment_count ?? 0) > 0 && (
               <span className="ml-2 px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full text-xs font-bold">
                 {project.comment_count}
               </span>
