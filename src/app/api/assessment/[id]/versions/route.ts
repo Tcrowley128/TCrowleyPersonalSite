@@ -49,7 +49,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     const { id: assessmentId } = await params;
     const body = await request.json();
 
