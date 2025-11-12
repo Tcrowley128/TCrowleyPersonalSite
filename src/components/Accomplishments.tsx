@@ -30,18 +30,13 @@ export default function Accomplishments() {
 
         <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
           {accomplishments.map((accomplishment, index) => {
-            const isLarge = index === 0 || index === 3; // Make first and fourth cards larger
             return (
               <motion.div
                 key={accomplishment.id}
                 initial={{ opacity: 0, y: 60 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className={`
-                  ${isLarge ? 'lg:col-span-2' : 'lg:col-span-1'}
-                  bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1
-                  border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group
-                `}
+                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group flex flex-col"
               >
                 {/* Refined header with subtle styling */}
                 <div className="bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-600 p-6">
@@ -76,8 +71,8 @@ export default function Accomplishments() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                <div className="p-6 flex-1 flex flex-col">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed flex-1">
                     {accomplishment.description}
                   </p>
 
