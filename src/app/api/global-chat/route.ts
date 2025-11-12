@@ -71,7 +71,7 @@ Be helpful, professional, and conversational. Guide users to the appropriate too
 
     // Call Claude API
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-20240620',
       max_tokens: 2048,
       system: systemPrompt,
       messages: messages,
