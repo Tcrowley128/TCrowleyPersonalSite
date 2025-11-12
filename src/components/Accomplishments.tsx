@@ -28,15 +28,25 @@ export default function Accomplishments() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-6 md:grid-cols-2 gap-8">
           {accomplishments.map((accomplishment, index) => {
+            // First 2 cards (Assessment Tool & Journey Platform) = 3 cols each (half width)
+            // Cards 3 & 4 = 3 cols each (half width)
+            // Cards 5+ = 2 cols each (third width)
+            let colSpan = 'lg:col-span-2'; // Default 3 columns (1/3 width)
+            if (index <= 1) {
+              colSpan = 'lg:col-span-3'; // First two cards take half width
+            } else if (index === 2 || index === 3) {
+              colSpan = 'lg:col-span-3'; // Cards 3 & 4 take half width
+            }
+
             return (
               <motion.div
                 key={accomplishment.id}
                 initial={{ opacity: 0, y: 60 }}
                 animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 60 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group flex flex-col"
+                className={`${colSpan} bg-white dark:bg-slate-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-400 overflow-hidden group flex flex-col`}
               >
                 {/* Refined header with subtle styling */}
                 <div className="bg-gray-50 dark:bg-slate-700 border-b border-gray-100 dark:border-gray-600 p-6">
