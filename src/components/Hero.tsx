@@ -1,9 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ArrowDown, Linkedin, Mail } from 'lucide-react';
+import { ArrowDown, Linkedin, Mail, LogIn, UserPlus } from 'lucide-react';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Hero() {
+  const { user } = useAuth();
+
   const scrollToNext = () => {
     const aboutSection = document.querySelector('#about');
     if (aboutSection) {
@@ -224,6 +228,29 @@ export default function Hero() {
                 <Mail size={24} />
               </a>
             </motion.div>
+
+            {/* Login/Register Buttons - Only show if user is not logged in */}
+            {!user && (
+              <motion.div
+                className="flex justify-center gap-4 pt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.9 }}
+              >
+                <Link href="/login">
+                  <button className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-400 rounded-lg hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-white transition-all duration-200">
+                    <LogIn size={18} />
+                    Login
+                  </button>
+                </Link>
+                <Link href="/signup">
+                  <button className="flex items-center gap-2 px-6 py-2.5 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-200 shadow-md hover:shadow-lg">
+                    <UserPlus size={18} />
+                    Register
+                  </button>
+                </Link>
+              </motion.div>
+            )}
           </motion.div>
 
           <motion.div
