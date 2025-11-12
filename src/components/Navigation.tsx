@@ -3,7 +3,7 @@
 // Force rebuild to clear Vercel cache - 2025-10-29
 import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X, Shield, LogOut, User, ChevronDown } from 'lucide-react';
+import { Menu, X, Shield, LogOut, User, ChevronDown, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -146,6 +146,12 @@ export default function Navigation() {
 
                         {/* Menu Items */}
                         <div className="py-2">
+                          <Link href="/my-assessments" onClick={() => setShowUserMenu(false)}>
+                            <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 cursor-pointer">
+                              <FileText size={16} className="text-blue-600 dark:text-blue-400" />
+                              My Assessments
+                            </div>
+                          </Link>
                           <Link href="/admin" onClick={() => setShowUserMenu(false)}>
                             <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center gap-2 cursor-pointer">
                               <Shield size={16} className="text-blue-600 dark:text-blue-400" />
@@ -228,11 +234,23 @@ export default function Navigation() {
                       <User size={18} className="text-blue-600 dark:text-blue-400" />
                       <span className="truncate">{user.email}</span>
                     </motion.div>
-                    <Link href="/admin">
+                    <Link href="/my-assessments">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.05 * (navItems.length + 1) }}
+                        onClick={handleNavigation}
+                        className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 text-base font-medium w-full text-left transition-colors duration-200 flex items-center gap-2"
+                      >
+                        <FileText size={18} />
+                        My Assessments
+                      </motion.div>
+                    </Link>
+                    <Link href="/admin">
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * (navItems.length + 2) }}
                         onClick={handleNavigation}
                         className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 block px-3 py-2 text-base font-medium w-full text-left transition-colors duration-200 flex items-center gap-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-blue-50 dark:bg-blue-900/20"
                       >
@@ -243,7 +261,7 @@ export default function Navigation() {
                     <motion.button
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 * (navItems.length + 2) }}
+                      transition={{ delay: 0.05 * (navItems.length + 3) }}
                       onClick={handleLogout}
                       className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 block px-3 py-2 text-base font-medium w-full text-left transition-colors duration-200 flex items-center gap-2"
                     >
@@ -255,7 +273,7 @@ export default function Navigation() {
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * (navItems.length + (user ? 3 : 0)) }}
+                  transition={{ delay: 0.05 * (navItems.length + (user ? 4 : 0)) }}
                   className="px-3 py-2 flex items-center gap-2"
                 >
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme:</span>
