@@ -143,7 +143,7 @@ export default function ProjectSprintManagement() {
           </div>
 
           {/* Sprint Management - Scrollable Content */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4">
             <SprintManagement
               projectId={projectId}
               onAskAI={handleAskAI}

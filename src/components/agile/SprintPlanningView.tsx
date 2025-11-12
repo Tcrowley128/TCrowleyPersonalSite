@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragEndEvent, DragOverlay, closestCorners, PointerSensor, useSensor, useSensors, DragStartEvent, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus } from 'lucide-react';
 import { SortablePBICard } from './SortablePBICard';
@@ -178,6 +178,12 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
     return pbiList.reduce((sum, pbi) => sum + (pbi.story_points || 0), 0);
   };
 
+  // Droppable wrapper component
+  function DroppableContainer({ id, children }: { id: string; children: React.ReactNode }) {
+    const { setNodeRef } = useDroppable({ id });
+    return <div ref={setNodeRef} className="h-full">{children}</div>;
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -252,32 +258,34 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
 
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Product Backlog */}
-          <SortableContext id="backlog" items={backlogPBIs.map(p => p.id)} strategy={verticalListSortingStrategy}>
-            <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4 min-h-[400px]">
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product Backlog</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {backlogPBIs.length} items • {getTotalStoryPoints(backlogPBIs)} points
-                </p>
+          <DroppableContainer id="backlog">
+            <SortableContext items={backlogPBIs.map(p => p.id)} strategy={verticalListSortingStrategy}>
+              <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4 min-h-[400px] h-full">
+                <div className="mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product Backlog</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {backlogPBIs.length} items • {getTotalStoryPoints(backlogPBIs)} points
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {backlogPBIs.map((pbi, index) => (
+                    <SortablePBICard
+                      key={pbi.id}
+                      pbi={pbi}
+                      index={index}
+                      isSelected={false}
+                      onToggleSelect={() => {}}
+                    />
+                  ))}
+                  {backlogPBIs.length === 0 && (
+                    <div className="text-center text-gray-400 dark:text-gray-600 py-8">
+                      No items in backlog
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="space-y-2">
-                {backlogPBIs.map((pbi, index) => (
-                  <SortablePBICard
-                    key={pbi.id}
-                    pbi={pbi}
-                    index={index}
-                    isSelected={false}
-                    onToggleSelect={() => {}}
-                  />
-                ))}
-                {backlogPBIs.length === 0 && (
-                  <div className="text-center text-gray-400 dark:text-gray-600 py-8">
-                    No items in backlog
-                  </div>
-                )}
-              </div>
-            </div>
-          </SortableContext>
+            </SortableContext>
+          </DroppableContainer>
 
           {/* Sprint Columns - Only show planned sprints */}
           {plannedSprints.length === 0 && (
@@ -294,13 +302,12 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           {plannedSprints.map((sprint) => {
             const sprintPBIs = getSprintPBIs(sprint.id);
             return (
-              <SortableContext
-                key={sprint.id}
-                id={`sprint-${sprint.id}`}
-                items={sprintPBIs.map(p => p.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[400px]">
+              <DroppableContainer key={sprint.id} id={`sprint-${sprint.id}`}>
+                <SortableContext
+                  items={sprintPBIs.map(p => p.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[400px] h-full">
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
@@ -360,8 +367,9 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                       </div>
                     )}
                   </div>
-                </div>
-              </SortableContext>
+                  </div>
+                </SortableContext>
+              </DroppableContainer>
             );
           })}
         </div>
