@@ -4,10 +4,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 // POST /api/comments/[commentId]/reactions - Add or remove a reaction
 export async function POST(
   request: NextRequest,
-  { params }: { params: { commentId: string } }
+  { params }: { params: Promise<{ commentId: string }> }
 ) {
   try {
-    const { commentId } = params;
+    const { commentId } = await params;
     const body = await request.json();
     const { emoji, user_id, action } = body; // action: 'add' or 'remove'
 
