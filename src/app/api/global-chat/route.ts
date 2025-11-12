@@ -53,7 +53,21 @@ export async function POST(request: NextRequest) {
 - Confidential project information
 - Private user information or analytics
 
-Be helpful, professional, and conversational. Guide users to the appropriate tools and pages when relevant. If asked about something you don't have information about, be honest and suggest they contact Tyler directly via the contact form.`;
+**Important Response Guidelines:**
+- When mentioning website pages, ALWAYS include clickable links using markdown format: [page name](/url)
+- Available page URLs:
+  - Homepage: [Home](/)
+  - About: [About](/about)
+  - Work: [Work](/work)
+  - Working with Me: [Working with Me](/working-with-me)
+  - Blog: [Blog](/blog)
+  - Contact: [Contact](/contact)
+  - Free Assessment: [Digital Transformation Assessment](/assessment)
+  - Assessment Start: [Start Assessment](/assessment/start)
+  - Login: [Login](/login)
+  - Register: [Sign Up](/signup)
+
+Be helpful, professional, and conversational. Guide users to the appropriate tools and pages when relevant by providing clickable links. If asked about something you don't have information about, be honest and suggest they contact Tyler directly via the [contact form](/contact).`;
 
     // Format conversation history for Claude
     const messages = conversationHistory
@@ -69,20 +83,48 @@ Be helpful, professional, and conversational. Guide users to the appropriate too
       content: message,
     });
 
-    // Call Claude API
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: messages,
+    // Create a streaming response
+    const stream = new ReadableStream({
+      async start(controller) {
+        const encoder = new TextEncoder();
+
+        try {
+          // Call Claude API with streaming
+          const response = await anthropic.messages.stream({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 2048,
+            system: systemPrompt,
+            messages: messages,
+          });
+
+          for await (const event of response) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              const chunk = JSON.stringify({ type: 'text', text: event.delta.text }) + '\n';
+              controller.enqueue(encoder.encode(chunk));
+            }
+          }
+
+          // Send done signal
+          const doneChunk = JSON.stringify({ type: 'done' }) + '\n';
+          controller.enqueue(encoder.encode(doneChunk));
+          controller.close();
+        } catch (error) {
+          const errorChunk = JSON.stringify({
+            type: 'error',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }) + '\n';
+          controller.enqueue(encoder.encode(errorChunk));
+          controller.close();
+        }
+      },
     });
 
-    const assistantMessage = response.content[0].type === 'text'
-      ? response.content[0].text
-      : 'I apologize, but I encountered an error processing your request.';
-
-    return NextResponse.json({
-      response: assistantMessage,
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
 
   } catch (error) {

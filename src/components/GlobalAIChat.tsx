@@ -63,6 +63,14 @@ export default function GlobalAIChat() {
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
+    // Add placeholder for assistant message
+    const assistantMessageIndex = messages.length + 1;
+    const streamingMessage: Message = {
+      role: "assistant",
+      content: "",
+    };
+    setMessages((prev) => [...prev, streamingMessage]);
+
     try {
       const response = await fetch("/api/global-chat", {
         method: "POST",
@@ -74,15 +82,49 @@ export default function GlobalAIChat() {
         throw new Error("Failed to get response");
       }
 
-      const data = await response.json();
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let streamedContent = '';
 
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.response },
-      ]);
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n').filter(line => line.trim());
+
+          for (const line of lines) {
+            try {
+              const data = JSON.parse(line);
+
+              if (data.type === 'text') {
+                streamedContent += data.text;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[assistantMessageIndex] = {
+                    role: "assistant",
+                    content: streamedContent,
+                  };
+                  return updated;
+                });
+              } else if (data.type === 'done') {
+                // Streaming complete
+              } else if (data.type === 'error') {
+                throw new Error(data.error || 'Streaming error');
+              }
+            } catch (parseError) {
+              // Ignore JSON parse errors for incomplete chunks
+            }
+          }
+        }
+      }
     } catch (err) {
       console.error("Error sending message:", err);
       setError("Failed to send message. Please try again.");
+      // Remove the failed assistant message
+      setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
@@ -162,8 +204,20 @@ export default function GlobalAIChat() {
                             : "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white"
                         }`}
                       >
-                        <div className="prose prose-sm dark:prose-invert max-w-none">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        <div className="prose prose-sm dark:prose-invert max-w-none prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              a: ({ node, ...props }) => (
+                                <a
+                                  {...props}
+                                  className="text-blue-400 hover:text-blue-300 underline font-medium cursor-pointer"
+                                  target="_self"
+                                  rel="noopener noreferrer"
+                                />
+                              ),
+                            }}
+                          >
                             {message.content}
                           </ReactMarkdown>
                         </div>
