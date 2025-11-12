@@ -23,9 +23,11 @@ interface Project {
   status: string;
   priority: string;
   complexity: string;
+  operational_area: string | null;
   progress_percentage: number;
   estimated_timeline_days: number;
   target_completion_date: string | null;
+  actual_completion_date: string | null;
   created_at: string;
   source_recommendation_id?: string;
   tasks?: { count: number }[];
