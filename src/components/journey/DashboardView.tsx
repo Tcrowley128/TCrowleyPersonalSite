@@ -72,7 +72,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
 
   // Get unique operational areas from projects
   const operationalAreas = useMemo(() => {
-    const areas = new Set(projects.map(p => p.operational_area).filter(Boolean));
+    const areas = new Set(projects.map(p => p.operational_area).filter((area): area is string => Boolean(area)));
     return Array.from(areas).sort();
   }, [projects]);
 
