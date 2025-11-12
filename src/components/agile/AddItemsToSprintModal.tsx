@@ -13,6 +13,7 @@ interface PBI {
   story_points: number;
   status: string;
   assigned_to: string;
+  sprint_id: string | null;
 }
 
 interface AddItemsToSprintModalProps {
