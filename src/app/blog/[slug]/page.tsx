@@ -231,24 +231,24 @@ export default function BlogPostPage() {
                   </div>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 leading-tight">
                   {post.title}
                 </h1>
 
                 {post.excerpt && (
-                  <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
+                  <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-8 leading-relaxed">
                     {post.excerpt}
                   </p>
                 )}
 
                 {post.tags.length > 0 && (
-                  <div className="flex items-center gap-2 mb-8">
-                    <Tag size={16} className="text-gray-400 dark:text-gray-500" />
-                    <div className="flex gap-2">
+                  <div className="flex items-start gap-2 mb-8">
+                    <Tag size={16} className="text-gray-400 dark:text-gray-500 flex-shrink-0 mt-1" />
+                    <div className="flex flex-wrap gap-2">
                       {post.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full"
+                          className="px-2 py-0.5 sm:px-3 sm:py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-xs sm:text-sm rounded-full whitespace-nowrap"
                         >
                           {tag.name}
                         </span>
