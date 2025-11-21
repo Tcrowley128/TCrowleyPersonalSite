@@ -187,7 +187,7 @@ export default function JourneyTour({ assessmentId, run, onComplete, onChangeSec
       onPopoverRender: (popover, { config, state }) => {
         // Custom styling if needed
         const progressText = popover.progress;
-        if (progressText) {
+        if (progressText && state.activeIndex !== undefined) {
           progressText.innerText = `${state.activeIndex + 1} of ${config.steps?.length || 0}`;
         }
       },
