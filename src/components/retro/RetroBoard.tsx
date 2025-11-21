@@ -509,6 +509,11 @@ export default function RetroBoard({
       const updated = await response.json();
       setRetro(updated);
       setShowCompleteRetroModal(false);
+
+      // Navigate back to project page after completing retro
+      if (onBack) {
+        onBack();
+      }
     } catch (error) {
       console.error("[RetroBoard] Error completing retro:", error);
       alert("Failed to complete retrospective. Please try again.");
@@ -1037,7 +1042,7 @@ export default function RetroBoard({
               {retro.status !== "completed" && (
                 <button
                   onClick={() => setShowCompleteRetroModal(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                 >
                   <CheckCircle className="w-4 h-4" />
                   Complete Retro

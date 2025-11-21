@@ -80,19 +80,17 @@ export function CompletedSprintsView({ projectId }: CompletedSprintsViewProps) {
                 retrospectives = (retrosData || []).filter((r: any) => r.sprint_id === sprint.id);
               }
 
-              // Calculate actual committed (all PBIs in sprint)
-              const actual_committed = pbis.reduce((sum, pbi) => sum + (pbi.story_points || 0), 0);
-
-              // Calculate actual completed (only done PBIs)
-              const actual_completed = pbis
-                .filter(pbi => pbi.status === 'done')
-                .reduce((sum, pbi) => sum + (pbi.story_points || 0), 0);
+              // Use the stored values from the database (calculated at sprint completion time)
+              // These were saved BEFORE moving incomplete items to backlog
+              // Only fall back to recalculation if database values are missing
+              const actual_committed = sprint.committed_story_points || 0;
+              const actual_completed = sprint.completed_story_points || 0;
 
               return {
                 ...sprint,
                 actual_committed,
                 actual_completed,
-                pbis: pbis.filter(pbi => pbi.status === 'done'), // Only store completed items
+                pbis: pbis.filter(pbi => pbi.status === 'done'), // Only store completed items for display
                 retrospectives
               };
             } catch (err) {
