@@ -179,9 +179,7 @@ export default function JourneyTour({ assessmentId, run, onComplete, onChangeSec
         onComplete();
       },
       popoverClass: 'journey-tour-popover',
-      // Wait for elements to appear (important for dynamic content)
       allowClose: true,
-      overlayClickNext: false,
       smoothScroll: true,
       stagePadding: 10,
       stageRadius: 12,
