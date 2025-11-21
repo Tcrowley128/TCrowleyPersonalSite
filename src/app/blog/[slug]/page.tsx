@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { trackPostView } from '@/lib/analytics';
 import { getReadingTime } from '@/utils/readingTime';
 import ReadingProgress from '@/components/ReadingProgress';
-import BlogAudioPlayer from '@/components/BlogAudioPlayer';
 
 interface Post {
   id: string;
@@ -258,9 +257,6 @@ export default function BlogPostPage() {
                   </div>
                 )}
               </div>
-
-              {/* Audio Player */}
-              <BlogAudioPlayer content={post.content} title={post.title} />
 
               <div
                 className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-code:bg-gray-100 dark:prose-code:bg-slate-800 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-li:text-gray-700 dark:prose-li:text-gray-300"
