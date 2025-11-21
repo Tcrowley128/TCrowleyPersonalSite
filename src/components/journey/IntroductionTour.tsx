@@ -7,7 +7,6 @@ import { X, BarChart3, Kanban, AlertTriangle, Users, FolderKanban, HelpCircle, R
 interface IntroductionTourProps {
   onComplete: () => void;
   onChangeSection?: (section: 'dashboard' | 'projects' | 'sprints' | 'risks' | 'collaboration') => void;
-  showBannerOnly?: boolean;
 }
 
 interface Hotspot {
@@ -20,7 +19,7 @@ interface Hotspot {
   position: 'top' | 'bottom' | 'left' | 'right';
 }
 
-export default function IntroductionTour({ onComplete, onChangeSection, showBannerOnly = false }: IntroductionTourProps) {
+export default function IntroductionTour({ onComplete, onChangeSection }: IntroductionTourProps) {
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [completedHotspots, setCompletedHotspots] = useState<Set<string>>(new Set());
   const [showCongrats, setShowCongrats] = useState(false);
@@ -235,81 +234,16 @@ export default function IntroductionTour({ onComplete, onChangeSection, showBann
   // Don't render until mounted
   if (!mounted) return null;
 
-  // If showBannerOnly, only render the welcome banner
-  if (showBannerOnly) {
-    return (
-      <AnimatePresence>
-        {showBanner && !tourStarted && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-lg relative overflow-hidden"
-          >
-            {/* Background decoration */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200 dark:bg-blue-800 opacity-20 rounded-full -mr-16 -mt-16" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-200 dark:bg-purple-800 opacity-20 rounded-full -ml-12 -mb-12" />
-
-            {/* Content */}
-            <div className="relative flex items-start gap-4">
-              {/* Icon */}
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <Rocket className="w-6 h-6 text-white" />
-              </div>
-
-              {/* Text */}
-              <div className="flex-1">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  Welcome to Your Transformation Journey! 🎉
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
-                  Take a quick guided tour to discover all the powerful features at your fingertips. Learn how to manage projects, track progress, and drive your digital transformation forward.
-                </p>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={handleStartTour}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg"
-                  >
-                    <Rocket className="w-4 h-4" />
-                    Start Tour
-                  </button>
-                  <button
-                    onClick={handleDismissBanner}
-                    className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium transition-colors"
-                  >
-                    Maybe Later
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
-                  <HelpCircle className="w-3 h-3" />
-                  You can restart this tour anytime using the help (?) button in the top right
-                </p>
-              </div>
-
-              {/* Close button */}
-              <button
-                onClick={handleDismissBanner}
-                className="flex-shrink-0 p-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    );
-  }
-
   return (
     <>
-      {/* Welcome Banner */}
+      {/* Welcome Banner - Fixed at top */}
       <AnimatePresence>
         {showBanner && !tourStarted && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-lg relative overflow-hidden"
+            exit={{ opacity: 0, y: -100 }}
+            className="fixed top-20 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-3xl z-[9998] bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-2xl overflow-hidden"
           >
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200 dark:bg-blue-800 opacity-20 rounded-full -mr-16 -mt-16" />

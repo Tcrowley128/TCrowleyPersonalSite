@@ -366,15 +366,6 @@ export default function JourneyWorkspace() {
           </div>
         </div>
 
-        {/* Interactive Tour Banner - Show at top */}
-        {runTour && (
-          <IntroductionTour
-            onComplete={handleTourComplete}
-            onChangeSection={setActiveSection}
-            showBannerOnly={true}
-          />
-        )}
-
         {/* Navigation Tabs */}
         <div className="mb-4 sm:mb-6 border-b border-gray-200 dark:border-gray-700 -mx-4 sm:mx-0 px-4 sm:px-0">
           <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
@@ -686,12 +677,11 @@ export default function JourneyWorkspace() {
         />
       </div>
 
-      {/* Interactive Tour Overlays (rendered at bottom for z-index) */}
+      {/* Interactive Tour */}
       {runTour && (
         <IntroductionTour
           onComplete={handleTourComplete}
           onChangeSection={setActiveSection}
-          showBannerOnly={false}
         />
       )}
       </div>
