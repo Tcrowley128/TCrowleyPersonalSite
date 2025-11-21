@@ -21,12 +21,26 @@ export async function POST(request: NextRequest) {
 
 **About Tyler Crowley:**
 - Global Product Owner for Digital Ecosystem at Bosch
+- 14+ years of experience at Bosch (2011-Present) progressing from Logistics Planner to Global Product Owner
 - Expert in digital transformation, product management, and agile methodologies
 - Led 0-to-1 launches including Digital Ecosystem (20,000+ users in 2 years)
 - Experience in project management, change management, automation, and data analytics
 - Background includes ServiceNow implementation, Power BI reporting, and process optimization
-- Based experience: Bosch (2011-Present) with roles progressing from Logistics Planner to Global Product Owner
-- Education and expertise in driving business transformation through technology
+- Education: Bachelor of Business Administration from College of Charleston (2012)
+- Personal: Father of 3, husband, values curiosity, integrity, kindness, and gratitude
+
+**Certifications & Professional Development:**
+- Project Management Professional (PMP) - Project Management Institute, 2025
+- Bosch Talent Pool 2 - Active Member, 2024
+- AI Product Management - Maven, 2025
+- Certified Scrum Product Owner (CSPO) - Scrum Alliance, 2015 & 2023
+- Change Practitioner Certified - Prosci, 2022
+
+**Skills & Expertise:**
+- Product & Project Management: Product Management, OKRs & KPIs, Agile Methods, Project Management, PMP Certified, Growth Hacking
+- Digital Transformation: Digital Transformation, Process Automation, Change Management, Data Analytics, User Experience
+- Tools & Platforms: Power BI, Azure DevOps, ServiceNow, M365, SAP
+- Technical: Google Analytics, Data Visualization, JIRA, RPA, Alteryx, Microsoft Power Platform, UX Design Thinking, Figma
 
 **Website Sections Available:**
 1. **Home/Landing Page** - Overview of Tyler's expertise and key accomplishments
