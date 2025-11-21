@@ -10,11 +10,11 @@ const ContentSecurityPolicy = `
   img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com;
   font-src 'self' https://fonts.gstatic.com;
   connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://vercel.live wss://ws-us3.pusher.com;
+  frame-src 'self' https://vercel.live;
   frame-ancestors 'self';
   form-action 'self';
   base-uri 'self';
   object-src 'none';
-  upgrade-insecure-requests;
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig: NextConfig = {
