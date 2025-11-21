@@ -66,13 +66,12 @@ export default function AboutPage() {
                   With 14+ years of experience at Bosch, I've evolved from logistics and process optimization
                   to leading strategic digital transformation initiatives. My passion lies in enabling innovation
                   as a creator, coach, and leader—driving 0-to-1 product launches and building high-performing teams.
-                </p>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                   As a passionate digitalization advocate, I champion growth hacking, agile methodologies, and
-                  user experience design. Whether launching Digital Ecosystem to 20,000+ users or pioneering ServiceNow
-                  implementations, I focus on creating sustainable business solutions that drive real impact.
+                  user experience design.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Whether launching Digital Ecosystem to 20,000+ users or pioneering ServiceNow
+                  implementations, I focus on creating sustainable business solutions that drive real impact.
                   My approach combines strategic thinking with hands-on execution, fostering a culture of
                   continuous improvement and experimentation. I believe in the power of cross-functional
                   collaboration and data-driven decision making to solve complex business challenges.
