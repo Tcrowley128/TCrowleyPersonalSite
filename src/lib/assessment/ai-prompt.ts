@@ -8,7 +8,7 @@ interface PromptParts {
 }
 
 // Static JSON schema and guidelines that can be cached across all assessments
-// Cache version: v2.2 - Stricter operational area coverage requirements with mandatory minimums
+// Cache version: v2.3 - Added operational_area field to all recommendations for better filtering
 const CACHED_SCHEMA_AND_GUIDELINES = `
 Generate VALID JSON with this EXACT structure:
 
@@ -68,16 +68,16 @@ Generate VALID JSON with this EXACT structure:
     }
   },
   "quick_wins": [
-    {"title": "", "pillar": "DATA|AUTOMATION|AI|UX|PEOPLE", "description": "", "impact": "HIGH|MEDIUM", "effort": "LOW|MEDIUM", "timeframe": "30_days|60_days|90_plus_days", "timeline": "1-3 weeks", "steps": [""], "tools": [""], "expected_outcome": ""}
+    {"title": "", "pillar": "DATA|AUTOMATION|AI|UX|PEOPLE", "operational_area": "Specific operational area this addresses (from user's selected areas)", "description": "", "impact": "HIGH|MEDIUM", "effort": "LOW|MEDIUM", "timeframe": "30_days|60_days|90_plus_days", "timeline": "1-3 weeks", "steps": [""], "tools": [""], "expected_outcome": ""}
   ],
   "roadmap_30_days": {"focus": "", "actions": [{"week": 1, "action": "", "owner": "", "outcome": ""}]},
   "roadmap_60_days": {"focus": "", "actions": [{"week": 5, "action": "", "owner": "", "outcome": ""}]},
   "roadmap_90_days": {"focus": "", "actions": [{"week": 9, "action": "", "owner": "", "outcome": ""}]},
   "tier1_citizen_led": [
-    {"name": "", "pillar": "DATA|AUTOMATION|AI|UX", "description": "", "why_recommended": "", "cost": "FREE|$", "complexity": "LOW", "url": "real URL", "quick_start": "", "training_resources": [{"title": "", "url": "real URL", "type": "VIDEO|DOC", "duration": ""}]}
+    {"name": "", "pillar": "DATA|AUTOMATION|AI|UX", "operational_area": "Specific operational area this addresses", "description": "", "why_recommended": "", "cost": "FREE|$", "complexity": "LOW", "url": "real URL", "quick_start": "", "training_resources": [{"title": "", "url": "real URL", "type": "VIDEO|DOC", "duration": ""}]}
   ],
-  "tier2_hybrid": [{"name": "", "pillar": "", "description": "", "why_recommended": "", "cost": "$|$$", "complexity": "MEDIUM", "url": "", "integration_notes": "", "training_resources": []}],
-  "tier3_technical": [{"name": "", "pillar": "", "description": "", "why_recommended": "", "cost": "$$|$$$", "complexity": "HIGH", "url": "", "prerequisites": "", "training_resources": []}],
+  "tier2_hybrid": [{"name": "", "pillar": "", "operational_area": "Specific operational area this addresses", "description": "", "why_recommended": "", "cost": "$|$$", "complexity": "MEDIUM", "url": "", "integration_notes": "", "training_resources": []}],
+  "tier3_technical": [{"name": "", "pillar": "", "operational_area": "Specific operational area this addresses", "description": "", "why_recommended": "", "cost": "$$|$$$", "complexity": "HIGH", "url": "", "prerequisites": "", "training_resources": []}],
   "existing_tool_opportunities": [
     {"tool": "", "current_usage": "", "untapped_capabilities": [""], "quick_win": "", "learning_resources": [{"title": "", "url": "real URL", "type": ""}]},
     {"tool": "", "current_usage": "", "untapped_capabilities": [""], "quick_win": "", "learning_resources": [{"title": "", "url": "real URL", "type": ""}]},
@@ -204,7 +204,9 @@ Technical Capability: ${assessment.technical_capability}
 Team Skills: ${JSON.stringify(assessment.team_comfort_level)}
 ${responsesMap.operational_areas && responsesMap.operational_areas.length > 0 ? `
 OPERATIONAL AREAS (MUST ADDRESS EACH): ${JSON.stringify(responsesMap.operational_areas)}
-CRITICAL REQUIREMENT: You must include at least 1-2 specific recommendations for EACH of the ${responsesMap.operational_areas.length} operational areas listed above. Every area must be explicitly mentioned in at least one recommendation title, description, or why_recommended field. Before finalizing your response, verify that each operational area has specific coverage.` : ''}
+CRITICAL REQUIREMENT: You must include at least 1-2 specific recommendations for EACH of the ${responsesMap.operational_areas.length} operational areas listed above.
+IMPORTANT: For every recommendation (quick_wins, tier1_citizen_led, tier2_hybrid, tier3_technical), you MUST populate the "operational_area" field with the specific area it addresses from the list above. Use the exact label (e.g., "Retail Banking", "Patient Care", etc.). This field is critical for filtering and cannot be empty. If a recommendation addresses multiple areas, choose the primary one.
+Before finalizing your response, verify that each operational area has at least 1-2 recommendations explicitly tagged with it.` : ''}
 
 EXISTING TOOLS: ${JSON.stringify(assessment.existing_tools)}
 

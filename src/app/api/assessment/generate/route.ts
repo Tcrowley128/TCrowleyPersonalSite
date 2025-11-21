@@ -195,9 +195,10 @@ export async function POST(request: NextRequest) {
     while (retryCount <= maxRetries) {
       try {
         // Use streaming to handle long responses
+        // For regenerations, reduce tokens and disable web search to stay within Vercel timeout
         const stream = await anthropic.messages.stream({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 24000,
+          max_tokens: regenerate ? 20000 : 24000, // Lower for regenerations
           temperature: 0.7,
           system: promptParts.systemInstructions,
           messages: [
@@ -206,11 +207,14 @@ export async function POST(request: NextRequest) {
               content: promptParts.userMessage
             }
           ],
-          tools: [{
-            type: "web_search_20250305" as const,
-            name: "web_search",
-            max_uses: 15
-          }]
+          // Only enable web search for initial generation, not regenerations
+          ...(regenerate ? {} : {
+            tools: [{
+              type: "web_search_20250305" as const,
+              name: "web_search",
+              max_uses: 15
+            }]
+          })
         });
 
         // Collect response text from stream

@@ -254,9 +254,46 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
     if (selectedArea === 'all') return solutions;
     return solutions.filter((win: any) => {
       const areaLabel = areaLabels[selectedArea] || '';
-      const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
-      return searchText.includes(areaLabel.toLowerCase()) ||
-             searchText.includes((selectedArea || '').toLowerCase().replace(/_/g, ' '));
+      const areaValue = selectedArea || '';
+
+      // Priority 1: Check if operational_area field matches exactly
+      if (win.operational_area) {
+        const opArea = win.operational_area.toLowerCase();
+        if (opArea === areaLabel.toLowerCase() || opArea === areaValue.toLowerCase()) {
+          return true;
+        }
+        // Check if operational_area contains the area label
+        if (opArea.includes(areaLabel.toLowerCase())) {
+          return true;
+        }
+      }
+
+      // Priority 2: Text-based search across all fields
+      const searchText = [
+        win.title,
+        win.description,
+        win.solution,
+        win.why_recommended,
+        win.justification,
+        win.use_case,
+        win.operational_area,
+        win.category
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      // Split area label into words for partial matching
+      const areaWords = areaLabel.toLowerCase().split(/[\s&,/]+/).filter(w => w.length > 2);
+      const valueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
+
+      // Full phrase match
+      const hasFullMatch = searchText.includes(areaLabel.toLowerCase()) ||
+                          searchText.includes(areaValue.replace(/_/g, ' ').toLowerCase());
+
+      // Partial word match - match if ANY significant word from the area appears
+      const hasPartialMatch = [...areaWords, ...valueWords].some(word =>
+        searchText.includes(word)
+      );
+
+      return hasFullMatch || hasPartialMatch;
     });
   };
 
@@ -298,9 +335,42 @@ export function QuickWinsTab({ quickWins, operationalAreas, onAskAI, onQuickEdit
                 {safeOperationalAreas.map((area: string) => {
                   const count = quickWins?.filter((win: any) => {
                     const areaLabel = areaLabels[area] || '';
-                    const searchText = [win.title, win.description].filter(Boolean).join(' ').toLowerCase();
-                    return searchText.includes(areaLabel.toLowerCase()) ||
-                           searchText.includes((area || '').toLowerCase().replace(/_/g, ' '));
+                    const areaValue = area || '';
+
+                    // Priority 1: Check operational_area field
+                    if (win.operational_area) {
+                      const opArea = win.operational_area.toLowerCase();
+                      if (opArea === areaLabel.toLowerCase() || opArea === areaValue.toLowerCase() || opArea.includes(areaLabel.toLowerCase())) {
+                        return true;
+                      }
+                    }
+
+                    // Priority 2: Comprehensive search across all text fields
+                    const searchText = [
+                      win.title,
+                      win.description,
+                      win.solution,
+                      win.why_recommended,
+                      win.justification,
+                      win.use_case,
+                      win.operational_area,
+                      win.category
+                    ].filter(Boolean).join(' ').toLowerCase();
+
+                    // Split area label into words for partial matching
+                    const areaWords = areaLabel.toLowerCase().split(/[\s&,/]+/).filter((w: string) => w.length > 2);
+                    const valueWords = areaValue.toLowerCase().split('_').filter((w: string) => w.length > 2);
+
+                    // Full phrase match
+                    const hasFullMatch = searchText.includes(areaLabel.toLowerCase()) ||
+                                        searchText.includes(areaValue.replace(/_/g, ' ').toLowerCase());
+
+                    // Partial word match
+                    const hasPartialMatch = [...areaWords, ...valueWords].some((word: string) =>
+                      searchText.includes(word)
+                    );
+
+                    return hasFullMatch || hasPartialMatch;
                   }).length || 0;
                   return (
                     <option key={area} value={area}>
@@ -2635,50 +2705,47 @@ export function OperationalAreasTab({ operationalAreas, results, onAskAI }: any)
     searchSources.forEach((item: any) => {
       if (!item) return;
 
-      const textToSearch = [
-        item.title,
-        item.description,
-        item.justification,
-        item.tool_name,
-        item.use_case,
-        item.operational_area
-      ].filter(Boolean).join(' ').toLowerCase();
+      let isMatch = false;
 
-      // Create more flexible matching - split area label into individual significant words
-      const areaLabelWords = (areaLabel || '').toLowerCase().split(/[\s&,]+/).filter(w => w.length > 2);
-      const areaValueWords = (areaValue || '').toLowerCase().split('_').filter(w => w.length > 2);
+      // Priority 1: Check if operational_area field matches
+      if (item.operational_area) {
+        const opArea = item.operational_area.toLowerCase();
+        if (opArea === areaLabel.toLowerCase() || opArea === areaValue.toLowerCase() || opArea.includes(areaLabel.toLowerCase())) {
+          isMatch = true;
+        }
+      }
 
-      // Remove common generic words that don't help with matching
-      const genericWords = ['services', 'management', 'operations', 'support', 'platform', 'general'];
-      const significantLabelWords = areaLabelWords.filter(w => !genericWords.includes(w));
-      const significantValueWords = areaValueWords.filter(w => !genericWords.includes(w));
+      // Priority 2: Text-based search if not matched by operational_area
+      if (!isMatch) {
+        const textToSearch = [
+          item.title,
+          item.description,
+          item.solution,
+          item.why_recommended,
+          item.justification,
+          item.tool_name,
+          item.use_case,
+          item.operational_area,
+          item.category
+        ].filter(Boolean).join(' ').toLowerCase();
 
-      // Create keyword list with both full phrase and individual significant words
-      const allKeywords = [
-        (areaLabel || '').toLowerCase(), // Full label
-        (areaValue || '').toLowerCase().replace(/_/g, ' '), // Full value with spaces
-        ...significantLabelWords, // Significant label words
-        ...significantValueWords  // Significant value words
-      ].filter(Boolean); // Remove empty strings
+        // Split area label into words for partial matching
+        const areaWords = areaLabel.toLowerCase().split(/[\s&,/]+/).filter(w => w.length > 2);
+        const valueWords = areaValue.toLowerCase().split('_').filter(w => w.length > 2);
 
-      // Remove duplicates
-      const uniqueKeywords = [...new Set(allKeywords)];
+        // Full phrase match
+        const hasFullMatch = textToSearch.includes(areaLabel.toLowerCase()) ||
+                            textToSearch.includes(areaValue.replace(/_/g, ' ').toLowerCase());
 
-      // Smart matching logic:
-      // 1. If full phrase matches, it's a match
-      // 2. If any significant word matches (non-generic), it's a match
-      // 3. For multi-word areas, need at least 1 significant word match OR the full phrase
-      const hasFullPhraseMatch = textToSearch.includes((areaLabel || '').toLowerCase()) ||
-                                 textToSearch.includes((areaValue || '').toLowerCase().replace(/_/g, ' '));
+        // Partial word match
+        const hasPartialMatch = [...areaWords, ...valueWords].some(word =>
+          textToSearch.includes(word)
+        );
 
-      const significantMatches = [
-        ...significantLabelWords.filter(word => textToSearch.includes(word)),
-        ...significantValueWords.filter(word => textToSearch.includes(word))
-      ];
+        isMatch = hasFullMatch || hasPartialMatch;
+      }
 
-      const hasMatch = hasFullPhraseMatch || significantMatches.length > 0;
-
-      if (hasMatch) {
+      if (isMatch) {
         const recText = item.title || item.tool_name || item.description;
         if (recText && !recommendations.includes(recText)) {
           recommendations.push(recText);
