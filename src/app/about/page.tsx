@@ -19,7 +19,7 @@ const interests = [
   {
     icon: Users,
     title: 'Community Building',
-    description: 'Bringing people together to collaborate and create meaningful impact.'
+    description: 'Democratizing digitalization by empowering others with the knowledge and tools to create independently and continue growing on their own.'
   },
   {
     icon: Lightbulb,
@@ -76,6 +76,11 @@ export default function AboutPage() {
                   My approach combines strategic thinking with hands-on execution, fostering a culture of
                   continuous improvement and experimentation. I believe in the power of cross-functional
                   collaboration and data-driven decision making to solve complex business challenges.
+                </p>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Central to my philosophy is the democratization of digitalization—leaving those I work with
+                  not just with solutions, but inspired and equipped with the independence to create on their own.
+                  True transformation happens when people are empowered to keep growing long after the project ends.
                 </p>
               </motion.div>
 
