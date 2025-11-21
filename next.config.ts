@@ -1,5 +1,22 @@
 import type { NextConfig } from "next";
 
+// Content Security Policy configuration
+// Using Report-Only mode first to test without breaking functionality
+// Once validated, change 'Content-Security-Policy-Report-Only' to 'Content-Security-Policy'
+const ContentSecurityPolicy = `
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  img-src 'self' data: blob: https://*.supabase.co https://*.googleusercontent.com;
+  font-src 'self' https://fonts.gstatic.com;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://vercel.live wss://ws-us3.pusher.com;
+  frame-ancestors 'self';
+  form-action 'self';
+  base-uri 'self';
+  object-src 'none';
+  upgrade-insecure-requests;
+`.replace(/\s{2,}/g, ' ').trim();
+
 const nextConfig: NextConfig = {
   // Security headers
   async headers() {
@@ -34,6 +51,12 @@ const nextConfig: NextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          // CSP in Report-Only mode - logs violations without blocking
+          // Monitor browser console for CSP violations before enforcing
+          {
+            key: 'Content-Security-Policy-Report-Only',
+            value: ContentSecurityPolicy,
           },
         ],
       },
