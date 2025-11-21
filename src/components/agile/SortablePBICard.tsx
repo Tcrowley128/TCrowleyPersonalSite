@@ -3,6 +3,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Zap, Bug, FileText, Lightbulb, Layout } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface PBI {
   id: string;
@@ -132,6 +133,9 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
 
       {/* Metadata */}
       <div className="flex items-center gap-2 flex-shrink-0">
+        {pbi.assigned_to && (
+          <UserAvatar email={pbi.assigned_to} size="sm" />
+        )}
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
           {currentStatus.label}
         </span>

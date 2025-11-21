@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { ChevronDown, ChevronRight, User, Zap, Bug, FileText, Lightbulb, Layout, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface Task {
   id: string;
@@ -153,10 +154,7 @@ export function PBICard({ pbi, onUpdate, onEdit }: PBICardProps) {
           {currentStatus.label}
         </span>
         {pbi.assigned_to && (
-          <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-xs">
-            <User size={12} />
-            <span className="text-gray-700 dark:text-gray-300">{pbi.assigned_to}</span>
-          </div>
+          <UserAvatar email={pbi.assigned_to} size="xs" />
         )}
       </div>
 

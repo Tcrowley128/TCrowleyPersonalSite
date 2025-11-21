@@ -101,15 +101,22 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
 
   return (
     <div className="space-y-4">
+      {/* Sprint Management Header */}
+      <div className="mb-4">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          Sprint Management
+        </h2>
+      </div>
+
       {/* View Tabs - Streamlined Design */}
-      <div className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-gray-700 pb-0">
+      <div className="border-b border-gray-200 dark:border-gray-700 pb-0">
         <div className="flex items-center gap-1 overflow-x-auto">
           <button
             onClick={() => setView('backlog')}
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'backlog'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
-                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
             }`}
           >
             <LayoutGrid size={18} />
@@ -122,14 +129,14 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
               view === 'sprint'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
                 : activeSprint
-                ? 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                ? 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
                 : 'border-transparent text-gray-400 dark:text-gray-600 cursor-not-allowed'
             }`}
           >
             <Calendar size={18} />
             Active Sprint
             {activeSprint && (
-              <span className="ml-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+              <span className="ml-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
                 Live
               </span>
             )}
@@ -139,13 +146,13 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'planning'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
-                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
             }`}
           >
             <CalendarPlus size={18} />
             Plan Future Sprint
             {activeSprint && (
-              <span className="ml-1 px-2 py-0.5 rounded-full text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
+              <span className="ml-1 px-2 py-0.5 rounded-full text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
                 New
               </span>
             )}
@@ -155,7 +162,7 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'risks'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
-                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
             }`}
           >
             <AlertTriangle size={18} />
@@ -166,7 +173,7 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'completed'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
-                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
             }`}
           >
             <CheckCircle2 size={18} />
@@ -177,7 +184,7 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
             className={`flex items-center justify-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
               view === 'retros'
                 ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800'
-                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700/50'
+                : 'border-transparent text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-slate-700/50'
             }`}
           >
             <MessageSquare size={18} />
@@ -250,7 +257,10 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
 
       {/* Retrospectives View */}
       {view === 'retros' && (
-        <RetrospectivesView projectId={projectId} />
+        <RetrospectivesView
+          projectId={projectId}
+          onNavigateToSprints={() => setView('completed')}
+        />
       )}
 
       {/* Start Sprint Modal */}

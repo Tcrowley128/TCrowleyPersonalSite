@@ -23,10 +23,11 @@ interface ProjectBoardProps {
   onRefresh: () => void;
   onAddProject?: () => void;
   onAskAI?: (message: string) => void;
+  statusFilter?: string | null;
+  onNavigateToSprints?: (projectId: string) => void;
 }
 
-export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProject, onAskAI }: ProjectBoardProps) {
-  const [filter, setFilter] = useState<'all' | string>('all');
+export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProject, onAskAI, statusFilter, onNavigateToSprints }: ProjectBoardProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const statuses = [
@@ -48,13 +49,13 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
 
   // Then apply status filter
   const filteredProjects = searchFilteredProjects.filter(p =>
-    filter === 'all' || p.status === filter
+    !statusFilter || p.status === statusFilter
   );
 
   return (
     <div>
       {/* Search Bar */}
-      <div className="mb-4 px-1">
+      <div className="mb-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
@@ -62,7 +63,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects by name or description..."
-            className="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+            className="w-full pl-10 pr-10 py-3 bg-white dark:bg-slate-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
           />
           {searchQuery && (
             <button
@@ -75,60 +76,17 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
         </div>
       </div>
 
-      {/* Filter Tabs and Add Project Button */}
-      <div className="mb-6 flex justify-between items-center gap-4">
-        <div className="flex gap-2 overflow-x-auto">
+      {/* Add Project Button */}
+      <div className="mb-6 flex justify-end items-center gap-2">
+        {onAddProject && (
           <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-              filter === 'all'
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
-            }`}
+            onClick={onAddProject}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors whitespace-nowrap"
           >
-            All ({searchFilteredProjects.length})
+            <Plus size={20} />
+            Add Project
           </button>
-          {statuses.map(status => {
-            const count = searchFilteredProjects.filter(p => p.status === status.value).length;
-            return (
-              <button
-                key={status.value}
-                onClick={() => setFilter(status.value)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                  filter === status.value
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                {status.label} ({count})
-              </button>
-            );
-          })}
-        </div>
-        <div className="flex items-center gap-2">
-          {onAskAI && (
-            <AskAIButton
-              onClick={() => {
-                const statusSummary = statuses.map(s => {
-                  const count = searchFilteredProjects.filter(p => p.status === s.value).length;
-                  return `${count} ${s.label}`;
-                }).join(', ');
-                onAskAI(`Help me prioritize and manage my projects. Current status: ${statusSummary}. What should I focus on? Any recommendations for moving projects forward?`);
-              }}
-              label="Get Recommendations"
-              size="sm"
-            />
-          )}
-          {onAddProject && (
-            <button
-              onClick={onAddProject}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors whitespace-nowrap"
-            >
-              <Plus size={20} />
-              Add Project
-            </button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Project Grid */}
@@ -157,6 +115,7 @@ export function ProjectBoard({ projects, onProjectUpdate, onRefresh, onAddProjec
               key={project.id}
               project={project}
               onUpdate={onProjectUpdate}
+              onNavigateToSprints={onNavigateToSprints}
             />
           ))}
         </div>

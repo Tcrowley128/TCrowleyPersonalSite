@@ -158,8 +158,8 @@ export default function GlobalAIChat() {
                 className={`fixed ${
                   isExpanded
                     ? "inset-4 md:inset-8"
-                    : "bottom-24 right-6 w-96 h-[600px]"
-                } bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col z-50 border border-gray-200 dark:border-slate-700`}
+                    : "bottom-20 sm:bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 max-h-[70vh] sm:h-[600px]"
+                } bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col z-[9999] border border-gray-200 dark:border-slate-700`}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-slate-700 bg-gradient-to-r from-blue-600 to-purple-600 rounded-t-2xl">
@@ -245,7 +245,7 @@ export default function GlobalAIChat() {
                 )}
 
                 {/* Input */}
-                <div className="p-4 border-t border-gray-200 dark:border-slate-700">
+                <div className="p-3 sm:p-4 border-t border-gray-200 dark:border-slate-700">
                   <div className="flex gap-2">
                     <textarea
                       ref={inputRef}
@@ -253,16 +253,16 @@ export default function GlobalAIChat() {
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Ask me anything about Tyler's work..."
-                      className="flex-1 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-xl resize-none bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent"
+                      className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 dark:border-slate-600 rounded-xl resize-none bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-600 dark:focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                       rows={2}
                       disabled={isLoading}
                     />
                     <button
                       onClick={sendMessage}
                       disabled={isLoading || !inputMessage.trim()}
-                      className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center flex-shrink-0"
                     >
-                      <Send className="w-5 h-5" />
+                      <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>
@@ -271,26 +271,29 @@ export default function GlobalAIChat() {
           </AnimatePresence>
 
           {/* Floating Button */}
-          <motion.button
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={toggleChat}
-            className="fixed bottom-6 right-6 z-40 group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all p-4"
-            title="Chat with Tyler's AI"
-          >
-            <Sparkles className="w-6 h-6 flex-shrink-0" />
-            <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out group-hover:mr-2">
-              Tyler's AI
-            </span>
-          </motion.button>
+          {!isOpen && (
+            <motion.button
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleChat}
+              className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all p-3 sm:p-4"
+              title="Chat with Tyler's AI"
+              style={{ pointerEvents: 'auto' }}
+            >
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0" />
+              <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-xs transition-all duration-300 ease-in-out group-hover:mr-2 text-sm sm:text-base">
+                Tyler's AI
+              </span>
+            </motion.button>
+          )}
 
           {/* Pulse Animation Ring */}
           {!isOpen && (
             <motion.div
-              className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full -z-10"
+              className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full z-[9998] pointer-events-none"
               animate={{
                 scale: [1, 1.3, 1],
                 opacity: [0.5, 0, 0.5],

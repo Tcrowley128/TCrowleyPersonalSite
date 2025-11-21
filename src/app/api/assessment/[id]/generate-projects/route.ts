@@ -10,6 +10,32 @@ export async function POST(
     const { id: assessmentId } = await params;
     const supabase = createAdminClient();
 
+    // IMPORTANT: Check if projects already exist for this assessment
+    // This prevents accidentally overwriting or duplicating an existing journey
+    const { data: existingProjects, error: existingError } = await supabase
+      .from('assessment_projects')
+      .select('id')
+      .eq('assessment_id', assessmentId)
+      .limit(1);
+
+    if (existingError) {
+      console.error('Error checking existing projects:', existingError);
+      return NextResponse.json(
+        { error: 'Failed to check existing projects', details: existingError.message },
+        { status: 500 }
+      );
+    }
+
+    // If projects already exist, don't create new ones - just return success
+    if (existingProjects && existingProjects.length > 0) {
+      return NextResponse.json({
+        success: true,
+        projects_created: 0,
+        existing_projects: true,
+        message: 'Journey already exists. No new projects created.'
+      });
+    }
+
     // Fetch assessment results
     const { data: results, error: resultsError } = await supabase
       .from('assessment_results')

@@ -24,10 +24,11 @@ interface Risk {
 interface RiskOverviewProps {
   assessmentId: string;
   projects: Array<{ id: string; title: string }>;
+  selectedRiskId?: string | null;
   onAskAI?: (message: string) => void;
 }
 
-export function RiskOverview({ assessmentId, projects, onAskAI }: RiskOverviewProps) {
+export function RiskOverview({ assessmentId, projects, selectedRiskId, onAskAI }: RiskOverviewProps) {
   const [risks, setRisks] = useState<Risk[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -45,6 +46,25 @@ export function RiskOverview({ assessmentId, projects, onAskAI }: RiskOverviewPr
   useEffect(() => {
     fetchAllRisks();
   }, [assessmentId]);
+
+  // Handle deep-linking to a specific risk
+  useEffect(() => {
+    if (selectedRiskId && risks.length > 0) {
+      const targetRisk = risks.find(r => r.id === selectedRiskId);
+      if (targetRisk) {
+        // Auto-open the risk edit modal
+        handleEditRisk(targetRisk);
+
+        // Scroll to the risk card after a short delay
+        setTimeout(() => {
+          const riskElement = document.getElementById(`risk-${selectedRiskId}`);
+          if (riskElement) {
+            riskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+  }, [selectedRiskId, risks]);
 
   const fetchAllRisks = async () => {
     try {
@@ -306,11 +326,18 @@ export function RiskOverview({ assessmentId, projects, onAskAI }: RiskOverviewPr
             const severityStyle = severityConfig[risk.severity] || severityConfig.medium;
             const statusStyle = statusConfig[risk.status] || statusConfig.identified;
 
+            const isSelected = selectedRiskId === risk.id;
+
             return (
               <div
                 key={risk.id}
+                id={`risk-${risk.id}`}
                 onClick={() => handleEditRisk(risk)}
-                className="bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer"
+                className={`bg-white dark:bg-slate-800 border-2 rounded-lg p-4 hover:border-blue-400 dark:hover:border-blue-600 transition-all cursor-pointer ${
+                  isSelected
+                    ? 'border-blue-500 dark:border-blue-400 shadow-lg ring-2 ring-blue-200 dark:ring-blue-800'
+                    : 'border-gray-200 dark:border-gray-700'
+                }`}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">

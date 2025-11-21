@@ -387,7 +387,7 @@ export default function QuestionCard({ question, value, onChange, allAnswers }: 
             onChange={(e) => onChange(e.target.value)}
             placeholder={question.placeholder}
             rows={6}
-            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white resize-y"
+            className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-2 focus:ring-blue-500 dark:bg-slate-700 dark:text-white resize-none"
           />
         )}
 

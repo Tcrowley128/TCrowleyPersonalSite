@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Sparkles, Loader2 } from 'lucide-react';
+import { X, Sparkles, Loader2, Info, Layout, Zap, FileText } from 'lucide-react';
 
 interface PBI {
   id: string;
@@ -133,13 +133,33 @@ export function GenerateBacklogModal({ projectId, pbis, onClose, onGenerated }: 
           </button>
         </div>
 
+        {/* Help Box */}
+        <div className="mb-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+          <div className="flex items-start gap-2">
+            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-blue-900 dark:text-blue-100">
+              <p className="font-semibold mb-2">Understanding the Hierarchy:</p>
+              <ul className="space-y-1 text-blue-800 dark:text-blue-200">
+                <li><strong>Epic:</strong> Large body of work (e.g., "User Authentication System")</li>
+                <li><strong>User Story:</strong> Specific user need under an Epic (e.g., "User can log in with email")</li>
+                <li><strong>Task:</strong> Technical work to complete a User Story (e.g., "Create login API endpoint")</li>
+              </ul>
+              <p className="mt-2 text-xs text-blue-700 dark:text-blue-300">💡 Tip: Start with Epics, then generate User Stories, then Tasks</p>
+            </div>
+          </div>
+        </div>
+
         {/* Item Type Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
             What would you like to generate?
           </label>
-          <div className="space-y-2">
-            <label className="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+          <div className="space-y-3">
+            <label className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+              itemType === 'epic'
+                ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+            }`}>
               <input
                 type="radio"
                 name="itemType"
@@ -150,17 +170,25 @@ export function GenerateBacklogModal({ projectId, pbis, onClose, onGenerated }: 
                   setParentId('');
                   setError('');
                 }}
-                className="mr-3 text-blue-600"
+                className="mr-3 mt-1 text-purple-600"
               />
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">Epics</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  High-level features or initiatives (no parent required)
+              <Layout className="w-5 h-5 mr-2 mt-0.5 text-purple-600 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900 dark:text-white mb-1">Epics</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Large initiatives that contain multiple user stories
+                </div>
+                <div className="text-xs bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200 px-2 py-1 rounded inline-block">
+                  No parent required • Start here
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+            <label className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+              itemType === 'user_story'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+            }`}>
               <input
                 type="radio"
                 name="itemType"
@@ -171,17 +199,25 @@ export function GenerateBacklogModal({ projectId, pbis, onClose, onGenerated }: 
                   setParentId('');
                   setError('');
                 }}
-                className="mr-3 text-blue-600"
+                className="mr-3 mt-1 text-blue-600"
               />
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">User Stories</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  User-facing features under an epic
+              <Zap className="w-5 h-5 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900 dark:text-white mb-1">User Stories</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Specific features from the user's perspective ("As a user, I want...")
+                </div>
+                <div className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 px-2 py-1 rounded inline-block">
+                  Requires Epic parent • Generate after Epics
                 </div>
               </div>
             </label>
 
-            <label className="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors">
+            <label className={`flex items-start p-4 border-2 rounded-lg cursor-pointer transition-all ${
+              itemType === 'task'
+                ? 'border-gray-500 bg-gray-50 dark:bg-gray-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-slate-700'
+            }`}>
               <input
                 type="radio"
                 name="itemType"
@@ -192,12 +228,16 @@ export function GenerateBacklogModal({ projectId, pbis, onClose, onGenerated }: 
                   setParentId('');
                   setError('');
                 }}
-                className="mr-3 text-blue-600"
+                className="mr-3 mt-1 text-gray-600"
               />
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">Tasks</div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  Technical tasks under a user story
+              <FileText className="w-5 h-5 mr-2 mt-0.5 text-gray-600 flex-shrink-0" />
+              <div className="flex-1">
+                <div className="font-semibold text-gray-900 dark:text-white mb-1">Tasks</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  Technical implementation work to complete a User Story
+                </div>
+                <div className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded inline-block">
+                  Requires User Story parent • Generate last
                 </div>
               </div>
             </label>
@@ -308,7 +348,7 @@ export function GenerateBacklogModal({ projectId, pbis, onClose, onGenerated }: 
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {generating ? (
               <>

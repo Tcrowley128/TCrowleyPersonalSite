@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   Target,
@@ -15,6 +17,8 @@ import {
   Lightbulb
 } from 'lucide-react';
 import BetaBadge from '@/components/BetaBadge';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 const benefits = [
   {
@@ -80,8 +84,37 @@ const itemVariants = {
 };
 
 export default function AssessmentLanding() {
+  const router = useRouter();
+  const { user } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const handleStartAssessment = () => {
+    if (user) {
+      // User is authenticated, go directly to assessment
+      router.push('/assessment/start');
+    } else {
+      // Show auth modal
+      setShowAuthModal(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    setShowAuthModal(false);
+    // After successful auth, redirect to assessment
+    router.push('/assessment/start');
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <>
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+        initialMode="signup"
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       {/* Hero Section */}
       <motion.section
         initial="hidden"
@@ -122,16 +155,15 @@ export default function AssessmentLanding() {
             variants={itemVariants}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
           >
-            <Link href="/assessment/start">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-              >
-                Start Your Assessment
-                <ArrowRight size={20} />
-              </motion.button>
-            </Link>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleStartAssessment}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+            >
+              Start Your Assessment
+              <ArrowRight size={20} />
+            </motion.button>
 
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
               <Clock size={16} />
@@ -250,7 +282,7 @@ export default function AssessmentLanding() {
           <div className="grid md:grid-cols-4 gap-8">
             {[
               { num: '1', title: 'Answer Questions', desc: 'Tell us about your business, tools, and challenges (10 min)' },
-              { num: '2', title: 'AI Analysis', desc: 'Claude analyzes your responses and matches solutions to your needs' },
+              { num: '2', title: 'AI Analysis', desc: 'AI analyzes your responses and matches solutions to your needs' },
               { num: '3', title: 'Get Your Roadmap', desc: 'Receive personalized recommendations and implementation plan' },
               { num: '4', title: 'Take Action', desc: 'Start with quick wins while building toward strategic goals' }
             ].map((step, index) => (
@@ -343,16 +375,15 @@ export default function AssessmentLanding() {
           </div>
 
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/signup">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
-              >
-                Register to Access Platform
-                <ArrowRight size={20} />
-              </motion.button>
-            </Link>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleStartAssessment}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+            >
+              Register to Access Platform
+              <ArrowRight size={20} />
+            </motion.button>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 text-sm">
               <CheckCircle size={16} className="text-green-600" />
               <span>Free assessment included with registration</span>
@@ -383,16 +414,15 @@ export default function AssessmentLanding() {
             Join hundreds of businesses discovering their digital transformation roadmap
           </motion.p>
           <motion.div variants={itemVariants}>
-            <Link href="/assessment/start">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
-              >
-                Get Started - It&apos;s Free
-                <ArrowRight size={20} />
-              </motion.button>
-            </Link>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleStartAssessment}
+              className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
+            >
+              Get Started - It&apos;s Free
+              <ArrowRight size={20} />
+            </motion.button>
           </motion.div>
         </motion.div>
       </section>
@@ -405,5 +435,6 @@ export default function AssessmentLanding() {
         </p>
       </section>
     </div>
+    </>
   );
 }

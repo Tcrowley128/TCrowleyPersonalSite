@@ -94,11 +94,10 @@ const JourneyChat = forwardRef<JourneyChatHandle, JourneyChatProps>(
         setError("");
         setSkipLoadingHistory(true);
         setInputMessage(message);
+
+        // Send message after a short delay to allow state to update
         setTimeout(() => {
-          setInputMessage(message);
-          setTimeout(() => {
-            sendMessageWithContent(message);
-          }, 100);
+          sendMessageWithContent(message);
         }, 300);
       },
     }));

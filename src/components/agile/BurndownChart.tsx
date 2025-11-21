@@ -13,9 +13,10 @@ interface BurndownChartProps {
     scope_creep_story_points?: number;
   };
   completedStoryPoints: number;
+  hideToggle?: boolean;
 }
 
-export function BurndownChart({ sprint, completedStoryPoints }: BurndownChartProps) {
+export function BurndownChart({ sprint, completedStoryPoints, hideToggle = false }: BurndownChartProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Calculate sprint days
@@ -80,6 +81,115 @@ export function BurndownChart({ sprint, completedStoryPoints }: BurndownChartPro
   const actualPath = actualBurndown
     .map((point, i) => `${i === 0 ? 'M' : 'L'} ${xScale(point.day)} ${yScale(point.points)}`)
     .join(' ');
+
+  // If hideToggle is true, always show the chart without a toggle button
+  if (hideToggle) {
+    return (
+      <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <TrendingDown className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <div>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Sprint Burndown</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {remainingPoints} of {totalPoints} points remaining • Day {daysElapsed} of {totalDays}
+            </p>
+          </div>
+        </div>
+        <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
+          {/* Grid lines */}
+          {Array.from({ length: 6 }).map((_, i) => {
+            const y = height - padding - (i * chartHeight) / 5;
+            return (
+              <line
+                key={`grid-${i}`}
+                x1={padding}
+                y1={y}
+                x2={width - padding}
+                y2={y}
+                stroke="currentColor"
+                strokeWidth="1"
+                opacity="0.1"
+                className="text-gray-400 dark:text-gray-600"
+              />
+            );
+          })}
+
+          {/* Ideal burndown line */}
+          <path
+            d={idealPath}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="5,5"
+            className="text-blue-400 dark:text-blue-500"
+          />
+
+          {/* Actual burndown line */}
+          <path
+            d={actualPath}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            className="text-green-600 dark:text-green-400"
+          />
+
+          {/* Points */}
+          {actualBurndown.map((point, i) => (
+            <circle
+              key={`actual-${i}`}
+              cx={xScale(point.day)}
+              cy={yScale(point.points)}
+              r="4"
+              fill="currentColor"
+              className="text-green-600 dark:text-green-400"
+            />
+          ))}
+
+          {/* Axis labels */}
+          <text x={padding} y={height - 10} className="text-xs fill-gray-600 dark:fill-gray-400">
+            Day 0
+          </text>
+          <text x={width - padding - 30} y={height - 10} className="text-xs fill-gray-600 dark:fill-gray-400">
+            Day {totalDays}
+          </text>
+          <text x={10} y={padding} className="text-xs fill-gray-600 dark:fill-gray-400">
+            {totalPoints} pts
+          </text>
+          <text x={10} y={height - padding} className="text-xs fill-gray-600 dark:fill-gray-400">
+            0 pts
+          </text>
+
+          {/* Today marker */}
+          <line
+            x1={xScale(daysElapsed)}
+            y1={padding}
+            x2={xScale(daysElapsed)}
+            y2={height - padding}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="3,3"
+            className="text-orange-500 dark:text-orange-400"
+          />
+        </svg>
+
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-6 mt-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5 bg-blue-400 dark:bg-blue-500" style={{ borderTop: '2px dashed' }} />
+            <span className="text-gray-600 dark:text-gray-400">Ideal</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5 bg-green-600 dark:bg-green-400" />
+            <span className="text-gray-600 dark:text-gray-400">Actual</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-0.5 border-t-2 border-dashed border-orange-500 dark:border-orange-400" />
+            <span className="text-gray-600 dark:text-gray-400">Today</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-slate-800">

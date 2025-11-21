@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Save, Users, Target, Calendar, DollarSign, TrendingUp, AlertTriangle, MessageSquare, CheckCircle2 } from 'lucide-react';
+import { X, Save, Users, Target, Calendar, DollarSign, TrendingUp, AlertTriangle, MessageSquare, CheckCircle2, Kanban } from 'lucide-react';
 import { CommentsSection } from '@/components/collaboration/CommentsSection';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -82,9 +82,10 @@ interface ProjectDetailsModalProps {
   project: Project;
   onClose: () => void;
   onUpdate: (projectId: string, updates: any) => void;
+  onNavigateToSprints?: () => void;
 }
 
-export function ProjectDetailsModal({ project, onClose, onUpdate }: ProjectDetailsModalProps) {
+export function ProjectDetailsModal({ project, onClose, onUpdate, onNavigateToSprints }: ProjectDetailsModalProps) {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'team' | 'metrics' | 'risks' | 'notes' | 'comments'>('overview');
   const [formData, setFormData] = useState<Project>(project);
@@ -199,6 +200,19 @@ export function ProjectDetailsModal({ project, onClose, onUpdate }: ProjectDetai
             />
           </div>
           <div className="flex items-center gap-2 ml-4">
+            {formData.status === 'in_progress' && onNavigateToSprints && (
+              <button
+                onClick={() => {
+                  onNavigateToSprints();
+                  onClose();
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                title="Manage this project in sprints"
+              >
+                <Kanban size={16} />
+                Manage Sprints
+              </button>
+            )}
             {hasChanges && (
               <button
                 onClick={handleSave}

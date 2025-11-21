@@ -5,6 +5,8 @@ import { X, Loader2, Trash2, AlertTriangle } from 'lucide-react';
 import { TeamMemberAutocomplete } from '@/components/common/TeamMemberAutocomplete';
 import { CommentsSection } from '@/components/collaboration/CommentsSection';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/components/common/Toast';
+import { ConfirmDialog } from '@/components/common/ConfirmDialog';
 
 interface Risk {
   id: string;
@@ -36,9 +38,11 @@ interface EditRiskModalProps {
 
 export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRiskUpdated, onRiskDeleted }: EditRiskModalProps) {
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -172,24 +176,27 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
       });
 
       if (response.ok) {
+        showToast('Risk updated successfully', 'success');
         onRiskUpdated();
         onClose();
       } else {
         const data = await response.json();
-        alert(`Failed to update risk: ${data.error || 'Unknown error'}`);
+        showToast(`Failed to update risk: ${data.error || 'Unknown error'}`, 'error');
       }
     } catch (error) {
       console.error('Error updating risk:', error);
-      alert('An error occurred while updating the risk');
+      showToast('An error occurred while updating the risk', 'error');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this risk? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setShowDeleteConfirm(false);
 
     try {
       setDeleting(true);
@@ -198,14 +205,15 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
       });
 
       if (response.ok) {
+        showToast('Risk deleted successfully', 'success');
         onRiskDeleted?.();
         onClose();
       } else {
-        alert('Failed to delete risk');
+        showToast('Failed to delete risk', 'error');
       }
     } catch (error) {
       console.error('Error deleting risk:', error);
-      alert('An error occurred while deleting the risk');
+      showToast('An error occurred while deleting the risk', 'error');
     } finally {
       setDeleting(false);
     }
@@ -245,7 +253,7 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} id="risk-edit-form" className="p-6 space-y-6">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -406,7 +414,7 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
         <div className="flex items-center justify-between p-6 pt-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-slate-900">
           <button
             type="button"
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             disabled={deleting || saving}
             className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
@@ -433,8 +441,8 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
               Cancel
             </button>
             <button
-              type="button"
-              onClick={handleSubmit}
+              type="submit"
+              form="risk-edit-form"
               disabled={saving || deleting || !hasUnsavedChanges}
               className={`px-6 py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2 ${
                 hasUnsavedChanges
@@ -454,6 +462,18 @@ export function EditRiskModal({ riskId, projectId, projectTitle, onClose, onRisk
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Risk"
+        message="Are you sure you want to delete this risk? This action cannot be undone."
+        confirmLabel="Delete Risk"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }

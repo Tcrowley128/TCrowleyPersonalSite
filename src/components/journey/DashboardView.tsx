@@ -69,6 +69,11 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
   const [loadingVersions, setLoadingVersions] = useState(false);
   const [showAllUpdates, setShowAllUpdates] = useState<boolean>(false);
   const [showAllVersions, setShowAllVersions] = useState<boolean>(false);
+  const [showFilters, setShowFilters] = useState<boolean>(false);
+  const [showAllOperationalAreas, setShowAllOperationalAreas] = useState<boolean>(false);
+  const [showAllPriorities, setShowAllPriorities] = useState<boolean>(false);
+  const [showAllBenefits, setShowAllBenefits] = useState<boolean>(false);
+  const [showAllHoursSaved, setShowAllHoursSaved] = useState<boolean>(false);
 
   // Get unique operational areas from projects
   const operationalAreas = useMemo(() => {
@@ -478,117 +483,145 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
 
   return (
     <div className="space-y-6" onClick={handleBackgroundClick}>
-      {/* Time Period Filters */}
-      <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Executive Dashboard</h2>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">Time Period:</span>
-          <button
-            onClick={() => setTimePeriod('year')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              timePeriod === 'year'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            Year
-          </button>
-          <button
-            onClick={() => setTimePeriod('quarter')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              timePeriod === 'quarter'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            Quarter
-          </button>
-          <button
-            onClick={() => setTimePeriod('month')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              timePeriod === 'month'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-          >
-            Month
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
+      {/* Executive Dashboard Header with Filters */}
       <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</h3>
-          {hasActiveFilters && (
+        {/* Title and Time Period Row */}
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Executive Dashboard</h2>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">Time Period:</span>
             <button
-              onClick={clearAllFilters}
-              className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-1"
+              onClick={() => setTimePeriod('year')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                timePeriod === 'year'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
             >
-              <span>Clear All Filters</span>
+              Year
             </button>
-          )}
+            <button
+              onClick={() => setTimePeriod('quarter')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                timePeriod === 'quarter'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Quarter
+            </button>
+            <button
+              onClick={() => setTimePeriod('month')}
+              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                timePeriod === 'month'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              Month
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Operational Area</label>
-            <select
-              value={selectedOperationalArea}
-              onChange={(e) => setSelectedOperationalArea(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-            >
-              <option value="all">All Areas</option>
-              {operationalAreas.map(area => (
-                <option key={area} value={area}>{area}</option>
-              ))}
-            </select>
+
+        {/* Filters Row - Collapsible */}
+        <div className="pt-2">
+          <div
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <div className="flex items-center gap-2">
+              {hasActiveFilters && (
+                <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs font-medium">
+                  {[selectedOperationalArea, selectedCategory, selectedPriority, selectedStatus].filter(f => f !== 'all').length} active
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {hasActiveFilters && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearAllFilters();
+                  }}
+                  className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <span>Clear All</span>
+                </button>
+              )}
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</h3>
+              <button className="p-1 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
+                {showFilters ? (
+                  <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                )}
+              </button>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Category</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-            >
-              <option value="all">All Categories</option>
-              <option value="automation">Automation</option>
-              <option value="data">Data</option>
-              <option value="ai">AI</option>
-              <option value="ux">UX</option>
-              <option value="people">People</option>
-            </select>
-          </div>
+          {showFilters && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <div>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Operational Area</label>
+                <select
+                  value={selectedOperationalArea}
+                  onChange={(e) => setSelectedOperationalArea(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
+                >
+                  <option value="all">All Areas</option>
+                  {operationalAreas.map(area => (
+                    <option key={area} value={area}>{area}</option>
+                  ))}
+                </select>
+              </div>
 
-          <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Priority</label>
-            <select
-              value={selectedPriority}
-              onChange={(e) => setSelectedPriority(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-            >
-              <option value="all">All Priorities</option>
-              <option value="critical">Critical</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-          </div>
+              <div>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Category</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="automation">Automation</option>
+                  <option value="data">Data</option>
+                  <option value="ai">AI</option>
+                  <option value="ux">UX</option>
+                  <option value="people">People</option>
+                </select>
+              </div>
 
-          <div>
-            <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Status</label>
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
-            >
-              <option value="all">All Statuses</option>
-              <option value="completed">Completed</option>
-              <option value="in_progress">In Progress</option>
-              <option value="not_started">Not Started</option>
-              <option value="blocked">Blocked</option>
-            </select>
-          </div>
+              <div>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Priority</label>
+                <select
+                  value={selectedPriority}
+                  onChange={(e) => setSelectedPriority(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
+                >
+                  <option value="all">All Priorities</option>
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">Status</label>
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg text-sm"
+                >
+                  <option value="all">All Statuses</option>
+                  <option value="completed">Completed</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="not_started">Not Started</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -604,7 +637,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             />
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 dashboard-metrics">
           <MetricCard
             title="Overall Progress"
             value={`${metrics.avgProgress}%`}
@@ -768,6 +801,12 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Projects by Operational Area</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {showAllOperationalAreas
+                  ? `Showing all ${operationalAreaData.length} areas`
+                  : `Showing top ${Math.min(5, operationalAreaData.length)} of ${operationalAreaData.length} areas`
+                }
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {onAskAI && (
@@ -781,7 +820,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             </div>
           </div>
           <div className="space-y-3">
-            {operationalAreaData.map((area) => (
+            {(showAllOperationalAreas ? operationalAreaData : operationalAreaData.slice(0, 5)).map((area) => (
               <div
                 key={area.name}
                 onClick={() => setSelectedOperationalArea(area.name)}
@@ -803,6 +842,26 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
               </div>
             ))}
           </div>
+          {operationalAreaData.length > 5 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAllOperationalAreas(!showAllOperationalAreas)}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 mx-auto"
+              >
+                {showAllOperationalAreas ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Show All {operationalAreaData.length} Areas
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Priority Distribution - Simplified Colors */}
@@ -810,6 +869,12 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
           <div className="flex items-center justify-between mb-4">
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Projects by Priority</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {showAllPriorities
+                  ? `Showing all ${priorityData.length} priorities`
+                  : `Showing top ${Math.min(5, priorityData.length)} of ${priorityData.length} priorities`
+                }
+              </p>
             </div>
             <div className="flex items-center gap-2">
               {onAskAI && (
@@ -823,7 +888,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             </div>
           </div>
           <div className="space-y-3">
-            {priorityData.map((pri) => {
+            {(showAllPriorities ? priorityData : priorityData.slice(0, 5)).map((pri) => {
               // Simplified color palette - only use red for critical, blue for rest
               const getColor = (priority: string) => {
                 if (priority === 'critical') return 'bg-red-600';
@@ -853,6 +918,26 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
               );
             })}
           </div>
+          {priorityData.length > 5 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAllPriorities(!showAllPriorities)}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 mx-auto"
+              >
+                {showAllPriorities ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Show All {priorityData.length} Priorities
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -880,7 +965,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             )}
           </div>
           <div className="space-y-4">
-            {qualitativeBenefits.map((benefit) => (
+            {(showAllBenefits ? qualitativeBenefits : qualitativeBenefits.slice(0, 5)).map((benefit) => (
               <div key={benefit.label}>
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="text-gray-700 dark:text-gray-300">{benefit.label}</span>
@@ -895,6 +980,26 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
               </div>
             ))}
           </div>
+          {qualitativeBenefits.length > 5 && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowAllBenefits(!showAllBenefits)}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 mx-auto"
+              >
+                {showAllBenefits ? (
+                  <>
+                    <ChevronUp className="w-4 h-4" />
+                    Show Less
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="w-4 h-4" />
+                    Show All {qualitativeBenefits.length} Benefits
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Hours Saved */}
@@ -921,7 +1026,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
           <div className="space-y-4">
             {hoursSavedData.length > 0 ? (
               <>
-                {hoursSavedData.map((item) => (
+                {(showAllHoursSaved ? hoursSavedData : hoursSavedData.slice(0, 5)).map((item) => (
                   <div
                     key={item.area}
                     onClick={() => setSelectedOperationalArea(item.area)}
@@ -941,6 +1046,26 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
                     </div>
                   </div>
                 ))}
+                {hoursSavedData.length > 5 && (
+                  <div className="text-center">
+                    <button
+                      onClick={() => setShowAllHoursSaved(!showAllHoursSaved)}
+                      className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium flex items-center gap-1 mx-auto"
+                    >
+                      {showAllHoursSaved ? (
+                        <>
+                          <ChevronUp className="w-4 h-4" />
+                          Show Less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-4 h-4" />
+                          Show All {hoursSavedData.length} Areas
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
                 <div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">Total</span>
@@ -1020,7 +1145,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
       </div>
 
       {/* Gantt Chart Timeline */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-6" onClick={(e) => e.stopPropagation()}>
+      <div className="gantt-chart bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <div className="flex-1">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project Timeline - Gantt View</h3>
@@ -1087,10 +1212,10 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
 
               {/* Today marker */}
               <div
-                className="absolute top-0 h-full w-0.5 bg-blue-600 dark:bg-blue-400 z-10"
+                className="absolute top-0 h-full w-0.5 bg-blue-600 dark:bg-blue-500 z-10"
                 style={{ left: `${ganttData.todayPercent}%` }}
               >
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-blue-600 dark:bg-blue-400 text-white text-xs rounded whitespace-nowrap">
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-blue-600 dark:bg-blue-600 text-white dark:text-white text-xs rounded whitespace-nowrap">
                   Today
                 </div>
               </div>
@@ -1248,8 +1373,8 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
                   {/* Target Savings Line (dashed) */}
                   <polyline
                     points={savingsTimeSeriesData.map((d, i) => {
-                      const x = (i / (savingsTimeSeriesData.length - 1)) * 100;
-                      const maxValue = Math.max(...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
+                      const x = (i / Math.max(1, savingsTimeSeriesData.length - 1)) * 100;
+                      const maxValue = Math.max(1, ...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
                       const y = 100 - (d.targetSavings / maxValue) * 100;
                       return `${x},${y}`;
                     }).join(' ')}
@@ -1262,8 +1387,8 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
                   {/* Actual Savings Line */}
                   <polyline
                     points={savingsTimeSeriesData.map((d, i) => {
-                      const x = (i / (savingsTimeSeriesData.length - 1)) * 100;
-                      const maxValue = Math.max(...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
+                      const x = (i / Math.max(1, savingsTimeSeriesData.length - 1)) * 100;
+                      const maxValue = Math.max(1, ...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
                       const y = 100 - (d.actualSavings / maxValue) * 100;
                       return `${x},${y}`;
                     }).join(' ')}
@@ -1275,8 +1400,8 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
                   {/* Cost Line */}
                   <polyline
                     points={savingsTimeSeriesData.map((d, i) => {
-                      const x = (i / (savingsTimeSeriesData.length - 1)) * 100;
-                      const maxValue = Math.max(...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
+                      const x = (i / Math.max(1, savingsTimeSeriesData.length - 1)) * 100;
+                      const maxValue = Math.max(1, ...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
                       const y = 100 - (d.cost / maxValue) * 100;
                       return `${x},${y}`;
                     }).join(' ')}
@@ -1287,8 +1412,8 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
 
                   {/* Data points */}
                   {savingsTimeSeriesData.map((d, i) => {
-                    const x = (i / (savingsTimeSeriesData.length - 1)) * 100;
-                    const maxValue = Math.max(...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
+                    const x = (i / Math.max(1, savingsTimeSeriesData.length - 1)) * 100;
+                    const maxValue = Math.max(1, ...savingsTimeSeriesData.map(d => Math.max(d.actualSavings, d.targetSavings, d.cost)));
                     const yActual = 100 - (d.actualSavings / maxValue) * 100;
                     const yCost = 100 - (d.cost / maxValue) * 100;
                     return (

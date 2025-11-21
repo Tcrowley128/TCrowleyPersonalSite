@@ -21,9 +21,10 @@ interface Retrospective {
 
 interface RetrospectivesViewProps {
   projectId: string;
+  onNavigateToSprints?: () => void;
 }
 
-export function RetrospectivesView({ projectId }: RetrospectivesViewProps) {
+export function RetrospectivesView({ projectId, onNavigateToSprints }: RetrospectivesViewProps) {
   const [retrospectives, setRetrospectives] = useState<Retrospective[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'in_progress' | 'completed'>('all');
@@ -117,8 +118,8 @@ export function RetrospectivesView({ projectId }: RetrospectivesViewProps) {
           Complete a sprint and run a retrospective to start collecting team insights
         </p>
         <button
-          onClick={() => window.location.href = '#'}
-          className="px-6 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
+          onClick={() => onNavigateToSprints?.()}
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
         >
           View Completed Sprints
         </button>

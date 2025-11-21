@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, Target, TrendingUp, Clock, CheckCircle2, Trash2, MoreVertical, Edit2, AlertTriangle } from 'lucide-react';
+import { Calendar, Target, TrendingUp, Clock, CheckCircle2, Trash2, MoreVertical, Edit2, AlertTriangle, ChevronDown, ChevronUp, Plus, TrendingDown } from 'lucide-react';
 
 interface Sprint {
   id: string;
@@ -22,13 +22,17 @@ interface SprintHeaderProps {
   onDelete?: () => void;
   onUpdate?: (sprintId: string, updates: { name?: string; goal?: string }) => void;
   projectId?: string;
+  burndownChart?: React.ReactNode;
+  completedStoryPoints?: number;
+  onAddItems?: () => void;
 }
 
-export function SprintHeader({ sprint, onComplete, onDelete, onUpdate, projectId }: SprintHeaderProps) {
+export function SprintHeader({ sprint, onComplete, onDelete, onUpdate, projectId, burndownChart, completedStoryPoints, onAddItems }: SprintHeaderProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState<'name' | 'goal' | null>(null);
   const [editValue, setEditValue] = useState('');
   const [showRiskModal, setShowRiskModal] = useState(false);
+  const [isMetricsExpanded, setIsMetricsExpanded] = useState(false);
   const [riskData, setRiskData] = useState({
     title: '',
     description: '',
@@ -158,16 +162,27 @@ export function SprintHeader({ sprint, onComplete, onDelete, onUpdate, projectId
           )}
         </div>
 
-        {/* Action Menu */}
-        {sprint.status === 'active' && (onComplete || onDelete) && (
-          <div className="relative">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-              title="Sprint actions"
-            >
-              <MoreVertical size={20} />
-            </button>
+        {/* Action Buttons */}
+        {sprint.status === 'active' && (
+          <div className="flex items-center gap-2">
+            {onAddItems && (
+              <button
+                onClick={onAddItems}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                <Plus size={18} />
+                Add Items
+              </button>
+            )}
+            {(onComplete || onDelete) && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  title="Sprint actions"
+                >
+                  <MoreVertical size={20} />
+                </button>
 
             {showMenu && (
               <>
@@ -235,62 +250,125 @@ export function SprintHeader({ sprint, onComplete, onDelete, onUpdate, projectId
                 </div>
               </>
             )}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* Timeline */}
-        <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
-          <div className="flex items-center gap-2 mb-2">
-            <Calendar size={18} className="text-blue-600 dark:text-blue-400" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Timeline</span>
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-            {new Date(sprint.start_date).toLocaleDateString()} - {new Date(sprint.end_date).toLocaleDateString()}
-          </div>
+      {/* Compact Metrics Summary (Always Visible) */}
+      <div className="flex items-center justify-between mb-4 bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+        <div className="flex items-center gap-6 flex-wrap">
+          {/* Timeline Summary */}
           <div className="flex items-center gap-2">
-            <Clock size={14} className="text-gray-500 dark:text-gray-400" />
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {daysRemaining > 0 ? `${daysRemaining} days left` : 'Sprint ended'}
+            <Calendar size={16} className="text-blue-600 dark:text-blue-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              {daysRemaining > 0 ? `${daysRemaining}d left` : 'Ended'}
             </span>
           </div>
-        </div>
 
-        {/* Story Points */}
-        <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-green-300 dark:hover:border-green-700 transition-colors">
-          <div className="flex items-center gap-2 mb-2">
-            <TrendingUp size={18} className="text-green-600 dark:text-green-400" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Story Points</span>
+          {/* Story Points Summary */}
+          <div className="flex items-center gap-2">
+            <TrendingUp size={16} className="text-green-600 dark:text-green-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              {completedPoints}/{committedPoints} pts ({completionPercentage}%)
+            </span>
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            {completedPoints} / {committedPoints}
-            {scopeCreepPoints > 0 && (
-              <span className="text-sm text-orange-600 dark:text-orange-400 ml-1">
-                (+{scopeCreepPoints})
+
+          {/* Sprint Progress Summary */}
+          <div className="flex items-center gap-2">
+            <Clock size={16} className="text-purple-600 dark:text-purple-400" />
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              Day {daysElapsed}/{totalDays} ({Math.round(progressPercentage)}%)
+            </span>
+          </div>
+
+          {/* Burndown Indicator */}
+          {burndownChart && (
+            <div className="flex items-center gap-2">
+              <TrendingDown size={16} className="text-orange-600 dark:text-orange-400" />
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                Burndown
               </span>
-            )}
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">
-            {completionPercentage}% complete
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Sprint Progress */}
-        <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-purple-300 dark:hover:border-purple-700 transition-colors">
-          <div className="flex items-center gap-2 mb-2">
-            <Clock size={18} className="text-purple-600 dark:text-purple-400" />
-            <span className="text-sm font-medium text-gray-900 dark:text-white">Sprint Progress</span>
-          </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-white">
-            {Math.round(progressPercentage)}%
-          </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400">
-            Day {daysElapsed} of {totalDays}
-          </div>
-        </div>
+        {/* Expand/Collapse Button */}
+        <button
+          onClick={() => setIsMetricsExpanded(!isMetricsExpanded)}
+          className="flex items-center gap-2 px-3 py-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors"
+          title={isMetricsExpanded ? "Hide detailed metrics" : "Show detailed metrics"}
+        >
+          <span className="hidden sm:inline">Details</span>
+          {isMetricsExpanded ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
+        </button>
       </div>
+
+      {/* Detailed Metrics and Burndown Chart (Expandable) */}
+      {isMetricsExpanded && (
+        <div className="space-y-4 mb-4">
+          {/* Detailed Metrics Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Timeline */}
+            <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar size={18} className="text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Timeline</span>
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                {new Date(sprint.start_date).toLocaleDateString()} - {new Date(sprint.end_date).toLocaleDateString()}
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock size={14} className="text-gray-500 dark:text-gray-400" />
+                <span className="text-sm font-bold text-gray-900 dark:text-white">
+                  {daysRemaining > 0 ? `${daysRemaining} days left` : 'Sprint ended'}
+                </span>
+              </div>
+            </div>
+
+            {/* Story Points */}
+            <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-green-300 dark:hover:border-green-700 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp size={18} className="text-green-600 dark:text-green-400" />
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Story Points</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {completedPoints} / {committedPoints}
+                {scopeCreepPoints > 0 && (
+                  <span className="text-sm text-orange-600 dark:text-orange-400 ml-1">
+                    (+{scopeCreepPoints})
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                {completionPercentage}% complete
+              </div>
+            </div>
+
+            {/* Sprint Progress */}
+            <div className="bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:border-purple-300 dark:hover:border-purple-700 transition-colors">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock size={18} className="text-purple-600 dark:text-purple-400" />
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Sprint Progress</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                {Math.round(progressPercentage)}%
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Day {daysElapsed} of {totalDays}
+              </div>
+            </div>
+          </div>
+
+          {/* Burndown Chart */}
+          {burndownChart}
+        </div>
+      )}
 
       {/* Edit Modal */}
       {showEditModal && (

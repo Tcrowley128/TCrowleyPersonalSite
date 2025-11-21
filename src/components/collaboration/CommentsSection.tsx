@@ -254,11 +254,20 @@ export function CommentsSection({
           />
           <button
             type="button"
-            onClick={handleSubmitComment}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleSubmitComment(e);
+            }}
             disabled={!newComment.trim() || submitting}
-            className="absolute right-3 bottom-3 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute right-3 bottom-3 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            title="Send comment (or press Ctrl+Enter)"
           >
-            <Send size={18} />
+            {submitting ? (
+              <div className="animate-spin rounded-full h-[18px] w-[18px] border-b-2 border-white"></div>
+            ) : (
+              <Send size={18} />
+            )}
           </button>
         </div>
 

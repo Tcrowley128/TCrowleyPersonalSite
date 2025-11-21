@@ -8,6 +8,7 @@ import { QuickFilters } from './QuickFilters';
 import { BurndownChart } from './BurndownChart';
 import { EditPBIModal } from './EditPBIModal';
 import { AddItemsToSprintModal } from './AddItemsToSprintModal';
+import { CreateRetroModal } from './CreateRetroModal';
 import { Clock, AlertCircle, CheckCircle2, Loader2, Plus, List, Layers } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -62,6 +63,7 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
   const [showAddItemsModal, setShowAddItemsModal] = useState(false);
   const [boardView, setBoardView] = useState<'user_stories' | 'tasks'>('user_stories');
   const [showCompleteSprintModal, setShowCompleteSprintModal] = useState(false);
+  const [showCreateRetroModal, setShowCreateRetroModal] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState({
@@ -228,11 +230,27 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
     if (!sprint) return;
 
     try {
-      // Update sprint status to completed
+      // Calculate actual metrics BEFORE moving items to backlog
+      // Only count user stories (not tasks, bugs, epics, etc.) for story point calculations
+      const userStories = pbis.filter(pbi => pbi.item_type === 'user_story');
+
+      // Calculate total committed story points (all user stories in sprint)
+      const totalCommittedPoints = userStories.reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0);
+
+      // Calculate completed story points (only done user stories)
+      const totalCompletedPoints = userStories
+        .filter(pbi => pbi.status === 'done')
+        .reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0);
+
+      // Update sprint with actual metrics and set status to completed
       const response = await fetch(`/api/projects/${projectId}/sprints/${sprint.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'completed' })
+        body: JSON.stringify({
+          status: 'completed',
+          committed_story_points: totalCommittedPoints,
+          completed_story_points: totalCompletedPoints
+        })
       });
 
       if (response.ok) {
@@ -250,18 +268,8 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
 
         setShowCompleteSprintModal(false);
 
-        // Ask user if they want to start a retrospective
-        const startRetro = confirm(
-          `Sprint "${sprint.name}" has been completed!\n\nWould you like to start a retrospective for this sprint?`
-        );
-
-        if (startRetro) {
-          // Navigate to create retrospective page with sprint ID
-          window.location.href = `/projects/${projectId}/retro/new?sprintId=${sprint.id}`;
-        } else {
-          // Just refresh to show updated state
-          window.location.reload();
-        }
+        // Show retrospective creation modal
+        setShowCreateRetroModal(true);
       }
     } catch (error) {
       console.error('Error completing sprint:', error);
@@ -283,6 +291,7 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
       console.error('Error deleting sprint:', error);
     }
   };
+
 
   // Filter PBIs
   const filteredPbis = pbis.filter(pbi => {
@@ -380,65 +389,24 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
 
   return (
     <div className="space-y-6">
-      {/* Sprint Header with Burndown Chart */}
+      {/* Sprint Header with Metrics and Burndown Chart */}
       {sprintWithCalculatedPoints && (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible">
           <SprintHeader
             sprint={sprintWithCalculatedPoints}
             onComplete={() => setShowCompleteSprintModal(true)}
             onDelete={handleDeleteSprint}
             onUpdate={handleSprintUpdate}
             projectId={projectId}
+            completedStoryPoints={completedStoryPoints}
+            burndownChart={<BurndownChart sprint={sprintWithCalculatedPoints} completedStoryPoints={completedStoryPoints} hideToggle />}
+            onAddItems={() => setShowAddItemsModal(true)}
           />
-          <BurndownChart sprint={sprintWithCalculatedPoints} completedStoryPoints={completedStoryPoints} />
         </div>
       )}
 
-      {/* Kanban Board Container with Filters */}
+      {/* Kanban Board Container */}
       <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {/* Filters and Controls Bar */}
-        <div className="bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex items-center justify-between mb-4">
-            {/* View Toggle */}
-            <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 p-1">
-              <button
-                onClick={() => setBoardView('user_stories')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors ${
-                  boardView === 'user_stories'
-                    ? 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                <Layers size={18} />
-                User Stories
-              </button>
-              <button
-                onClick={() => setBoardView('tasks')}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-colors ${
-                  boardView === 'tasks'
-                    ? 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200'
-                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                <List size={18} />
-                Tasks
-              </button>
-            </div>
-
-            {/* Add Items Button */}
-            <button
-              onClick={() => setShowAddItemsModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
-            >
-              <Plus size={18} />
-              Add Items to Sprint
-            </button>
-          </div>
-
-          {/* Quick Filters */}
-          <QuickFilters filters={filters} onFilterChange={setFilters} />
-        </div>
-
         {/* Kanban Board */}
         <div className="p-6">
           <DndContext
@@ -465,7 +433,7 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
                           {config.title}
                         </h3>
                       </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-800 text-${config.color}-800 dark:text-${config.color}-200`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-900 text-${config.color}-800 dark:text-${config.color}-100`}>
                         {columnPbis.length}
                       </span>
                     </div>
@@ -539,7 +507,7 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
                                     {config.title}
                                   </h5>
                                 </div>
-                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-800 text-${config.color}-800 dark:text-${config.color}-200`}>
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-900 text-${config.color}-800 dark:text-${config.color}-100`}>
                                   {columnTasks.length}
                                 </span>
                               </div>
@@ -743,6 +711,22 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
         </div>
         );
       })()}
+
+      {/* Create Retrospective Modal */}
+      {showCreateRetroModal && sprint && (
+        <CreateRetroModal
+          projectId={projectId}
+          sprint={sprint}
+          onClose={() => {
+            setShowCreateRetroModal(false);
+            window.location.reload();
+          }}
+          onRetroCreated={(retroId) => {
+            setShowCreateRetroModal(false);
+            window.location.href = `/retro/${retroId}`;
+          }}
+        />
+      )}
     </div>
   );
 }

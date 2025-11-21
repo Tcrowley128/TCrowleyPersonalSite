@@ -195,6 +195,34 @@ export async function PATCH(
       }
     }
 
+    // Update sprint completed_story_points when PBI status changes
+    if (body.status !== undefined && pbi.sprint_id) {
+      try {
+        // Get all PBIs in this sprint with status 'done'
+        const { data: completedPbis, error: completedError } = await supabase
+          .from('product_backlog_items')
+          .select('story_points')
+          .eq('sprint_id', pbi.sprint_id)
+          .eq('status', 'done');
+
+        if (!completedError && completedPbis) {
+          // Calculate total completed story points
+          const totalCompleted = completedPbis.reduce(
+            (sum, item) => sum + (Number(item.story_points) || 0),
+            0
+          );
+
+          // Update the sprint
+          await supabase
+            .from('sprints')
+            .update({ completed_story_points: totalCompleted })
+            .eq('id', pbi.sprint_id);
+        }
+      } catch (sprintUpdateError) {
+        console.error('Error updating sprint completed_story_points:', sprintUpdateError);
+      }
+    }
+
     return NextResponse.json({ pbi });
   } catch (error) {
     console.error('Error in PATCH /api/pbis/[pbiId]:', error);

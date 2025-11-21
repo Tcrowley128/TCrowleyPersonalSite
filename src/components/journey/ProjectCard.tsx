@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Target, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { ProjectDetailsModal } from './ProjectDetailsModal';
+import { AvatarGroup, UserAvatar } from '@/components/common/UserAvatar';
 
 interface Project {
   id: string;
@@ -19,9 +20,10 @@ interface Project {
 interface ProjectCardProps {
   project: any; // Using any to allow flexible project structure from different sources
   onUpdate: (projectId: string, updates: any) => void;
+  onNavigateToSprints?: (projectId: string) => void;
 }
 
-export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
+export function ProjectCard({ project, onUpdate, onNavigateToSprints }: ProjectCardProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   const statusConfig = {
@@ -84,14 +86,30 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
 
         {/* Footer Info */}
         <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center gap-1">
-            <CheckCircle2 size={16} />
-            <span>{project.tasks?.[0]?.count || 0} tasks</span>
+          <div className="flex items-center gap-3">
+            {project.estimated_timeline_days && (
+              <div className="flex items-center gap-1">
+                <Calendar size={16} />
+                <span>{project.estimated_timeline_days}d</span>
+              </div>
+            )}
           </div>
-          {project.estimated_timeline_days && (
-            <div className="flex items-center gap-1">
-              <Calendar size={16} />
-              <span>{project.estimated_timeline_days}d</span>
+          {/* Team Members */}
+          {(project.project_lead || (project.team_members && project.team_members.length > 0)) && (
+            <div className="flex items-center gap-2">
+              {project.project_lead && !project.team_members?.length && (
+                <UserAvatar email={project.project_lead} size="xs" />
+              )}
+              {project.team_members && project.team_members.length > 0 && (
+                <AvatarGroup
+                  users={[
+                    ...(project.project_lead ? [{ email: project.project_lead }] : []),
+                    ...project.team_members.map((email: string) => ({ email }))
+                  ]}
+                  max={3}
+                  size="xs"
+                />
+              )}
             </div>
           )}
         </div>
@@ -103,6 +121,7 @@ export function ProjectCard({ project, onUpdate }: ProjectCardProps) {
           project={project}
           onClose={() => setShowDetails(false)}
           onUpdate={onUpdate}
+          onNavigateToSprints={onNavigateToSprints ? () => onNavigateToSprints(project.id) : undefined}
         />
       )}
     </>

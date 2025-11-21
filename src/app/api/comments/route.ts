@@ -68,9 +68,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract mentions from content
-    const { data: mentions } = await supabase.rpc('extract_mentions', {
-      p_text: content
-    });
+    let mentions: string[] = [];
+    try {
+      const { data: mentionData, error: mentionError } = await supabase.rpc('extract_mentions', {
+        p_text: content
+      });
+      if (!mentionError && mentionData) {
+        mentions = mentionData;
+      }
+    } catch (mentionErr) {
+      console.warn('Error extracting mentions, proceeding without mentions:', mentionErr);
+      // Continue without mentions rather than failing the whole comment
+    }
 
     const { data: comment, error } = await supabase
       .from('comments')
@@ -82,7 +91,7 @@ export async function POST(request: NextRequest) {
         thread_level,
         user_id,
         user_name,
-        mentioned_users: mentions || []
+        mentioned_users: mentions
       })
       .select()
       .single();

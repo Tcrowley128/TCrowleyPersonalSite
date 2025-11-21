@@ -85,8 +85,18 @@ export function TeamMemberAutocomplete({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    onChange(newValue);
-    setShowDropdown(true);
+
+    // Check for comma - take the first email before comma
+    if (newValue.includes(',')) {
+      const firstEmail = newValue.split(',')[0].trim();
+      if (firstEmail) {
+        onChange(firstEmail);
+        handleSelectMember(firstEmail);
+      }
+    } else {
+      onChange(newValue);
+      setShowDropdown(true);
+    }
   };
 
   const handleSelectMember = async (email: string) => {
@@ -130,7 +140,7 @@ export function TeamMemberAutocomplete({
   return (
     <div className="relative">
       <div className="relative">
-        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
         <input
           ref={inputRef}
           type="text"
@@ -142,10 +152,23 @@ export function TeamMemberAutocomplete({
           required={required}
           className={`w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent ${className}`}
         />
-        <ChevronDown
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
-        />
+        <button
+          type="button"
+          onClick={() => {
+            setShowDropdown(!showDropdown);
+            inputRef.current?.focus();
+          }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors"
+          title="Show team members"
+        >
+          <ChevronDown className="w-4 h-4 text-gray-400" />
+        </button>
       </div>
+
+      {/* Helper text */}
+      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        Tip: You can paste comma-separated emails - first email will be selected
+      </p>
 
       {/* Dropdown */}
       {showDropdown && filteredMembers.length > 0 && (

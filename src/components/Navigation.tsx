@@ -63,7 +63,7 @@ export default function Navigation() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Left: T Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
@@ -80,7 +80,7 @@ export default function Navigation() {
           </div>
 
           {/* Center: Main Navigation */}
-          <div className="hidden md:flex flex-1 justify-center">
+          <div className="hidden md:flex flex-1 justify-center ml-8">
             <div className="flex items-center space-x-6">
               {navItems.map((item, index) => (
                 <Link key={item.href} href={item.href}>
@@ -102,10 +102,10 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Right: User Actions */}
-          <div className="hidden md:flex flex-shrink-0 items-center space-x-3">
-            {user && (
-              <div className="relative">
+          {/* Right: User Actions & Mobile Menu */}
+          <div className="flex flex-shrink-0 items-center space-x-2 sm:space-x-3">
+            {user ? (
+              <div className="relative hidden md:block">
                 <motion.button
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -174,24 +174,38 @@ export default function Navigation() {
                   )}
                 </AnimatePresence>
               </div>
+            ) : (
+              <Link href="/login">
+                <motion.button
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * navItems.length }}
+                  className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm hover:shadow-md"
+                >
+                  <User size={16} />
+                  Login
+                </motion.button>
+              </Link>
             )}
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 * (navItems.length + 1) }}
+              className="hidden md:block"
             >
               <ThemeToggle />
             </motion.div>
-          </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none p-2"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -223,7 +237,7 @@ export default function Navigation() {
                     </motion.div>
                   </Link>
                 ))}
-                {user && (
+                {user ? (
                   <>
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
@@ -269,11 +283,24 @@ export default function Navigation() {
                       Logout
                     </motion.button>
                   </>
+                ) : (
+                  <Link href="/login">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 * navItems.length }}
+                      onClick={handleNavigation}
+                      className="text-white bg-blue-600 hover:bg-blue-700 block px-3 py-2 text-base font-medium w-full text-left transition-colors duration-200 flex items-center gap-2 rounded-lg shadow-sm"
+                    >
+                      <User size={18} />
+                      Login
+                    </motion.div>
+                  </Link>
                 )}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * (navItems.length + (user ? 4 : 0)) }}
+                  transition={{ delay: 0.05 * (navItems.length + (user ? 4 : 1)) }}
                   className="px-3 py-2 flex items-center gap-2"
                 >
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme:</span>

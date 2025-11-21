@@ -178,7 +178,7 @@ export function ActivateSprintModal({
                   type="button"
                   onClick={generateSprintGoal}
                   disabled={generatingGoal || sprintPBIs.length === 0}
-                  className="flex items-center gap-2 px-3 py-1 text-sm bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-3 py-1 text-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {generatingGoal ? (
                     <>

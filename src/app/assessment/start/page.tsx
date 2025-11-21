@@ -9,9 +9,13 @@ import QuestionCard from '@/components/assessment/QuestionCard';
 import ReviewAnswersStep from '@/components/assessment/ReviewAnswersStep';
 import { assessmentSteps } from '@/lib/assessment/questions';
 import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function AssessmentStart() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [answers, setAnswers] = useState<Record<string, any>>({});
   const [sessionId, setSessionId] = useState<string>('');
@@ -23,8 +27,19 @@ export default function AssessmentStart() {
   const [showResumeBanner, setShowResumeBanner] = useState(false);
   const [draftTimestamp, setDraftTimestamp] = useState<string>('');
 
+  // Check authentication before allowing assessment
+  useEffect(() => {
+    if (!authLoading && !user) {
+      // User is not authenticated, show auth modal
+      setShowAuthModal(true);
+    }
+  }, [authLoading, user]);
+
   // Initialize session and load saved progress
   useEffect(() => {
+    // Only initialize if user is authenticated
+    if (!user) return;
+
     const sid = sessionStorage.getItem('assessment_session_id') || uuidv4();
     sessionStorage.setItem('assessment_session_id', sid);
     setSessionId(sid);
@@ -43,7 +58,7 @@ export default function AssessmentStart() {
         console.error('Failed to load saved progress:', err);
       }
     }
-  }, []);
+  }, [user]);
 
   // Auto-save progress every 30 seconds
   useEffect(() => {
@@ -217,6 +232,7 @@ export default function AssessmentStart() {
       // Prepare assessment data
       const assessmentData = {
         session_id: sessionId,
+        user_id: user?.id, // Link to authenticated user
         company_size: answers.company_size,
         industry: answers.industry === 'other' && answers.industry_other ? answers.industry_other : answers.industry,
         operational_areas: answers.operational_areas || [],
@@ -290,6 +306,15 @@ export default function AssessmentStart() {
     }
   };
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
   // Allow review step even if currentStepData is undefined
   if (!currentStepData && !isReviewStep) {
     return <div>Loading...</div>;
@@ -298,8 +323,17 @@ export default function AssessmentStart() {
   const stepTitles = [...assessmentSteps.map(s => s.title), 'Review'];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => router.push('/assessment')}
+        onSuccess={() => setShowAuthModal(false)}
+        initialMode="signup"
+      />
+
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Progress Bar */}
         <ProgressBar
           currentStep={currentStep}
@@ -437,24 +471,25 @@ export default function AssessmentStart() {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between items-center gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={handlePrevious}
                 disabled={currentStep === 1}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
                   currentStep === 1
                     ? 'opacity-50 cursor-not-allowed bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
                     : 'bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-gray-600'
                 }`}
               >
-                <ArrowLeft size={20} />
-                Previous
+                <ArrowLeft size={18} className="sm:w-5 sm:h-5" />
+                <span className="hidden xs:inline">Previous</span>
+                <span className="xs:hidden">Prev</span>
               </button>
 
               <button
                 onClick={handleNext}
                 disabled={isSubmitting}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold transition-all text-sm sm:text-base ${
                   isSubmitting
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:shadow-lg'
@@ -462,13 +497,14 @@ export default function AssessmentStart() {
               >
                 {isLastStep ? (
                   <>
-                    Review Answers
-                    <ArrowRight size={20} />
+                    <span className="hidden sm:inline">Review Answers</span>
+                    <span className="sm:hidden">Review</span>
+                    <ArrowRight size={18} className="sm:w-5 sm:h-5" />
                   </>
                 ) : (
                   <>
                     Next
-                    <ArrowRight size={20} />
+                    <ArrowRight size={18} className="sm:w-5 sm:h-5" />
                   </>
                 )}
               </button>
@@ -499,5 +535,6 @@ export default function AssessmentStart() {
         )}
       </div>
     </div>
+    </>
   );
 }

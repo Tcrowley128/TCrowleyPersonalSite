@@ -59,6 +59,8 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [isStartingJourney, setIsStartingJourney] = useState(false);
   const [hasExistingProjects, setHasExistingProjects] = useState(false);
+  const [showJourneyBanner, setShowJourneyBanner] = useState(false);
+  const [showStickyFooter, setShowStickyFooter] = useState(false);
   const chatRef = useRef<AssessmentChatHandle>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -117,6 +119,24 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     generateResults();
     checkExistingProjects();
   }, [generateResults, checkExistingProjects]);
+
+  // Check if user has seen journey prompt before
+  useEffect(() => {
+    if (!results) return;
+
+    const hasSeenJourneyPrompt = localStorage.getItem(`journey-prompt-seen-${id}`);
+    const hasStartedJourney = localStorage.getItem(`journey-started-${id}`);
+
+    if (!hasStartedJourney) {
+      if (!hasSeenJourneyPrompt) {
+        // First time viewing results - show prominent banner
+        setShowJourneyBanner(true);
+      } else {
+        // Returning user who hasn't started journey - show sticky footer
+        setShowStickyFooter(true);
+      }
+    }
+  }, [results, id]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -187,9 +207,24 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     }
   };
 
+  const handleDismissBanner = () => {
+    localStorage.setItem(`journey-prompt-seen-${id}`, 'true');
+    setShowJourneyBanner(false);
+    setShowStickyFooter(true);
+  };
+
+  const handleDismissFooter = () => {
+    setShowStickyFooter(false);
+  };
+
   const handleStartJourney = async () => {
     setIsStartingJourney(true);
     setError('');
+
+    // Mark journey as started in localStorage
+    localStorage.setItem(`journey-started-${id}`, 'true');
+    setShowJourneyBanner(false);
+    setShowStickyFooter(false);
 
     try {
       // If projects already exist, just navigate to the journey page
@@ -618,10 +653,11 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         {!showSnakeGame && !isGenerating && (
           <button
             onClick={() => setShowSnakeGame(true)}
-            className="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-lg hover:shadow-xl"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 inline-flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-white dark:bg-slate-800 border-2 border-gray-300 dark:border-gray-600 rounded-lg font-medium text-sm sm:text-base text-gray-700 dark:text-gray-300 hover:border-blue-600 hover:text-blue-600 dark:hover:text-blue-400 transition-all shadow-lg hover:shadow-xl"
           >
             <span>🎮</span>
-            <span>Play Snake</span>
+            <span className="hidden sm:inline">Play Snake</span>
+            <span className="sm:hidden">Snake</span>
           </button>
         )}
       </>
@@ -699,23 +735,23 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium">
-              <CheckCircle size={16} />
+          <div className="text-center mb-3 sm:mb-4">
+            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium">
+              <CheckCircle size={14} className="sm:w-4 sm:h-4" />
               Assessment Complete
             </div>
           </div>
 
-          <div className="relative">
-            <h1 className="text-4xl md:text-5xl font-bold text-center mb-4">
-              <span className="text-gray-900 dark:text-white">{results.company_name || 'Your'}</span>{' '}
-              <span className="text-gray-600 dark:text-gray-400">Digital Transformation Roadmap</span>
+          <div className="relative pr-12 sm:pr-0">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-3 sm:mb-4">
+              <span className="text-gray-900 dark:text-white block sm:inline">{results.company_name || 'Your'}</span>{' '}
+              <span className="text-gray-600 dark:text-gray-400 block sm:inline">Digital Transformation Roadmap</span>
             </h1>
 
             {/* Three-Dot Menu - Positioned in top right, vertically centered with title */}
-            <div className="absolute top-1/2 -translate-y-1/2 right-0 flex-shrink-0" ref={menuRef}>
+            <div className="absolute top-0 sm:top-1/2 sm:-translate-y-1/2 right-0 flex-shrink-0" ref={menuRef}>
               <div className="relative">
                 {/* Pulsing Tip Icon */}
                 {showMenuTip && (
@@ -857,6 +893,62 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
               <p className="text-red-800 dark:text-red-200 text-center">{error}</p>
             </motion.div>
           )}
+
+          {/* Journey Banner - First time viewers */}
+          <AnimatePresence>
+            {showJourneyBanner && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="max-w-4xl mx-auto mb-8"
+              >
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-2 border-blue-400 dark:border-blue-500 rounded-xl p-6 shadow-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                        <Rocket className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Ready to Start Your Transformation Journey?
+                      </h3>
+                      <p className="text-gray-700 dark:text-gray-300 mb-4">
+                        You've reviewed your roadmap - now it's time to take action! Our Journey Management Platform
+                        helps you track progress, manage projects, and achieve your digital transformation goals.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <button
+                          onClick={handleStartJourney}
+                          disabled={isStartingJourney}
+                          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
+                        >
+                          <Rocket className={isStartingJourney ? 'animate-bounce' : ''} size={20} />
+                          {isStartingJourney
+                            ? (hasExistingProjects ? 'Opening Journey...' : 'Starting Journey...')
+                            : (hasExistingProjects ? 'Go to Journey' : 'Start Your Journey')
+                          }
+                        </button>
+                        <button
+                          onClick={handleDismissBanner}
+                          className="px-6 py-3 text-gray-700 dark:text-gray-300 font-medium hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded-lg transition-all"
+                        >
+                          Maybe Later
+                        </button>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleDismissBanner}
+                      className="flex-shrink-0 p-1 hover:bg-blue-100 dark:hover:bg-blue-900/40 rounded transition-colors"
+                    >
+                      <X size={20} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
         </motion.div>
 
@@ -1050,6 +1142,56 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
         <FloatingAIButton
           onClick={() => chatRef.current?.openWithMessage("")}
         />
+
+        {/* Sticky Footer - Returning users */}
+        <AnimatePresence>
+          {showStickyFooter && (
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 100 }}
+              className="fixed bottom-0 left-0 right-0 z-40 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 border-t-2 border-blue-500 dark:border-blue-400 shadow-2xl backdrop-blur-sm"
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="hidden sm:flex w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full items-center justify-center flex-shrink-0 shadow-md">
+                      <Rocket className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        Ready to take action on your roadmap?
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 hidden sm:block">
+                        Track progress and manage your transformation projects
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleStartJourney}
+                      disabled={isStartingJourney}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold rounded-lg transition-all shadow-lg hover:shadow-xl disabled:opacity-50 whitespace-nowrap"
+                    >
+                      <Rocket className={isStartingJourney ? 'animate-bounce' : ''} size={18} />
+                      {isStartingJourney
+                        ? 'Starting...'
+                        : (hasExistingProjects ? 'Go to Journey' : 'Start Journey')
+                      }
+                    </button>
+                    <button
+                      onClick={handleDismissFooter}
+                      className="p-2 hover:bg-blue-200 dark:hover:bg-blue-900/60 rounded transition-colors"
+                      title="Dismiss"
+                    >
+                      <X size={20} className="text-gray-600 dark:text-gray-300" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Email Modal */}
         {showEmailModal && (

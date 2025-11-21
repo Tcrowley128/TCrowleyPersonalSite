@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragOverlay, closestCorners, pointerWithin, PointerSensor, useSensor, useSensors, DragStartEvent, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus, AlertTriangle } from 'lucide-react';
+import { Loader2, Plus, Calendar, Play, Trash2, Edit2, CalendarPlus, AlertTriangle, Square, CheckSquare, MoveRight } from 'lucide-react';
 import { SortablePBICard } from './SortablePBICard';
 import { ActivateSprintModal } from './ActivateSprintModal';
 
@@ -46,6 +46,8 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
   const [newSprintName, setNewSprintName] = useState('');
   const [activatingSprintId, setActivatingSprintId] = useState<string | null>(null);
   const [deletingSprintId, setDeletingSprintId] = useState<string | null>(null);
+  const [selectedPBIs, setSelectedPBIs] = useState<Set<string>>(new Set());
+  const [bulkActionTarget, setBulkActionTarget] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -249,6 +251,46 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
     return pbiList.reduce((sum, pbi) => sum + (pbi.story_points || 0), 0);
   };
 
+  // Multi-select handlers
+  const togglePBISelection = (pbiId: string) => {
+    const newSelected = new Set(selectedPBIs);
+    if (newSelected.has(pbiId)) {
+      newSelected.delete(pbiId);
+    } else {
+      newSelected.add(pbiId);
+    }
+    setSelectedPBIs(newSelected);
+  };
+
+  const selectAllInBacklog = () => {
+    const backlog = getBacklogPBIs();
+    setSelectedPBIs(new Set(backlog.map(pbi => pbi.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedPBIs(new Set());
+  };
+
+  const moveBulkToSprint = async (targetSprintId: string | null) => {
+    if (selectedPBIs.size === 0) return;
+
+    try {
+      const updatePromises = Array.from(selectedPBIs).map(pbiId =>
+        fetch(`/api/pbis/${pbiId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sprint_id: targetSprintId })
+        })
+      );
+
+      await Promise.all(updatePromises);
+      clearSelection();
+      fetchData();
+    } catch (error) {
+      console.error('Error moving PBIs:', error);
+    }
+  };
+
   // Droppable wrapper component
   function DroppableContainer({ id, children }: { id: string; children: React.ReactNode }) {
     const { setNodeRef, isOver } = useDroppable({ id });
@@ -303,7 +345,9 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           {!showCreateSprint ? (
             <button
               onClick={() => setShowCreateSprint(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              disabled={plannedSprints.length >= 1}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              title={plannedSprints.length >= 1 ? 'Only one future sprint can be planned at a time' : 'Create a new sprint'}
             >
               <Plus size={20} />
               Create Sprint
@@ -337,41 +381,100 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Product Backlog */}
-          <DroppableContainer id="backlog">
-            <SortableContext items={backlogPBIs.map(p => p.id)} strategy={verticalListSortingStrategy}>
-              <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4 min-h-[400px] h-full">
-                <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product Backlog</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {backlogPBIs.length} items • {getTotalStoryPoints(backlogPBIs)} points
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  {backlogPBIs.map((pbi, index) => (
-                    <SortablePBICard
-                      key={pbi.id}
-                      pbi={pbi}
-                      index={index}
-                      isSelected={false}
-                      onToggleSelect={() => {}}
-                    />
-                  ))}
-                  {backlogPBIs.length === 0 && (
-                    <div className="text-center text-gray-400 dark:text-gray-600 py-8">
-                      No items in backlog
-                    </div>
-                  )}
-                </div>
+        {/* Multi-select toolbar */}
+        {selectedPBIs.size > 0 && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <CheckSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="font-medium text-gray-900 dark:text-white">
+                  {selectedPBIs.size} item{selectedPBIs.size !== 1 ? 's' : ''} selected
+                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  ({pbis.filter(pbi => selectedPBIs.has(pbi.id)).reduce((sum, pbi) => sum + pbi.story_points, 0)} points)
+                </span>
               </div>
-            </SortableContext>
-          </DroppableContainer>
+              <div className="flex items-center gap-2">
+                <select
+                  value={bulkActionTarget || ''}
+                  onChange={(e) => setBulkActionTarget(e.target.value || null)}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm"
+                >
+                  <option value="">Move to...</option>
+                  {plannedSprints.map(sprint => (
+                    <option key={sprint.id} value={sprint.id}>{sprint.name}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => {
+                    if (bulkActionTarget) {
+                      moveBulkToSprint(bulkActionTarget);
+                    }
+                  }}
+                  disabled={!bulkActionTarget}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors text-sm"
+                >
+                  <MoveRight className="w-4 h-4" />
+                  Move
+                </button>
+                <button
+                  onClick={clearSelection}
+                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {/* Sprint Columns - Only show planned sprints */}
-          {plannedSprints.length === 0 && (
-            <div className="lg:col-span-2 xl:col-span-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-700 p-8 text-center">
-              <CalendarPlus className="w-12 h-12 mx-auto mb-4 text-blue-600 dark:text-blue-400" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Product Backlog - Takes 2 columns */}
+          <div className="lg:col-span-2">
+            <DroppableContainer id="backlog">
+              <SortableContext items={backlogPBIs.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4 min-h-[600px] h-full">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Product Backlog</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {backlogPBIs.length} items • {getTotalStoryPoints(backlogPBIs)} points
+                        </p>
+                      </div>
+                      <button
+                        onClick={backlogPBIs.length > 0 && selectedPBIs.size === backlogPBIs.length ? clearSelection : selectAllInBacklog}
+                        className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                      >
+                        {backlogPBIs.length > 0 && selectedPBIs.size === backlogPBIs.length ? 'Deselect All' : 'Select All'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-2 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+                    {backlogPBIs.map((pbi, index) => (
+                      <SortablePBICard
+                        key={pbi.id}
+                        pbi={pbi}
+                        index={index}
+                        isSelected={selectedPBIs.has(pbi.id)}
+                        onToggleSelect={() => togglePBISelection(pbi.id)}
+                      />
+                    ))}
+                    {backlogPBIs.length === 0 && (
+                      <div className="text-center text-gray-400 dark:text-gray-600 py-8">
+                        No items in backlog
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </SortableContext>
+            </DroppableContainer>
+          </div>
+
+          {/* Sprint Column - Only show 1 planned sprint, takes 1 column */}
+          {plannedSprints.length === 0 ? (
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-700 p-8 flex flex-col items-center justify-center min-h-[600px]">
+              <CalendarPlus className="w-12 h-12 mb-4 text-blue-600 dark:text-blue-400" />
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                 No Future Sprints Planned
               </h3>
@@ -379,29 +482,24 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                 Create a new sprint to start planning future work
               </p>
             </div>
-          )}
-          {plannedSprints.map((sprint) => {
-            const sprintPBIs = getSprintPBIs(sprint.id);
-            const droppableId = `sprint-${sprint.id}`;
-
-            return (
-              <div key={sprint.id} className="h-full">
-                <DroppableContainer id={droppableId}>
+          ) : (
+              <div key={plannedSprints[0].id} className="h-full">
+                <DroppableContainer id={`sprint-${plannedSprints[0].id}`}>
                   <SortableContext
-                    items={sprintPBIs.map(p => p.id)}
+                    items={getSprintPBIs(plannedSprints[0].id).map(p => p.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[400px] h-full">
+                    <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-blue-300 dark:border-blue-700 p-4 min-h-[600px] h-full">
                   <div className="mb-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                         <Calendar size={18} className="text-blue-600" />
-                        {sprint.name}
+                        {plannedSprints[0].name}
                       </h3>
                       <div className="flex items-center gap-1">
-                        {sprint.status === 'planned' && (
+                        {plannedSprints[0].status === 'planned' && (
                           <button
-                            onClick={() => setActivatingSprintId(sprint.id)}
+                            onClick={() => setActivatingSprintId(plannedSprints[0].id)}
                             className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
                             title="Start Sprint"
                           >
@@ -409,7 +507,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                           </button>
                         )}
                         <button
-                          onClick={() => setDeletingSprintId(sprint.id)}
+                          onClick={() => setDeletingSprintId(plannedSprints[0].id)}
                           className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                           title="Delete Sprint"
                         >
@@ -419,24 +517,24 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                     </div>
                     <div className="flex items-center gap-2 text-xs">
                       <span className={`px-2 py-1 rounded-full ${
-                        sprint.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                        sprint.status === 'completed' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' :
+                        plannedSprints[0].status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                        plannedSprints[0].status === 'completed' ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200' :
                         'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
                       }`}>
-                        {sprint.status}
+                        {plannedSprints[0].status}
                       </span>
                       <span className="text-gray-600 dark:text-gray-400">
-                        {sprintPBIs.length} items • {getTotalStoryPoints(sprintPBIs)} points
+                        {getSprintPBIs(plannedSprints[0].id).length} items • {getTotalStoryPoints(getSprintPBIs(plannedSprints[0].id))} points
                       </span>
                     </div>
-                    {sprint.goal && (
+                    {plannedSprints[0].goal && (
                       <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 italic">
-                        {sprint.goal}
+                        {plannedSprints[0].goal}
                       </p>
                     )}
                   </div>
                   <div className="space-y-2 min-h-[200px] relative">
-                    {sprintPBIs.map((pbi, index) => (
+                    {getSprintPBIs(plannedSprints[0].id).map((pbi, index) => (
                       <SortablePBICard
                         key={pbi.id}
                         pbi={pbi}
@@ -446,16 +544,15 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                       />
                     ))}
                     {/* Always render a drop zone at the end for empty space */}
-                    <div className={`${sprintPBIs.length === 0 ? 'min-h-[200px]' : 'min-h-[50px]'} text-center text-gray-400 dark:text-gray-600 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg ${sprintPBIs.length > 0 ? 'mt-2' : ''}`}>
-                      {sprintPBIs.length === 0 ? 'Drop PBIs here' : 'Drop more items here'}
+                    <div className={`${getSprintPBIs(plannedSprints[0].id).length === 0 ? 'min-h-[200px]' : 'min-h-[50px]'} text-center text-gray-400 dark:text-gray-600 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg ${getSprintPBIs(plannedSprints[0].id).length > 0 ? 'mt-2' : ''}`}>
+                      {getSprintPBIs(plannedSprints[0].id).length === 0 ? 'Drop PBIs here' : 'Drop more items here'}
                     </div>
                   </div>
                 </div>
                   </SortableContext>
                 </DroppableContainer>
               </div>
-            );
-          })}
+          )}
         </div>
       </div>
 

@@ -21,7 +21,7 @@ export async function GET(
       .select('*', { count: 'exact', head: true })
       .eq('assessment_id', assessmentId);
 
-    // Fetch projects with limit
+    // Fetch projects with limit - sorted by updated_at so recently modified projects appear first
     const { data: projects, error } = await supabase
       .from('assessment_projects')
       .select(`
@@ -29,7 +29,7 @@ export async function GET(
         tasks:project_tasks(count)
       `)
       .eq('assessment_id', assessmentId)
-      .order('created_at', { ascending: false })
+      .order('updated_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {

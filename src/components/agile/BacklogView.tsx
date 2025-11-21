@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, closestCorners, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { Loader2, Play, Plus, Sparkles, RefreshCw, List, GitBranch, Search, Filter } from 'lucide-react';
+import { Loader2, Play, Plus, Sparkles, RefreshCw, List, GitBranch, Search, Filter, Repeat } from 'lucide-react';
 import { SortablePBICard } from './SortablePBICard';
 import { HierarchicalPBICard } from './HierarchicalPBICard';
 import { AddPBIModal } from './AddPBIModal';
 import { EditPBIModal } from './EditPBIModal';
 import { GenerateBacklogModal } from './GenerateBacklogModal';
+import { RecurringItemModal } from './RecurringItemModal';
 
 interface PBI {
   id: string;
@@ -39,6 +40,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
   const [selectedPbis, setSelectedPbis] = useState<Set<string>>(new Set());
   const [showAddModal, setShowAddModal] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [showRecurringModal, setShowRecurringModal] = useState(false);
   const [addChildParentId, setAddChildParentId] = useState<string | null>(null);
   const [editingPbiId, setEditingPbiId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'flat' | 'hierarchy'>('hierarchy');
@@ -284,7 +286,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Let AI analyze your project and generate user stories, tasks, and bugs to get started
           </p>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-3 flex-wrap">
             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
@@ -298,6 +300,13 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
             >
               <Sparkles size={18} />
               Generate with AI
+            </button>
+            <button
+              onClick={() => setShowRecurringModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+            >
+              <Repeat size={18} />
+              Recurring Item
             </button>
           </div>
         </div>
@@ -364,6 +373,14 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
                 >
                   <Sparkles size={16} />
                   <span className="hidden sm:inline">Generate</span>
+                </button>
+                <button
+                  onClick={() => setShowRecurringModal(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm"
+                  title="Create recurring work item"
+                >
+                  <Repeat size={16} />
+                  <span className="hidden lg:inline">Recurring</span>
                 </button>
                 <button
                   onClick={fetchBacklog}
@@ -566,6 +583,18 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
           pbis={pbis}
           onClose={() => setShowGenerateModal(false)}
           onGenerated={handleGenerateSuccess}
+        />
+      )}
+
+      {/* Recurring Item Modal */}
+      {showRecurringModal && (
+        <RecurringItemModal
+          projectId={projectId}
+          onClose={() => setShowRecurringModal(false)}
+          onSaved={() => {
+            setShowRecurringModal(false);
+            fetchBacklog();
+          }}
         />
       )}
     </div>

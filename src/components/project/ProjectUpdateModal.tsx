@@ -361,7 +361,7 @@ export default function ProjectUpdateModal({
                   <button
                     onClick={handleApply}
                     disabled={isApplying || selectedInsights.length === 0}
-                    className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {isApplying ? (
                       <>

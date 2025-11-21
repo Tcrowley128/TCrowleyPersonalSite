@@ -76,7 +76,18 @@ export async function POST(request: NextRequest) {
       console.error('[Submit] Error message:', assessmentError.message);
       console.error('[Submit] Error details:', assessmentError.details);
       console.error('[Submit] Error hint:', assessmentError.hint);
-      throw assessmentError;
+
+      // Return detailed error information to client
+      return NextResponse.json(
+        {
+          error: 'Failed to create assessment',
+          message: assessmentError.message,
+          code: assessmentError.code,
+          details: assessmentError.details,
+          hint: assessmentError.hint
+        },
+        { status: 500 }
+      );
     }
     console.log('[Submit] Assessment created successfully with ID:', assessmentData.id);
 
@@ -105,9 +116,18 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Error submitting assessment:', error);
+    console.error('[Submit] Error submitting assessment:', error);
+
+    // Extract error details
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorDetails = error instanceof Error ? error.stack : String(error);
+
     return NextResponse.json(
-      { error: 'Failed to submit assessment' },
+      {
+        error: 'Failed to submit assessment',
+        message: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? errorDetails : undefined
+      },
       { status: 500 }
     );
   }
