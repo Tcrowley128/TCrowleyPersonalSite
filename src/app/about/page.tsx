@@ -133,7 +133,7 @@ export default function AboutPage() {
                   Leading 0-to-1 product launches, establishing OKRs & KPIs, and driving product-led growth strategies.
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {['Product Management', 'OKRs & KPIs', 'Agile Methods', 'Project Management', 'Growth Hacking'].map((skill) => (
+                  {['Product Management', 'OKRs & KPIs', 'Agile Methods', 'Project Management', 'PMP Certified', 'Growth Hacking'].map((skill) => (
                     <span key={skill} className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-700 dark:text-blue-200 text-sm rounded-full">
                       {skill}
                     </span>
@@ -188,8 +188,12 @@ export default function AboutPage() {
             </div>
 
             <div className="bg-white dark:bg-slate-700 rounded-xl shadow-sm p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Professional Development</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Certifications & Professional Development</h2>
               <div className="space-y-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Project Management Professional (PMP)</h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Project Management Institute | 2025</p>
+                </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Bosch Talent Pool 2</h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm">Active Member | 2024</p>
@@ -199,7 +203,7 @@ export default function AboutPage() {
                   <p className="text-gray-600 dark:text-gray-300 text-sm">Maven | 2025</p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Certified Scrum Product Owner</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Certified Scrum Product Owner (CSPO)</h3>
                   <p className="text-gray-600 dark:text-gray-300 text-sm">Scrum Alliance | 2015, 2023</p>
                 </div>
                 <div>
