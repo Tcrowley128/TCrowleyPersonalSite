@@ -9,11 +9,11 @@ function AskAIButton({ onClick, label = "Ask AI" }: { onClick: () => void; label
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-semibold rounded-lg transition-all hover:shadow-md"
+      className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-xs font-semibold rounded-lg transition-all hover:shadow-md flex-shrink-0"
       title={label}
     >
       <Sparkles size={14} />
-      <span>{label}</span>
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }
@@ -569,13 +569,13 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow'
   const colors = accentColors[accentColor] || accentColors.yellow;
 
   return (
-    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${colors.border} rounded-lg p-4`}>
+    <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${colors.border} rounded-lg p-3 sm:p-4`}>
       {/* Header with number, title/description, and action buttons */}
-      <div className="flex items-start gap-3 mb-3">
-        <div className={`${colors.badge} ${colors.text} w-8 h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5`}>
+      <div className="flex items-start gap-2 sm:gap-3 mb-3">
+        <div className={`${colors.badge} ${colors.text} w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5 text-xs sm:text-sm`}>
           {index + 1}
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 pr-1">
           {onQuickEdit && isEditing ? (
             <>
               <QuickResultEditor
@@ -600,13 +600,13 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow'
             </>
           ) : (
             <>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">{win.title}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">{win.description}</p>
+              <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 leading-snug">{win.title}</h4>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{win.description}</p>
             </>
           )}
         </div>
         {/* Action buttons in top right */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           {onAskAI && (
             <AskAIButton
               onClick={() => onAskAI(`Tell me more about this quick win: "${win.title}". How can I implement it step-by-step, and what are the potential challenges I should watch out for?`)}
@@ -630,7 +630,7 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow'
       </div>
 
       {/* Compact badges and metrics row */}
-      <div className="flex flex-wrap items-center gap-2 mb-3 ml-11">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3 ml-8 sm:ml-11">
         {win.effort && (
           <span className={`px-2 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${difficultyColors[win.effort as keyof typeof difficultyColors] || difficultyColors.MEDIUM}`}>
             Effort: {win.effort}
