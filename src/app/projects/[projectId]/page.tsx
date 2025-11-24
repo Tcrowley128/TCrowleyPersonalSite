@@ -138,7 +138,7 @@ export default function ProjectSprintManagement() {
                   </button>
                 </div>
                 {project.description && (
-                  <p className="text-base text-gray-600 dark:text-gray-400 max-w-3xl mt-2">
+                  <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-3xl mt-2">
                     {project.description}
                   </p>
                 )}
