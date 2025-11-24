@@ -125,15 +125,16 @@ export default function ProjectSprintManagement() {
               </button>
               <div className="border-l-4 border-blue-600 pl-4 py-2">
                 <div className="flex items-center justify-between gap-4">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                  <h1 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
                     {project.title}
                   </h1>
                   <button
                     onClick={handleOpenChat}
                     className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all shadow-md hover:shadow-lg flex-shrink-0"
+                    title="AI Scrum Master"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">AI Scrum Master</span>
+                    <span className="hidden sm:inline text-sm font-medium">AI Scrum Master</span>
                   </button>
                 </div>
                 {project.description && (
