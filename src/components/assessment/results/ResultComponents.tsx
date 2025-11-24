@@ -570,39 +570,23 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow'
 
   return (
     <div className={`bg-gray-100 dark:bg-slate-800 border-l-4 ${colors.border} rounded-lg p-3 sm:p-4`}>
-      {/* Header with number, title/description, and action buttons */}
-      <div className="flex items-start gap-2 sm:gap-3 mb-3">
+      {/* Header with number, title, and action buttons */}
+      <div className="flex items-start gap-2 sm:gap-3 mb-2">
         <div className={`${colors.badge} ${colors.text} w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5 text-xs sm:text-sm`}>
           {index + 1}
         </div>
-        <div className="flex-1 min-w-0 pr-1">
+        <div className="flex-1 min-w-0">
           {onQuickEdit && isEditing ? (
-            <>
-              <QuickResultEditor
-                fieldName="quick_wins"
-                value={win.title}
-                onSave={async (newValue) => {
-                  await onQuickEdit('quick_wins', newValue, `[${index}].title`);
-                }}
-                label="Quick Win Title"
-              />
-              <div className="mt-2">
-                <QuickResultEditor
-                  fieldName="quick_wins"
-                  value={win.description}
-                  onSave={async (newValue) => {
-                    await onQuickEdit('quick_wins', newValue, `[${index}].description`);
-                  }}
-                  label="Quick Win Description"
-                  multiline
-                />
-              </div>
-            </>
+            <QuickResultEditor
+              fieldName="quick_wins"
+              value={win.title}
+              onSave={async (newValue) => {
+                await onQuickEdit('quick_wins', newValue, `[${index}].title`);
+              }}
+              label="Quick Win Title"
+            />
           ) : (
-            <>
-              <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-1 leading-snug">{win.title}</h4>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{win.description}</p>
-            </>
+            <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white leading-snug">{win.title}</h4>
           )}
         </div>
         {/* Action buttons in top right */}
@@ -627,6 +611,23 @@ function QuickWinCard({ win, index, onAskAI, onQuickEdit, accentColor = 'yellow'
             </button>
           )}
         </div>
+      </div>
+
+      {/* Description - full width below title */}
+      <div className="ml-8 sm:ml-11 mb-3">
+        {onQuickEdit && isEditing ? (
+          <QuickResultEditor
+            fieldName="quick_wins"
+            value={win.description}
+            onSave={async (newValue) => {
+              await onQuickEdit('quick_wins', newValue, `[${index}].description`);
+            }}
+            label="Quick Win Description"
+            multiline
+          />
+        ) : (
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{win.description}</p>
+        )}
       </div>
 
       {/* Compact badges and metrics row */}
