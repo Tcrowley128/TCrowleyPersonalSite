@@ -21,7 +21,7 @@ export function AskAIButton({ onClick, label = "Ask AI", size = 'sm', className 
       title={label}
     >
       <Sparkles className={iconSize} />
-      <span>{label}</span>
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }

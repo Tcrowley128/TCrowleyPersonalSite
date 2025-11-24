@@ -103,7 +103,7 @@ export function SprintManagement({ projectId, onAskAI, selectedProjectId, onProj
     <div className="space-y-4">
       {/* Sprint Management Header */}
       <div className="mb-4">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 dark:text-white">
           Sprint Management
         </h2>
       </div>
