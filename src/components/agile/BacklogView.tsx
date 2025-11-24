@@ -316,8 +316,92 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
       {pbis.length > 0 && (
         <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
           {/* Header Section */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+            {/* Mobile Header */}
+            <div className="sm:hidden space-y-3">
+              {/* Title row with view toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                    Product Backlog
+                  </h3>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                    {pbis.length} items · {pbis.filter(pbi => pbi.item_type === 'user_story').reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0)} pts
+                  </p>
+                </div>
+                {/* View Mode Toggle */}
+                <div className="flex items-center gap-1 bg-gray-100 dark:bg-slate-700 p-1 rounded-lg">
+                  <button
+                    onClick={() => setViewMode('hierarchy')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded transition-colors text-xs font-medium ${
+                      viewMode === 'hierarchy'
+                        ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    <GitBranch size={14} />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('flat')}
+                    className={`flex items-center gap-1 px-2 py-1 rounded transition-colors text-xs font-medium ${
+                      viewMode === 'flat'
+                        ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    <List size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons - mobile grid */}
+              <div className="grid grid-cols-5 gap-1.5">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="flex items-center justify-center p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  title="Add Item"
+                >
+                  <Plus size={18} />
+                </button>
+                <button
+                  onClick={() => setShowGenerateModal(true)}
+                  className="flex items-center justify-center p-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg transition-colors"
+                  title="Generate with AI"
+                >
+                  <Sparkles size={18} />
+                </button>
+                <button
+                  onClick={() => setShowRecurringModal(true)}
+                  className="flex items-center justify-center p-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+                  title="Recurring Item"
+                >
+                  <Repeat size={18} />
+                </button>
+                <button
+                  onClick={fetchBacklog}
+                  className="flex items-center justify-center p-2.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
+                  title="Refresh"
+                >
+                  <RefreshCw size={18} />
+                </button>
+                <button
+                  onClick={() => onStartSprint(Array.from(selectedPbis), selectedStoryPoints)}
+                  disabled={selectedPbis.size === 0}
+                  className="flex items-center justify-center p-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative"
+                  title={selectedPbis.size > 0 ? `Start Sprint (${selectedPbis.size} items)` : 'Select items first'}
+                >
+                  <Play size={18} />
+                  {selectedPbis.size > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {selectedPbis.size}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Desktop Header */}
+            <div className="hidden sm:flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               {/* Title and Stats */}
               <div className="flex items-center gap-4">
                 <div>
@@ -404,7 +488,7 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
             </div>
 
             {/* Search and Filters */}
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-5 sm:gap-3">
               {/* Search Bar */}
               <div className="sm:col-span-2">
                 <div className="relative">
@@ -419,46 +503,43 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
                 </div>
               </div>
 
-              {/* Status Filter */}
-              <div>
+              {/* Filters row on mobile */}
+              <div className="grid grid-cols-3 gap-2 sm:contents">
+                {/* Status Filter */}
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                  className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
                 >
-                  <option value="">All Statuses</option>
+                  <option value="">Status</option>
                   <option value="new">New</option>
                   <option value="approved">Approved</option>
                   <option value="committed">Committed</option>
                   <option value="in_progress">In Progress</option>
                   <option value="done">Done</option>
                 </select>
-              </div>
 
-              {/* Item Type Filter */}
-              <div>
+                {/* Item Type Filter */}
                 <select
                   value={filters.itemType}
                   onChange={(e) => setFilters({ ...filters, itemType: e.target.value })}
-                  className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
                 >
-                  <option value="">All Types</option>
+                  <option value="">Type</option>
                   <option value="epic">Epic</option>
-                  <option value="user_story">User Story</option>
+                  <option value="user_story">Story</option>
                   <option value="task">Task</option>
                   <option value="bug">Bug</option>
                   <option value="spike">Spike</option>
                 </select>
-              </div>
 
-              {/* Sprint Filter */}
-              <div>
+                {/* Sprint Filter */}
                 <select
                   value={filters.sprint}
                   onChange={(e) => setFilters({ ...filters, sprint: e.target.value })}
-                  className="w-full px-3 py-2 text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm bg-white dark:bg-slate-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 dark:text-white"
                 >
-                  <option value="">All Sprints</option>
+                  <option value="">Sprint</option>
                   <option value="unassigned">Unassigned</option>
                   {sprints.map(sprint => (
                     <option key={sprint.id} value={sprint.id}>
@@ -489,8 +570,8 @@ export function BacklogView({ projectId, activeSprint, onStartSprint, onRefresh 
           </div>
 
           {/* Backlog Items Content */}
-          <div className="p-4">
-            <div className="mb-3 text-sm text-gray-600 dark:text-gray-400">
+          <div className="p-3 sm:p-4">
+            <div className="mb-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               <strong>Tip:</strong> {viewMode === 'flat' ? 'Drag and drop items to prioritize. ' : ''}Click checkboxes to select items for the next sprint.
             </div>
 

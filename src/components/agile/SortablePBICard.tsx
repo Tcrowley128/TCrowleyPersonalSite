@@ -81,7 +81,7 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+      className={`rounded-lg border-2 transition-all ${
         isDragging
           ? 'opacity-50 border-blue-400 bg-blue-50 dark:bg-blue-900/20'
           : isSelected
@@ -89,61 +89,116 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-gray-600'
       }`}
     >
-      {/* Drag Handle */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-      >
-        <GripVertical size={20} />
-      </div>
-
-      {/* Checkbox - Disabled if done */}
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={() => onToggleSelect(pbi.id)}
-        disabled={isDone}
-        className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
-      />
-
-      {/* Order Number */}
-      <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-400">
-        {index + 1}
-      </div>
-
-      {/* Content */}
-      <div
-        className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-        onClick={() => onEdit?.(pbi.id)}
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <TypeIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />
-          <h4 className="font-medium text-gray-900 dark:text-white truncate">
-            {pbi.title}
-          </h4>
-        </div>
-        {pbi.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-            {pbi.description}
-          </p>
-        )}
-      </div>
-
-      {/* Metadata */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        {pbi.assigned_to && (
-          <UserAvatar email={pbi.assigned_to} size="sm" />
-        )}
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
-          {currentStatus.label}
-        </span>
-        {pbi.item_type === 'user_story' && pbi.story_points && (
-          <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-sm font-bold">
-            {pbi.story_points}
+      {/* Mobile Layout */}
+      <div className="sm:hidden p-3">
+        <div className="flex items-start gap-2">
+          {/* Drag Handle */}
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-0.5"
+          >
+            <GripVertical size={18} />
           </div>
-        )}
+
+          {/* Checkbox */}
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(pbi.id)}
+            disabled={isDone}
+            className="w-4 h-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
+          />
+
+          {/* Content */}
+          <div
+            className="flex-1 min-w-0 cursor-pointer"
+            onClick={() => onEdit?.(pbi.id)}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <TypeIcon className={`w-3.5 h-3.5 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />
+                <h4 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2">
+                  {pbi.title}
+                </h4>
+              </div>
+              {pbi.item_type === 'user_story' && pbi.story_points && (
+                <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                  {pbi.story_points}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+              <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${currentStatus.color}`}>
+                {currentStatus.label}
+              </span>
+              {pbi.assigned_to && (
+                <UserAvatar email={pbi.assigned_to} size="xs" />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop Layout */}
+      <div className="hidden sm:flex items-center gap-3 p-4">
+        {/* Drag Handle */}
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <GripVertical size={20} />
+        </div>
+
+        {/* Checkbox - Disabled if done */}
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => onToggleSelect(pbi.id)}
+          disabled={isDone}
+          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
+        />
+
+        {/* Order Number */}
+        <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-400">
+          {index + 1}
+        </div>
+
+        {/* Content */}
+        <div
+          className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => onEdit?.(pbi.id)}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <TypeIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />
+            <h4 className="font-medium text-gray-900 dark:text-white truncate">
+              {pbi.title}
+            </h4>
+          </div>
+          {pbi.description && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+              {pbi.description}
+            </p>
+          )}
+        </div>
+
+        {/* Metadata */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {pbi.assigned_to && (
+            <UserAvatar email={pbi.assigned_to} size="sm" />
+          )}
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
+            {currentStatus.label}
+          </span>
+          {pbi.item_type === 'user_story' && pbi.story_points && (
+            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-sm font-bold">
+              {pbi.story_points}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

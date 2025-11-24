@@ -21,7 +21,9 @@ import {
   ChevronDown,
   ChevronUp,
   Rss,
-  Sparkles
+  Sparkles,
+  Filter,
+  X
 } from 'lucide-react';
 import { AskAIButton } from './AskAIButton';
 
@@ -484,11 +486,12 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
   return (
     <div className="space-y-6" onClick={handleBackgroundClick}>
       {/* Executive Dashboard Header with Filters */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4" onClick={(e) => e.stopPropagation()}>
-        {/* Title, Filters Toggle, and Time Period Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Executive Dashboard</h2>
-          <div className="flex items-center gap-2 flex-wrap">
+      <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-3 sm:p-4" onClick={(e) => e.stopPropagation()}>
+        {/* Title Row */}
+        <div className="flex items-center justify-between mb-3 sm:mb-0">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">Executive Dashboard</h2>
+          {/* Desktop controls */}
+          <div className="hidden sm:flex items-center gap-2">
             {/* Filters Toggle */}
             <div
               className="flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -518,7 +521,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
               </button>
             )}
             {/* Divider */}
-            <div className="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
             {/* Time Period Buttons */}
             <span className="text-sm text-gray-600 dark:text-gray-400">Time:</span>
             <button
@@ -551,6 +554,46 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             >
               Month
             </button>
+          </div>
+        </div>
+
+        {/* Mobile controls - stacked */}
+        <div className="sm:hidden space-y-2">
+          <div className="flex items-center gap-2">
+            {/* Time Period Dropdown */}
+            <select
+              value={timePeriod}
+              onChange={(e) => setTimePeriod(e.target.value as TimePeriod)}
+              className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+            >
+              <option value="year">Year View</option>
+              <option value="quarter">Quarter View</option>
+              <option value="month">Month View</option>
+            </select>
+            {/* Filters Toggle */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
+                showFilters || hasActiveFilters
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              {hasActiveFilters && (
+                <span className="px-1.5 py-0.5 bg-blue-600 text-white rounded text-xs font-medium">
+                  {[selectedOperationalArea, selectedCategory, selectedPriority, selectedStatus].filter(f => f !== 'all').length}
+                </span>
+              )}
+            </button>
+            {hasActiveFilters && (
+              <button
+                onClick={clearAllFilters}
+                className="p-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -1143,14 +1186,14 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
       </div>
 
       {/* Gantt Chart Timeline */}
-      <div className="gantt-chart bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-6">
+      <div className="gantt-chart bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-3 sm:p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-6">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Project Timeline - Gantt View</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Project Timeline</h3>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
               {showAllProjects
-                ? `Showing all ${ganttData.projects.length} projects by priority`
-                : `Showing top ${Math.min(10, ganttData.projects.length)} of ${ganttData.projects.length} projects by priority`
+                ? `Showing all ${ganttData.projects.length} projects`
+                : `Top ${Math.min(10, ganttData.projects.length)} of ${ganttData.projects.length} projects`
               }
             </p>
           </div>
@@ -1158,17 +1201,19 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             {ganttData.projects.length > 10 && (
               <button
                 onClick={() => setShowAllProjects(!showAllProjects)}
-                className="px-4 py-2 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors flex items-center gap-2"
+                className="px-3 py-1.5 text-xs sm:text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors flex items-center gap-1"
               >
                 {showAllProjects ? (
                   <>
-                    <ChevronUp className="w-4 h-4" />
-                    Show Less
+                    <ChevronUp className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Show Less</span>
+                    <span className="sm:hidden">Less</span>
                   </>
                 ) : (
                   <>
-                    <ChevronDown className="w-4 h-4" />
-                    Show All
+                    <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Show All</span>
+                    <span className="sm:hidden">All</span>
                   </>
                 )}
               </button>
@@ -1176,11 +1221,10 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             {onAskAI && ganttData.projects.length > 0 && (
               <AskAIButton
                 onClick={() => onAskAI(`Help me optimize this project timeline. I have ${ganttData.projects.length} projects shown. ${ganttData.projects.filter(p => p.isOverdue).length > 0 ? `${ganttData.projects.filter(p => p.isOverdue).length} project(s) are overdue.` : ''} How can I improve scheduling and resource allocation?`)}
-                label="Optimize Timeline"
+                label="Optimize"
                 size="sm"
               />
             )}
-            <Target className="w-5 h-5 text-gray-400" />
           </div>
         </div>
 
@@ -1190,139 +1234,132 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             <p className="text-sm">No projects with timeline data</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {/* Month Headers */}
-            <div className="relative h-8 border-b border-gray-200 dark:border-gray-700">
-              {ganttData.monthMarkers.map((marker, idx) => (
-                <div
-                  key={idx}
-                  className="absolute top-0 h-full"
-                  style={{ left: `${marker.percent}%` }}
-                >
-                  <div className="flex flex-col items-start">
-                    <span className={`text-xs font-medium ${marker.isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}>
-                      {marker.label}
-                    </span>
-                    <div className="w-px h-full bg-gray-200 dark:bg-gray-700" />
-                  </div>
-                </div>
-              ))}
-
-              {/* Today marker */}
-              <div
-                className="absolute top-0 h-full w-0.5 bg-blue-600 dark:bg-blue-500 z-10"
-                style={{ left: `${ganttData.todayPercent}%` }}
-              >
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-blue-600 dark:bg-blue-600 text-white dark:text-white text-xs rounded whitespace-nowrap">
-                  Today
-                </div>
-              </div>
-            </div>
-
-            {/* Project Bars */}
-            <div className="space-y-2 mt-6">
+          <>
+            {/* Mobile: List view */}
+            <div className="md:hidden space-y-2">
               {(showAllProjects ? ganttData.projects : ganttData.projects.slice(0, 10)).map((project) => {
-                const statusColors = {
-                  completed: 'bg-green-500 dark:bg-green-600',
-                  in_progress: 'bg-blue-500 dark:bg-blue-600',
-                  not_started: 'bg-gray-400 dark:bg-gray-500',
-                  blocked: 'bg-red-500 dark:bg-red-600'
+                const statusColors: Record<string, string> = {
+                  completed: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                  in_progress: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                  not_started: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                  blocked: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                 };
-
-                const priorityBorders = {
-                  critical: 'border-2 border-red-600 dark:border-red-400',
-                  high: 'border-2 border-gray-500 dark:border-gray-400',
-                  medium: 'border border-gray-300 dark:border-gray-600',
-                  low: 'border border-gray-200 dark:border-gray-700'
+                const statusLabels: Record<string, string> = {
+                  completed: 'Done',
+                  in_progress: 'Active',
+                  not_started: 'Pending',
+                  blocked: 'Blocked'
                 };
-
                 return (
-                  <div key={project.id} className="relative h-10 group">
-                    {/* Project name */}
-                    <div className="absolute left-0 w-64 pr-4 truncate text-sm text-gray-700 dark:text-gray-300 flex items-center h-full">
-                      <span className="truncate" title={project.title}>
+                  <div key={project.id} className="p-3 bg-gray-50 dark:bg-slate-700/50 rounded-lg">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h4 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1 flex-1">
                         {project.title}
+                        {project.isOverdue && <AlertCircle className="w-3 h-3 text-red-500 inline ml-1" />}
+                      </h4>
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${statusColors[project.status] || statusColors.not_started}`}>
+                        {statusLabels[project.status] || 'Pending'}
                       </span>
-                      {project.isOverdue && (
-                        <AlertCircle className="w-4 h-4 text-red-500 ml-2 flex-shrink-0" />
-                      )}
                     </div>
-
-                    {/* Timeline area */}
-                    <div className="absolute left-64 right-0 h-full">
-                      {/* Background grid */}
-                      <div className="absolute inset-0 flex">
-                        {ganttData.monthMarkers.map((marker, idx) => (
-                          <div
-                            key={idx}
-                            className="border-l border-gray-100 dark:border-gray-800"
-                            style={{ left: `${marker.percent}%`, position: 'absolute', height: '100%' }}
-                          />
-                        ))}
-                      </div>
-
-                      {/* Project bar */}
-                      <div
-                        className={`absolute h-7 rounded ${statusColors[project.status as keyof typeof statusColors]} ${priorityBorders[project.priority as keyof typeof priorityBorders]} transition-all hover:h-8 hover:-translate-y-0.5 cursor-pointer shadow-sm hover:shadow-md`}
-                        style={{
-                          left: `${project.leftPercent}%`,
-                          width: `${project.widthPercent}%`,
-                          top: '50%',
-                          transform: 'translateY(-50%)'
-                        }}
-                        title={`${project.title}\n${project.startDate.toLocaleDateString()} - ${project.endDate.toLocaleDateString()}\nProgress: ${project.progress}%`}
-                      >
-                        {/* Progress indicator inside bar */}
-                        {project.status === 'in_progress' && (
-                          <div
-                            className="h-full bg-black/20 rounded-l transition-all"
-                            style={{ width: `${project.progress}%` }}
-                          />
-                        )}
-
-                        {/* Percentage label if bar is wide enough */}
-                        {project.widthPercent > 8 && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-xs font-medium text-white drop-shadow">
-                              {project.progress}%
-                            </span>
-                          </div>
-                        )}
-                      </div>
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                      <span>{project.startDate.toLocaleDateString()} → {project.endDate.toLocaleDateString()}</span>
+                      <span className="font-medium">{project.progress}%</span>
+                    </div>
+                    <div className="mt-2 w-full bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                      <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${project.progress}%` }} />
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* Legend */}
-            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-green-500 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">Completed</span>
+            {/* Desktop: Gantt chart */}
+            <div className="hidden md:block space-y-4">
+              {/* Month Headers */}
+              <div className="relative h-8 border-b border-gray-200 dark:border-gray-700">
+                {ganttData.monthMarkers.map((marker, idx) => (
+                  <div
+                    key={idx}
+                    className="absolute top-0 h-full"
+                    style={{ left: `${marker.percent}%` }}
+                  >
+                    <div className="flex flex-col items-start">
+                      <span className={`text-xs font-medium ${marker.isToday ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                        {marker.label}
+                      </span>
+                      <div className="w-px h-full bg-gray-200 dark:bg-gray-700" />
+                    </div>
+                  </div>
+                ))}
+                {/* Today marker */}
+                <div
+                  className="absolute top-0 h-full w-0.5 bg-blue-600 dark:bg-blue-500 z-10"
+                  style={{ left: `${ganttData.todayPercent}%` }}
+                >
+                  <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-blue-600 text-white text-xs rounded whitespace-nowrap">
+                    Today
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-blue-500 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">In Progress</span>
+
+              {/* Project Bars */}
+              <div className="space-y-2 mt-6">
+                {(showAllProjects ? ganttData.projects : ganttData.projects.slice(0, 10)).map((project) => {
+                  const statusColors = {
+                    completed: 'bg-green-500 dark:bg-green-600',
+                    in_progress: 'bg-blue-500 dark:bg-blue-600',
+                    not_started: 'bg-gray-400 dark:bg-gray-500',
+                    blocked: 'bg-red-500 dark:bg-red-600'
+                  };
+                  const priorityBorders = {
+                    critical: 'border-2 border-red-600 dark:border-red-400',
+                    high: 'border-2 border-gray-500 dark:border-gray-400',
+                    medium: 'border border-gray-300 dark:border-gray-600',
+                    low: 'border border-gray-200 dark:border-gray-700'
+                  };
+                  return (
+                    <div key={project.id} className="relative h-10 group">
+                      <div className="absolute left-0 w-64 pr-4 truncate text-sm text-gray-700 dark:text-gray-300 flex items-center h-full">
+                        <span className="truncate" title={project.title}>{project.title}</span>
+                        {project.isOverdue && <AlertCircle className="w-4 h-4 text-red-500 ml-2 flex-shrink-0" />}
+                      </div>
+                      <div className="absolute left-64 right-0 h-full">
+                        <div className="absolute inset-0 flex">
+                          {ganttData.monthMarkers.map((marker, idx) => (
+                            <div key={idx} className="border-l border-gray-100 dark:border-gray-800" style={{ left: `${marker.percent}%`, position: 'absolute', height: '100%' }} />
+                          ))}
+                        </div>
+                        <div
+                          className={`absolute h-7 rounded ${statusColors[project.status as keyof typeof statusColors]} ${priorityBorders[project.priority as keyof typeof priorityBorders]} transition-all hover:h-8 hover:-translate-y-0.5 cursor-pointer shadow-sm hover:shadow-md`}
+                          style={{ left: `${project.leftPercent}%`, width: `${project.widthPercent}%`, top: '50%', transform: 'translateY(-50%)' }}
+                          title={`${project.title}\n${project.startDate.toLocaleDateString()} - ${project.endDate.toLocaleDateString()}\nProgress: ${project.progress}%`}
+                        >
+                          {project.status === 'in_progress' && (
+                            <div className="h-full bg-black/20 rounded-l transition-all" style={{ width: `${project.progress}%` }} />
+                          )}
+                          {project.widthPercent > 8 && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <span className="text-xs font-medium text-white drop-shadow">{project.progress}%</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-400 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">Not Started</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-red-500 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">Blocked</span>
-              </div>
-              <div className="flex items-center gap-2 ml-4">
-                <div className="w-4 h-4 border-2 border-red-600 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">Critical Priority</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-gray-500 rounded" />
-                <span className="text-gray-600 dark:text-gray-400">High Priority</span>
+
+              {/* Legend - desktop only */}
+              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 text-xs">
+                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-500 rounded" /><span className="text-gray-600 dark:text-gray-400">Completed</span></div>
+                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-blue-500 rounded" /><span className="text-gray-600 dark:text-gray-400">In Progress</span></div>
+                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-400 rounded" /><span className="text-gray-600 dark:text-gray-400">Not Started</span></div>
+                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-red-500 rounded" /><span className="text-gray-600 dark:text-gray-400">Blocked</span></div>
+                <div className="flex items-center gap-2 ml-4"><div className="w-4 h-4 border-2 border-red-600 rounded" /><span className="text-gray-600 dark:text-gray-400">Critical</span></div>
+                <div className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-gray-500 rounded" /><span className="text-gray-600 dark:text-gray-400">High</span></div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
 

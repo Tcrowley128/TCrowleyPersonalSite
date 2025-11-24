@@ -72,82 +72,145 @@ export function HierarchicalPBICard({ pbi, childPbis = [], childrenMap, selected
     <div className="space-y-2">
       {/* Main PBI Card */}
       <div
-        className={`flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
+        className={`rounded-lg border-2 transition-all ${
           isSelected
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 hover:border-gray-300 dark:hover:border-gray-600'
         }`}
       >
-        {/* Expand/Collapse Button */}
-        {hasChildren ? (
-          <button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded"
-            title={isExpanded ? "Collapse children" : "Expand children"}
-          >
-            {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-          </button>
-        ) : (
-          <div className="w-7 flex-shrink-0" />
-        )}
-
-        {/* Checkbox - Disabled if done */}
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => onToggleSelect(pbi.id)}
-          disabled={isDone}
-          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
-        />
-
-        {/* Content */}
-        <div
-          className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => onEdit?.(pbi.id)}
-        >
-          <div className="flex items-center gap-2 mb-1">
-            <TypeIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />
-            <h4 className="font-medium text-gray-900 dark:text-white truncate">
-              {pbi.title}
-            </h4>
-            {hasChildren && (
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                ({childPbis.length} {childPbis.length === 1 ? 'item' : 'items'})
-              </span>
+        {/* Mobile Layout */}
+        <div className="sm:hidden p-3">
+          <div className="flex items-start gap-2">
+            {/* Expand/Collapse Button */}
+            {hasChildren ? (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-0.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded mt-0.5"
+                title={isExpanded ? "Collapse children" : "Expand children"}
+              >
+                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+              </button>
+            ) : (
+              <div className="w-5 flex-shrink-0" />
             )}
+
+            {/* Checkbox */}
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(pbi.id)}
+              disabled={isDone}
+              className="w-4 h-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
+            />
+
+            {/* Content */}
+            <div
+              className="flex-1 min-w-0 cursor-pointer"
+              onClick={() => onEdit?.(pbi.id)}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start gap-1.5 min-w-0">
+                  <TypeIcon className={`w-3.5 h-3.5 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0 mt-0.5`} />
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2">
+                      {pbi.title}
+                    </h4>
+                    {hasChildren && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        ({childPbis.length} {childPbis.length === 1 ? 'item' : 'items'})
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {pbi.item_type === 'user_story' && pbi.story_points && (
+                  <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    {pbi.story_points}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 mt-1.5">
+                <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${currentStatus.color}`}>
+                  {currentStatus.label}
+                </span>
+              </div>
+            </div>
           </div>
-          {pbi.description && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
-              {pbi.description}
-            </p>
-          )}
         </div>
 
-        {/* Metadata */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
-            {currentStatus.label}
-          </span>
-          {pbi.item_type === 'user_story' && pbi.story_points && (
-            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-sm font-bold">
-              {pbi.story_points}
-            </div>
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex items-center gap-3 p-4">
+          {/* Expand/Collapse Button */}
+          {hasChildren ? (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 hover:bg-gray-100 dark:hover:bg-slate-800 rounded"
+              title={isExpanded ? "Collapse children" : "Expand children"}
+            >
+              {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+            </button>
+          ) : (
+            <div className="w-7 flex-shrink-0" />
           )}
+
+          {/* Checkbox - Disabled if done */}
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelect(pbi.id)}
+            disabled={isDone}
+            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
+          />
+
+          {/* Content */}
+          <div
+            className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onEdit?.(pbi.id)}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <TypeIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />
+              <h4 className="font-medium text-gray-900 dark:text-white truncate">
+                {pbi.title}
+              </h4>
+              {hasChildren && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  ({childPbis.length} {childPbis.length === 1 ? 'item' : 'items'})
+                </span>
+              )}
+            </div>
+            {pbi.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-1">
+                {pbi.description}
+              </p>
+            )}
+          </div>
+
+          {/* Metadata */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentStatus.color}`}>
+              {currentStatus.label}
+            </span>
+            {pbi.item_type === 'user_story' && pbi.story_points && (
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 flex items-center justify-center text-sm font-bold">
+                {pbi.story_points}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Child Items */}
+      {/* Child Items - reduced indentation on mobile */}
       {hasChildren && isExpanded && (
-        <div className="ml-8 space-y-2 relative">
+        <div className="ml-4 sm:ml-8 space-y-2 relative">
           {/* Connecting line */}
           <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-gray-300 via-gray-300 to-transparent dark:from-gray-600 dark:via-gray-600" />
 
-          <div className="pl-6 space-y-2">
+          <div className="pl-3 sm:pl-6 space-y-2">
             {childPbis.map((child, index) => (
               <div key={child.id} className="relative">
                 {/* Horizontal connector */}
-                <div className="absolute left-0 top-1/2 w-6 h-px bg-gray-300 dark:bg-gray-600" />
+                <div className="absolute left-0 top-1/2 w-3 sm:w-6 h-px bg-gray-300 dark:bg-gray-600" />
 
                 <HierarchicalPBICard
                   pbi={child}

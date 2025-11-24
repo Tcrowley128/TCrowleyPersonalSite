@@ -9,7 +9,7 @@ import { BurndownChart } from './BurndownChart';
 import { EditPBIModal } from './EditPBIModal';
 import { AddItemsToSprintModal } from './AddItemsToSprintModal';
 import { CreateRetroModal } from './CreateRetroModal';
-import { Clock, AlertCircle, CheckCircle2, Loader2, Plus, List, Layers } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle2, Loader2, Plus, List, Layers, ChevronLeft, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 interface Sprint {
@@ -64,6 +64,7 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
   const [boardView, setBoardView] = useState<'user_stories' | 'tasks'>('user_stories');
   const [showCompleteSprintModal, setShowCompleteSprintModal] = useState(false);
   const [showCreateRetroModal, setShowCreateRetroModal] = useState(false);
+  const [mobileColumn, setMobileColumn] = useState<'new' | 'in_progress' | 'done'>('new');
 
   // Filters
   const [filters, setFilters] = useState({
@@ -417,46 +418,128 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
       >
         {boardView === 'user_stories' ? (
           // User Stories View - Traditional Kanban
-          <div className="grid grid-cols-3 gap-6">
-            {Object.entries(columns).map(([status, config]) => {
-              const ColumnIcon = config.icon;
-              const columnPbis = getPbisByStatus(status).filter(pbi => pbi.item_type === 'user_story');
+          <>
+            {/* Mobile: Column selector tabs */}
+            <div className="md:hidden mb-4">
+              <div className="flex items-center gap-2 bg-gray-100 dark:bg-slate-700 p-1 rounded-lg">
+                {Object.entries(columns).map(([status, config]) => {
+                  const ColumnIcon = config.icon;
+                  const columnPbis = getPbisByStatus(status).filter(pbi => pbi.item_type === 'user_story');
+                  const isActive = mobileColumn === status;
 
-              return (
-                <div key={status} className="flex flex-col">
-                  {/* Column Header */}
-                  <div className={`bg-${config.color}-50 dark:bg-${config.color}-900/20 border-2 border-${config.color}-200 dark:border-${config.color}-800 rounded-t-lg p-4`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <ColumnIcon className={`w-5 h-5 text-${config.color}-600 dark:text-${config.color}-400`} />
-                        <h3 className={`font-semibold text-${config.color}-900 dark:text-${config.color}-100`}>
-                          {config.title}
-                        </h3>
-                      </div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-900 text-${config.color}-800 dark:text-${config.color}-100`}>
+                  return (
+                    <button
+                      key={status}
+                      onClick={() => setMobileColumn(status as typeof mobileColumn)}
+                      className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-md transition-colors text-sm font-medium ${
+                        isActive
+                          ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
+                          : 'text-gray-600 dark:text-gray-400'
+                      }`}
+                    >
+                      <ColumnIcon size={14} />
+                      <span className="hidden xs:inline">{config.title}</span>
+                      <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+                        isActive ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                      }`}>
                         {columnPbis.length}
                       </span>
-                    </div>
-                    <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      {columnPbis.reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0)} points
-                    </div>
-                  </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-                  {/* Column Content - Drop Zone */}
-                  <DroppableColumn id={status}>
-                    {columnPbis.map(pbi => (
-                      <PBICard
-                        key={pbi.id}
-                        pbi={pbi}
-                        onUpdate={handlePBIUpdate}
-                        onEdit={setEditingPbiId}
-                      />
-                    ))}
-                  </DroppableColumn>
-                </div>
-              );
-            })}
-          </div>
+            {/* Mobile: Single column view */}
+            <div className="md:hidden">
+              {(() => {
+                const config = columns[mobileColumn];
+                const ColumnIcon = config.icon;
+                const columnPbis = getPbisByStatus(mobileColumn).filter(pbi => pbi.item_type === 'user_story');
+
+                return (
+                  <div className="flex flex-col">
+                    {/* Column Header */}
+                    <div className={`bg-${config.color}-50 dark:bg-${config.color}-900/20 border-2 border-${config.color}-200 dark:border-${config.color}-800 rounded-t-lg p-3`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ColumnIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400`} />
+                          <h3 className={`font-semibold text-${config.color}-900 dark:text-${config.color}-100`}>
+                            {config.title}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {columnPbis.reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0)} pts
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Column Content - Drop Zone */}
+                    <DroppableColumn id={mobileColumn}>
+                      {columnPbis.length === 0 ? (
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+                          No items in {config.title.toLowerCase()}
+                        </div>
+                      ) : (
+                        columnPbis.map(pbi => (
+                          <PBICard
+                            key={pbi.id}
+                            pbi={pbi}
+                            onUpdate={handlePBIUpdate}
+                            onEdit={setEditingPbiId}
+                          />
+                        ))
+                      )}
+                    </DroppableColumn>
+                  </div>
+                );
+              })()}
+            </div>
+
+            {/* Desktop: Traditional 3-column Kanban */}
+            <div className="hidden md:grid md:grid-cols-3 gap-6">
+              {Object.entries(columns).map(([status, config]) => {
+                const ColumnIcon = config.icon;
+                const columnPbis = getPbisByStatus(status).filter(pbi => pbi.item_type === 'user_story');
+
+                return (
+                  <div key={status} className="flex flex-col">
+                    {/* Column Header */}
+                    <div className={`bg-${config.color}-50 dark:bg-${config.color}-900/20 border-2 border-${config.color}-200 dark:border-${config.color}-800 rounded-t-lg p-4`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ColumnIcon className={`w-5 h-5 text-${config.color}-600 dark:text-${config.color}-400`} />
+                          <h3 className={`font-semibold text-${config.color}-900 dark:text-${config.color}-100`}>
+                            {config.title}
+                          </h3>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium bg-${config.color}-100 dark:bg-${config.color}-900 text-${config.color}-800 dark:text-${config.color}-100`}>
+                          {columnPbis.length}
+                        </span>
+                      </div>
+                      <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        {columnPbis.reduce((sum, pbi) => sum + (Number(pbi.story_points) || 0), 0)} points
+                      </div>
+                    </div>
+
+                    {/* Column Content - Drop Zone */}
+                    <DroppableColumn id={status}>
+                      {columnPbis.map(pbi => (
+                        <PBICard
+                          key={pbi.id}
+                          pbi={pbi}
+                          onUpdate={handlePBIUpdate}
+                          onEdit={setEditingPbiId}
+                        />
+                      ))}
+                    </DroppableColumn>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         ) : (
           // Tasks View - Grouped by User Story as Swimlanes
           <div className="space-y-6">
@@ -473,8 +556,21 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
                 return (
                   <div key={userStory.id} className="border border-gray-200 dark:border-gray-700 shadow-sm rounded-lg overflow-hidden">
                     {/* User Story Header (Swimlane) */}
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border-b-2 border-blue-200 dark:border-blue-800 p-4">
-                      <div className="flex items-center justify-between">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border-b-2 border-blue-200 dark:border-blue-800 p-3 md:p-4">
+                      {/* Mobile layout */}
+                      <div className="md:hidden">
+                        <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm line-clamp-2">{userStory.title}</h4>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200">
+                            {storyTasks.length} tasks
+                          </span>
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200">
+                            {userStory.story_points} pts
+                          </span>
+                        </div>
+                      </div>
+                      {/* Desktop layout */}
+                      <div className="hidden md:flex items-center justify-between">
                         <div>
                           <h4 className="font-semibold text-blue-900 dark:text-blue-100">{userStory.title}</h4>
                           <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">{userStory.description}</p>
@@ -490,8 +586,33 @@ export function SprintBoard({ projectId, sprintId }: SprintBoardProps) {
                       </div>
                     </div>
 
-                    {/* Task Columns for this User Story */}
-                    <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-slate-900">
+                    {/* Mobile: Task list grouped by status */}
+                    <div className="md:hidden p-3 bg-gray-50 dark:bg-slate-900 space-y-2">
+                      {storyTasks.map(task => {
+                        const taskConfig = columns[task.status as keyof typeof columns] || columns.new;
+                        return (
+                          <div
+                            key={task.id}
+                            onClick={() => setEditingPbiId(task.id)}
+                            className="p-2 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <span className="text-sm text-gray-900 dark:text-white line-clamp-1">{task.title}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 ${
+                                task.status === 'done' ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' :
+                                task.status === 'in_progress' ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300' :
+                                'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                              }`}>
+                                {taskConfig.title}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Desktop: Task Columns for this User Story */}
+                    <div className="hidden md:grid md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-slate-900">
                       {Object.entries(columns).map(([status, config]) => {
                         const ColumnIcon = config.icon;
                         const columnTasks = storyTasks.filter(task => task.status === status);

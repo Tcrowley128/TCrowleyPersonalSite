@@ -368,72 +368,83 @@ export default function JourneyWorkspace() {
 
         {/* Navigation Tabs */}
         <div className="mb-4 sm:mb-6 border-b border-gray-200 dark:border-gray-700 -mx-4 sm:mx-0 px-4 sm:px-0">
-          <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide">
+          {/* Mobile: Dropdown selector */}
+          <div className="md:hidden pb-3">
+            <select
+              value={activeSection}
+              onChange={(e) => setActiveSection(e.target.value as typeof activeSection)}
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-slate-800 text-gray-900 dark:text-white font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <option value="projects">Projects Overview ({projects.length})</option>
+              <option value="dashboard">Executive Dashboard</option>
+              <option value="sprints">Sprint Management ({inProgressProjects.length})</option>
+              <option value="risks">Risk Overview</option>
+              <option value="collaboration">Team Collaboration</option>
+            </select>
+          </div>
+
+          {/* Desktop: Horizontal tabs */}
+          <div className="hidden md:flex gap-2">
             <button
               onClick={() => setActiveSection('projects')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm sm:text-base ${
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeSection === 'projects'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <LayoutGrid size={16} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Projects Overview</span>
-              <span className="sm:hidden">Projects</span>
-              <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-xs bg-gray-200 dark:bg-gray-700">
+              <LayoutGrid size={20} />
+              Projects Overview
+              <span className="px-2 py-0.5 rounded-full text-xs bg-gray-200 dark:bg-gray-700">
                 {projects.length}
               </span>
             </button>
             <button
               onClick={() => setActiveSection('dashboard')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm sm:text-base ${
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeSection === 'dashboard'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <BarChart3 size={16} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Executive Dashboard</span>
-              <span className="sm:hidden">Dashboard</span>
+              <BarChart3 size={20} />
+              Executive Dashboard
             </button>
             <button
               onClick={() => setActiveSection('sprints')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm sm:text-base ${
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeSection === 'sprints'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <Kanban size={16} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Sprint Management</span>
-              <span className="sm:hidden">Sprints</span>
-              <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-xs bg-gray-200 dark:bg-gray-700">
+              <Kanban size={20} />
+              Sprint Management
+              <span className="px-2 py-0.5 rounded-full text-xs bg-gray-200 dark:bg-gray-700">
                 {inProgressProjects.length}
               </span>
             </button>
             <button
               onClick={() => setActiveSection('risks')}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm sm:text-base ${
+              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeSection === 'risks'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <Shield size={16} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Risk Overview</span>
-              <span className="sm:hidden">Risks</span>
+              <Shield size={20} />
+              Risk Overview
             </button>
             <button
               onClick={() => setActiveSection('collaboration')}
-              className={`team-collaboration-tab flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 font-medium transition-colors border-b-2 whitespace-nowrap text-sm sm:text-base ${
+              className={`team-collaboration-tab flex items-center gap-2 px-6 py-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                 activeSection === 'collaboration'
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
               }`}
             >
-              <Users size={16} className="sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline">Team Collaboration</span>
-              <span className="sm:hidden">Team</span>
+              <Users size={20} />
+              Team Collaboration
             </button>
           </div>
         </div>
