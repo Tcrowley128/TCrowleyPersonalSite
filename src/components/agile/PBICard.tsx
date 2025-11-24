@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
-import { ChevronDown, ChevronRight, User, Zap, Bug, FileText, Lightbulb, Layout, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, User, Zap, Bug, FileText, Lightbulb, Layout, CheckCircle2, Circle, AlertCircle, ArrowRight, CheckCircle } from 'lucide-react';
 import { UserAvatar } from '@/components/common/UserAvatar';
 
 interface Task {
@@ -222,6 +222,34 @@ export function PBICard({ pbi, onUpdate, onEdit }: PBICardProps) {
           )}
         </div>
       )}
+      </div>
+
+      {/* Mobile Quick Actions - Show only on mobile */}
+      <div className="md:hidden mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex gap-2">
+        {pbi.status !== 'in_progress' && pbi.status !== 'done' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdate(pbi.id, { status: 'in_progress' });
+            }}
+            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+          >
+            <ArrowRight size={14} />
+            Start
+          </button>
+        )}
+        {pbi.status !== 'done' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdate(pbi.id, { status: 'done' });
+            }}
+            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-xs font-medium hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+          >
+            <CheckCircle size={14} />
+            Complete
+          </button>
+        )}
       </div>
     </div>
   );

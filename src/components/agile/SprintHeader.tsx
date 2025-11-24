@@ -139,39 +139,40 @@ export function SprintHeader({ sprint, onComplete, onDelete, onUpdate, projectId
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header Row */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex-1">
-          <div className="flex items-center gap-3 mb-3">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+      <div className="flex items-start justify-between mb-4 sm:mb-6">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap">
+            <h2 className="text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white line-clamp-1">
               {sprint.name}
             </h2>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+            <span className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 flex-shrink-0">
               Sprint {sprint.sprint_number}
             </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-medium bg-${config.color}-100 text-${config.color}-800 dark:bg-${config.color}-900 dark:text-${config.color}-200`}>
+            <span className={`px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-medium bg-${config.color}-100 text-${config.color}-800 dark:bg-${config.color}-900 dark:text-${config.color}-200 flex-shrink-0`}>
               {config.label}
             </span>
           </div>
           {sprint.goal && (
             <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-              <Target size={18} className="mt-0.5 flex-shrink-0 text-purple-600" />
-              <p className="text-sm font-medium">{sprint.goal}</p>
+              <Target size={16} className="mt-0.5 flex-shrink-0 text-purple-600 sm:w-[18px] sm:h-[18px]" />
+              <p className="text-xs sm:text-sm font-medium line-clamp-2">{sprint.goal}</p>
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
         {sprint.status === 'active' && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             {onAddItems && (
               <button
                 onClick={onAddItems}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                title="Add Items to Sprint"
               >
                 <Plus size={18} />
-                Add Items
+                <span className="hidden sm:inline">Add Items</span>
               </button>
             )}
             {(onComplete || onDelete) && (
