@@ -52,10 +52,9 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
-          // CSP in Report-Only mode - logs violations without blocking
-          // Monitor browser console for CSP violations before enforcing
+          // Content Security Policy - actively blocks violating resources
           {
-            key: 'Content-Security-Policy-Report-Only',
+            key: 'Content-Security-Policy',
             value: ContentSecurityPolicy,
           },
         ],
