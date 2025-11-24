@@ -27,10 +27,10 @@ export function ProjectCard({ project, onUpdate, onNavigateToSprints }: ProjectC
   const [showDetails, setShowDetails] = useState(false);
 
   const statusConfig = {
-    not_started: { color: 'gray', icon: Clock, label: 'Not Started' },
-    in_progress: { color: 'blue', icon: Clock, label: 'In Progress' },
-    completed: { color: 'green', icon: CheckCircle2, label: 'Completed' },
-    blocked: { color: 'red', icon: AlertCircle, label: 'Blocked' }
+    not_started: { colorClass: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300', icon: Clock, label: 'Not Started' },
+    in_progress: { colorClass: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300', icon: Clock, label: 'In Progress' },
+    completed: { colorClass: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300', icon: CheckCircle2, label: 'Completed' },
+    blocked: { colorClass: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300', icon: AlertCircle, label: 'Blocked' }
   };
 
   const priorityColors = {
@@ -61,7 +61,7 @@ export function ProjectCard({ project, onUpdate, onNavigateToSprints }: ProjectC
 
         {/* Status & Priority */}
         <div className="flex gap-2 mb-4">
-          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-${config.color}-100 text-${config.color}-800 dark:bg-${config.color}-900 dark:text-${config.color}-300`}>
+          <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${config.colorClass}`}>
             <StatusIcon size={14} />
             {config.label}
           </span>
