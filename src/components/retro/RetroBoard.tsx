@@ -917,33 +917,29 @@ export default function RetroBoard({
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
       <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-start justify-between gap-6">
-            <div className="flex items-start gap-4 flex-1">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-6">
+          {/* Mobile Header Layout */}
+          <div className="md:hidden space-y-3">
+            {/* Title row with back button */}
+            <div className="flex items-start gap-2">
               {onBack && (
                 <button
                   onClick={onBack}
-                  className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors mt-1"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
               )}
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
                   {retro.title}
                 </h1>
-                <div className="flex items-center gap-4 flex-wrap">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center gap-2 flex-wrap mt-1">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {template.icon} {template.name}
                   </span>
-                  {retro.facilitator_name && (
-                    <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {retro.facilitator_name}
-                    </span>
-                  )}
                   <span
-                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       retro.status === "completed"
                         ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
                         : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
@@ -955,7 +951,135 @@ export default function RetroBoard({
               </div>
             </div>
 
-            <div className="flex items-start gap-3 flex-wrap justify-end">
+            {/* Controls row */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Realtime Status */}
+              <div
+                className={`flex items-center gap-1 text-xs px-2 py-1 rounded-lg flex-shrink-0 ${
+                  isRealtimeConnected
+                    ? "bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {isRealtimeConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+              </div>
+
+              {/* Timer */}
+              {(timerMinutes > 0 || timerSeconds > 0 || isTimerRunning) && (
+                <div
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg font-mono text-sm font-bold flex-shrink-0 ${
+                    timerMinutes === 0 && timerSeconds <= 10 && isTimerRunning
+                      ? "bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 animate-pulse"
+                      : "bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
+                  }`}
+                >
+                  <Clock className="w-3 h-3" />
+                  <span className="text-xs">
+                    {String(timerMinutes).padStart(2, "0")}:{String(timerSeconds).padStart(2, "0")}
+                  </span>
+                  <div className="flex gap-0.5">
+                    {isTimerRunning ? (
+                      <button onClick={handlePauseTimer} className="p-0.5 hover:bg-blue-200 dark:hover:bg-blue-800 rounded" title="Pause">
+                        <Pause className="w-3 h-3" />
+                      </button>
+                    ) : (
+                      <button onClick={handleResumeTimer} className="p-0.5 hover:bg-blue-200 dark:hover:bg-blue-800 rounded" title="Resume">
+                        <Play className="w-3 h-3" />
+                      </button>
+                    )}
+                    <button onClick={handleResetTimer} className="p-0.5 hover:bg-blue-200 dark:hover:bg-blue-800 rounded" title="Reset">
+                      <RotateCcw className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Votes */}
+              {template.votingEnabled && (
+                <div className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded-lg flex-shrink-0">
+                  Votes: {userVotes}/{maxVotes}
+                </div>
+              )}
+
+              {/* Complete Button */}
+              {retro.status !== "completed" && (
+                <button
+                  onClick={() => setShowCompleteRetroModal(true)}
+                  className="ml-auto flex items-center gap-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-medium transition-colors flex-shrink-0"
+                >
+                  <CheckCircle className="w-3 h-3" />
+                  Complete
+                </button>
+              )}
+            </div>
+
+            {/* Tabs */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveTab("board")}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-1 justify-center ${
+                  activeTab === "board"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300"
+                }`}
+              >
+                <Timer className="w-4 h-4" />
+                Board
+              </button>
+              <button
+                onClick={() => setActiveTab("actions")}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors flex-1 justify-center ${
+                  activeTab === "actions"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300"
+                }`}
+              >
+                <ListChecks className="w-4 h-4" />
+                Actions ({actions.length})
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Header Layout */}
+          <div className="hidden md:block">
+            <div className="flex items-start justify-between gap-6">
+              <div className="flex items-start gap-4 flex-1">
+                {onBack && (
+                  <button
+                    onClick={onBack}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors mt-1"
+                  >
+                    <ArrowLeft className="w-5 h-5" />
+                  </button>
+                )}
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                    {retro.title}
+                  </h1>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {template.icon} {template.name}
+                    </span>
+                    {retro.facilitator_name && (
+                      <span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        {retro.facilitator_name}
+                      </span>
+                    )}
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        retro.status === "completed"
+                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                      }`}
+                    >
+                      {retro.status === "completed" ? "Completed" : "In Progress"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 flex-wrap justify-end">
               {/* Realtime Status Indicator */}
               <div
                 className={`flex items-center gap-2 text-xs px-3 py-2 rounded-lg ${
@@ -1051,36 +1175,37 @@ export default function RetroBoard({
             </div>
           </div>
 
-          {/* Tabs */}
-          <div className="flex gap-2 mt-4">
-            <button
-              onClick={() => setActiveTab("board")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "board"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
-              }`}
-            >
-              <Timer className="w-4 h-4" />
-              Board
-            </button>
-            <button
-              onClick={() => setActiveTab("actions")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                activeTab === "actions"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
-              }`}
-            >
-              <ListChecks className="w-4 h-4" />
-              Actions ({actions.length})
-            </button>
+            {/* Tabs */}
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => setActiveTab("board")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeTab === "board"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
+                }`}
+              >
+                <Timer className="w-4 h-4" />
+                Board
+              </button>
+              <button
+                onClick={() => setActiveTab("actions")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeTab === "actions"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-600"
+                }`}
+              >
+                <ListChecks className="w-4 h-4" />
+                Actions ({actions.length})
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         <AnimatePresence mode="wait">
           {activeTab === "board" && (
             <motion.div
@@ -1088,36 +1213,62 @@ export default function RetroBoard({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid gap-6"
-              style={{
-                gridTemplateColumns: `repeat(${template.columns.length}, minmax(300px, 1fr))`,
-              }}
             >
-              {template.columns.map((column) => (
-                <RetroColumn
-                  key={column.id}
-                  column={column}
-                  cards={cards.filter((card) => card.column_id === column.id)}
-                  currentUserId={currentUserId}
-                  currentUserName={currentUserName}
-                  userVotes={userVotes}
-                  maxVotes={maxVotes}
-                  userVotedCardIds={userVotedCardIds}
-                  onAddCard={handleAddCard}
-                  onVote={handleVote}
-                  onUnvote={handleUnvote}
-                  onEditCard={handleEditCard}
-                  onDeleteCard={handleDeleteCard}
-                  onConvertToAction={handleCreateActionFromCard}
-                />
-              ))}
+              {/* Mobile: Single column stacked */}
+              <div className="md:hidden space-y-4">
+                {template.columns.map((column) => (
+                  <RetroColumn
+                    key={column.id}
+                    column={column}
+                    cards={cards.filter((card) => card.column_id === column.id)}
+                    currentUserId={currentUserId}
+                    currentUserName={currentUserName}
+                    userVotes={userVotes}
+                    maxVotes={maxVotes}
+                    userVotedCardIds={userVotedCardIds}
+                    onAddCard={handleAddCard}
+                    onVote={handleVote}
+                    onUnvote={handleUnvote}
+                    onEditCard={handleEditCard}
+                    onDeleteCard={handleDeleteCard}
+                    onConvertToAction={handleCreateActionFromCard}
+                  />
+                ))}
+              </div>
+
+              {/* Desktop: Multi-column grid */}
+              <div
+                className="hidden md:grid gap-6"
+                style={{
+                  gridTemplateColumns: `repeat(${template.columns.length}, minmax(300px, 1fr))`,
+                }}
+              >
+                {template.columns.map((column) => (
+                  <RetroColumn
+                    key={column.id}
+                    column={column}
+                    cards={cards.filter((card) => card.column_id === column.id)}
+                    currentUserId={currentUserId}
+                    currentUserName={currentUserName}
+                    userVotes={userVotes}
+                    maxVotes={maxVotes}
+                    userVotedCardIds={userVotedCardIds}
+                    onAddCard={handleAddCard}
+                    onVote={handleVote}
+                    onUnvote={handleUnvote}
+                    onEditCard={handleEditCard}
+                    onDeleteCard={handleDeleteCard}
+                    onConvertToAction={handleCreateActionFromCard}
+                  />
+                ))}
+              </div>
 
               {/* Appreciations & Recommendations Section */}
               {(template.hasAppreciations || template.hasRecommendations) && (
-                <div className="col-span-full mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {/* Appreciations */}
                   {template.hasAppreciations && (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <span className="text-3xl">💖</span>
                         <div>
@@ -1225,7 +1376,7 @@ export default function RetroBoard({
 
                   {/* Recommendations */}
                   {template.hasRecommendations && (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <span className="text-3xl">🎬</span>
                         <div>
@@ -1368,8 +1519,8 @@ export default function RetroBoard({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
             >
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-6">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-6">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                       Action Items
