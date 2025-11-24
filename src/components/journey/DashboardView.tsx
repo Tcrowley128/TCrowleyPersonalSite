@@ -485,14 +485,45 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
     <div className="space-y-6" onClick={handleBackgroundClick}>
       {/* Executive Dashboard Header with Filters */}
       <div className="bg-white dark:bg-slate-800 rounded-lg border-2 border-gray-200 dark:border-gray-700 p-4" onClick={(e) => e.stopPropagation()}>
-        {/* Title and Time Period Row */}
-        <div className="flex items-center justify-between mb-2">
+        {/* Title, Filters Toggle, and Time Period Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Executive Dashboard</h2>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">Time Period:</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Filters Toggle */}
+            <div
+              className="flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</h3>
+              {hasActiveFilters && (
+                <span className="px-1.5 py-0.5 bg-blue-600 text-white rounded text-xs font-medium">
+                  {[selectedOperationalArea, selectedCategory, selectedPriority, selectedStatus].filter(f => f !== 'all').length}
+                </span>
+              )}
+              {showFilters ? (
+                <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+              )}
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearAllFilters();
+                }}
+                className="text-xs px-2 py-1.5 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            )}
+            {/* Divider */}
+            <div className="hidden sm:block w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+            {/* Time Period Buttons */}
+            <span className="text-sm text-gray-600 dark:text-gray-400">Time:</span>
             <button
               onClick={() => setTimePeriod('year')}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 timePeriod === 'year'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -502,7 +533,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             </button>
             <button
               onClick={() => setTimePeriod('quarter')}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 timePeriod === 'quarter'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -512,7 +543,7 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
             </button>
             <button
               onClick={() => setTimePeriod('month')}
-              className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                 timePeriod === 'month'
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -523,41 +554,8 @@ export function DashboardView({ projects, assessmentId, onAskAI }: DashboardView
           </div>
         </div>
 
-        {/* Filters Row - Collapsible */}
-        <div className="pt-2">
-          <div
-            className="flex items-center justify-between cursor-pointer"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <div className="flex items-center gap-2">
-              {hasActiveFilters && (
-                <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded text-xs font-medium">
-                  {[selectedOperationalArea, selectedCategory, selectedPriority, selectedStatus].filter(f => f !== 'all').length} active
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              {hasActiveFilters && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearAllFilters();
-                  }}
-                  className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-1"
-                >
-                  <span>Clear All</span>
-                </button>
-              )}
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</h3>
-              <button className="p-1 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors">
-                {showFilters ? (
-                  <ChevronUp className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                )}
-              </button>
-            </div>
-          </div>
+        {/* Collapsible Filters Content */}
+        <div>
 
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
