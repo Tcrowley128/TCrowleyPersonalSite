@@ -353,18 +353,19 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
               Create Sprint
             </button>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <input
                 type="text"
                 value={newSprintName}
                 onChange={(e) => setNewSprintName(e.target.value)}
                 placeholder="Sprint name..."
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+                className="w-48 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
                 autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateSprint()}
               />
               <button
                 onClick={handleCreateSprint}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors whitespace-nowrap flex-shrink-0"
               >
                 Save
               </button>
@@ -373,7 +374,7 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                   setShowCreateSprint(false);
                   setNewSprintName('');
                 }}
-                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors whitespace-nowrap flex-shrink-0"
               >
                 Cancel
               </button>
