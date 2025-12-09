@@ -540,8 +540,8 @@ export function SprintPlanningView({ projectId, activeSprint, onStartSprint, onR
                         key={pbi.id}
                         pbi={pbi}
                         index={index}
-                        isSelected={false}
-                        onToggleSelect={() => {}}
+                        isSelected={selectedPBIs.has(pbi.id)}
+                        onToggleSelect={() => togglePBISelection(pbi.id)}
                       />
                     ))}
                     {/* Always render a drop zone at the end for empty space */}

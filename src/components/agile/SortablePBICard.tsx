@@ -81,7 +81,9 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
     <div
       ref={setNodeRef}
       style={style}
-      className={`rounded-lg border-2 transition-all ${
+      {...attributes}
+      {...listeners}
+      className={`rounded-lg border-2 transition-all cursor-grab active:cursor-grabbing ${
         isDragging
           ? 'opacity-50 border-blue-400 bg-blue-50 dark:bg-blue-900/20'
           : isSelected
@@ -94,9 +96,7 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
         <div className="flex items-start gap-2">
           {/* Drag Handle */}
           <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-0.5"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-0.5"
           >
             <GripVertical size={18} />
           </div>
@@ -107,6 +107,8 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
             checked={isSelected}
             onChange={() => onToggleSelect(pbi.id)}
             disabled={isDone}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
             className="w-4 h-4 mt-0.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
           />
@@ -114,7 +116,11 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
           {/* Content */}
           <div
             className="flex-1 min-w-0 cursor-pointer"
-            onClick={() => onEdit?.(pbi.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.(pbi.id);
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
@@ -145,9 +151,7 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
       <div className="hidden sm:flex items-center gap-3 p-4">
         {/* Drag Handle */}
         <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
         >
           <GripVertical size={20} />
         </div>
@@ -158,6 +162,8 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
           checked={isSelected}
           onChange={() => onToggleSelect(pbi.id)}
           disabled={isDone}
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           title={isDone ? "Done items cannot be added to sprints" : "Select for sprint"}
         />
@@ -170,7 +176,11 @@ export function SortablePBICard({ pbi, index, isSelected, onToggleSelect, onEdit
         {/* Content */}
         <div
           className="flex-1 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => onEdit?.(pbi.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit?.(pbi.id);
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="flex items-center gap-2 mb-1">
             <TypeIcon className={`w-4 h-4 text-${config.color}-600 dark:text-${config.color}-400 flex-shrink-0`} />

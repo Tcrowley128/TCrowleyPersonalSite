@@ -243,7 +243,7 @@ export default function IntroductionTour({ onComplete, onChangeSection }: Introd
             initial={{ opacity: 0, y: -100 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -100 }}
-            className="fixed top-20 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-3xl z-[9998] bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 shadow-2xl overflow-hidden"
+            className="fixed top-20 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-3xl z-[9998] bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/80 dark:to-purple-900/80 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 shadow-2xl overflow-hidden"
           >
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-200 dark:bg-blue-800 opacity-20 rounded-full -mr-16 -mt-16" />
