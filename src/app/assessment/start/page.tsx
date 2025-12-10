@@ -26,6 +26,9 @@ export default function AssessmentStart() {
   const [isSaving, setIsSaving] = useState(false);
   const [showResumeBanner, setShowResumeBanner] = useState(false);
   const [draftTimestamp, setDraftTimestamp] = useState<string>('');
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [hasSyncConflict, setHasSyncConflict] = useState(false);
+  const [serverDraft, setServerDraft] = useState<any>(null);
 
   // Check authentication before allowing assessment
   useEffect(() => {
@@ -34,6 +37,67 @@ export default function AssessmentStart() {
       setShowAuthModal(true);
     }
   }, [authLoading, user]);
+
+  // Sync draft to server
+  const syncDraftToServer = async () => {
+    if (!user || !sessionId || Object.keys(answers).length === 0) return;
+
+    setIsSyncing(true);
+
+    try {
+      const response = await fetch('/api/assessment/drafts/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          answers,
+          current_step: currentStep,
+          timestamp: new Date().toISOString()
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.conflict && data.server_draft) {
+        // Server has newer version
+        setServerDraft(data.server_draft);
+        setHasSyncConflict(true);
+      }
+    } catch (err) {
+      console.error('Failed to sync draft:', err);
+      // Fail silently - localStorage is fallback
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Fetch server draft
+  const fetchServerDraft = async (sid: string) => {
+    try {
+      const response = await fetch(`/api/assessment/drafts/sync?session_id=${sid}`);
+      if (!response.ok) {
+        console.error('Failed to fetch server draft:', response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      if (data.draft) {
+        const localProgress = localStorage.getItem(`assessment_progress_${sid}`);
+        const localTimestamp = localProgress ? JSON.parse(localProgress).timestamp : null;
+        const serverTimestamp = data.draft.updated_at;
+
+        // Compare timestamps - server wins if newer
+        if (!localTimestamp || new Date(serverTimestamp) > new Date(localTimestamp)) {
+          setServerDraft(data.draft);
+          setHasSyncConflict(true);
+          setShowResumeBanner(true);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch server draft:', err);
+      // Fail silently - localStorage is fallback
+    }
+  };
 
   // Initialize session and load saved progress
   useEffect(() => {
@@ -44,7 +108,7 @@ export default function AssessmentStart() {
     sessionStorage.setItem('assessment_session_id', sid);
     setSessionId(sid);
 
-    // Load saved progress from localStorage
+    // Load saved progress from localStorage first (instant)
     const savedProgress = localStorage.getItem(`assessment_progress_${sid}`);
     if (savedProgress) {
       try {
@@ -58,6 +122,9 @@ export default function AssessmentStart() {
         console.error('Failed to load saved progress:', err);
       }
     }
+
+    // Then fetch from server (background)
+    fetchServerDraft(sid);
   }, [user]);
 
   // Auto-save progress every 30 seconds
@@ -71,9 +138,15 @@ export default function AssessmentStart() {
           step: currentStep,
           timestamp: new Date().toISOString()
         };
+        // Save to localStorage first (instant)
         localStorage.setItem(`assessment_progress_${sessionId}`, JSON.stringify(progressData));
         setLastSaved(new Date());
         setIsSaving(false);
+
+        // If authenticated, also sync to server (debounced)
+        if (user) {
+          syncDraftToServer();
+        }
       } catch (err) {
         console.error('Failed to save progress:', err);
       }
@@ -94,7 +167,7 @@ export default function AssessmentStart() {
       clearTimeout(debounceTimeout);
       clearInterval(autoSaveInterval);
     };
-  }, [answers, currentStep, sessionId]);
+  }, [answers, currentStep, sessionId, user]);
 
   const currentStepData = assessmentSteps.find(s => s.id === currentStep);
   const totalSteps = assessmentSteps.length;
@@ -295,6 +368,20 @@ export default function AssessmentStart() {
       // Clear saved progress on successful submission
       if (sessionId) {
         localStorage.removeItem(`assessment_progress_${sessionId}`);
+
+        // Also delete from server
+        if (user) {
+          try {
+            await fetch('/api/assessment/drafts/delete', {
+              method: 'DELETE',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ session_id: sessionId })
+            });
+          } catch (err) {
+            console.error('Failed to delete server draft:', err);
+            // Non-critical error - don't block redirect
+          }
+        }
       }
 
       // Redirect to results page
@@ -535,6 +622,56 @@ export default function AssessmentStart() {
         )}
       </div>
     </div>
+
+    {/* Sync Conflict Resolution Modal */}
+    {hasSyncConflict && serverDraft && (
+      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white dark:bg-slate-800 rounded-xl p-6 max-w-md shadow-2xl"
+        >
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+            Sync Conflict Detected
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            You have progress saved on another device. Which version would you like to keep?
+          </p>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                // Use server version
+                setAnswers(serverDraft.answers);
+                setCurrentStep(serverDraft.current_step);
+                setHasSyncConflict(false);
+
+                // Update localStorage to match server
+                localStorage.setItem(`assessment_progress_${sessionId}`, JSON.stringify({
+                  answers: serverDraft.answers,
+                  step: serverDraft.current_step,
+                  timestamp: serverDraft.updated_at
+                }));
+              }}
+              className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Use Server Version (Latest: {new Date(serverDraft.updated_at).toLocaleString()})
+            </button>
+
+            <button
+              onClick={() => {
+                // Keep local version
+                setHasSyncConflict(false);
+                // Local version will sync on next save
+              }}
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+            >
+              Keep This Device's Version
+            </button>
+          </div>
+        </motion.div>
+      </div>
+    )}
     </>
   );
 }

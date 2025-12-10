@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 // GET /api/assessment/[id]/results - Fetch assessment results
 export async function GET(
@@ -8,9 +9,42 @@ export async function GET(
 ) {
   try {
     const { id: assessmentId } = await params;
-    const supabase = createAdminClient();
 
-    // Fetch assessment results
+    // Verify authentication and ownership
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user owns this assessment
+    const { data: assessment, error: assessmentError } = await authSupabase
+      .from('assessments')
+      .select('user_id')
+      .eq('id', assessmentId)
+      .single();
+
+    if (assessmentError || !assessment) {
+      return NextResponse.json(
+        { error: 'Assessment not found' },
+        { status: 404 }
+      );
+    }
+
+    // Verify ownership
+    if (assessment.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden - You do not have access to this assessment' },
+        { status: 403 }
+      );
+    }
+
+    // User owns the assessment, fetch results using admin client
+    const supabase = createAdminClient();
     const { data: results, error } = await supabase
       .from('assessment_results')
       .select('*')

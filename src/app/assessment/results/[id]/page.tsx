@@ -8,7 +8,7 @@ import {
   Loader2, Target, Zap, TrendingUp, Users, Shield,
   Calendar, Download, Mail, RefreshCw, CheckCircle,
   Lightbulb, BarChart3, X, Edit2, MoreVertical,
-  History, FileText, Briefcase, Rocket
+  History, FileText, Briefcase, Rocket, Link2
 } from 'lucide-react';
 import {
   OverviewTab,
@@ -28,6 +28,7 @@ import ResultsSkeleton from '@/components/assessment/ResultsSkeleton';
 import Confetti from '@/components/assessment/Confetti';
 import { JourneyLoadingScreen } from '@/components/journey/JourneyLoadingScreen';
 import { FloatingAIButton } from '@/components/journey/FloatingAIButton';
+import ShareModal from '@/components/assessment/ShareModal';
 
 interface ResultsPageProps {
   params: Promise<{ id: string }>;
@@ -57,6 +58,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
   const [showActionsMenu, setShowActionsMenu] = useState(false);
   const [showMenuTip, setShowMenuTip] = useState(true);
   const [showVersionModal, setShowVersionModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [isStartingJourney, setIsStartingJourney] = useState(false);
   const [hasExistingProjects, setHasExistingProjects] = useState(false);
   const [showJourneyBanner, setShowJourneyBanner] = useState(false);
@@ -77,6 +79,24 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
+
+        // Handle specific error cases
+        if (response.status === 401) {
+          setError('Please sign in to view assessment results');
+          router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
+          return;
+        }
+
+        if (response.status === 403) {
+          setError('Access Denied - You do not have permission to view this assessment');
+          return;
+        }
+
+        if (response.status === 404) {
+          setError('Assessment not found');
+          return;
+        }
+
         throw new Error(errorData.details || 'Failed to generate results');
       }
 
@@ -101,7 +121,7 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, router]);
 
   const checkExistingProjects = useCallback(async () => {
     try {
@@ -839,6 +859,19 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
                     </button>
                     <button
                       onClick={() => {
+                        setShowShareModal(true);
+                        setShowActionsMenu(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Link2 size={18} />
+                      <div className="flex-1">
+                        <div className="font-medium">Share Results</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Create a shareable link</div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => {
                         setShowVersionModal(true);
                         setShowActionsMenu(false);
                       }}
@@ -969,6 +1002,13 @@ export default function AssessmentResults({ params }: ResultsPageProps) {
           onRegenerateComplete={() => {
             window.location.reload();
           }}
+        />
+
+        {/* Share Modal */}
+        <ShareModal
+          assessmentId={id}
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
         />
 
         {/* Version History Modal */}

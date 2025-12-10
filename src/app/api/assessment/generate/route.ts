@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { buildAssessmentPrompt } from '@/lib/assessment/ai-prompt';
 
@@ -11,6 +12,38 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Assessment ID is required' },
         { status: 400 }
+      );
+    }
+
+    // Verify authentication and ownership first
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    // Check if user owns this assessment (early check before expensive operations)
+    const { data: assessmentOwnership, error: ownershipError } = await authSupabase
+      .from('assessments')
+      .select('user_id')
+      .eq('id', assessment_id)
+      .single();
+
+    if (ownershipError || !assessmentOwnership) {
+      return NextResponse.json(
+        { error: 'Assessment not found' },
+        { status: 404 }
+      );
+    }
+
+    if (assessmentOwnership.user_id !== user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden - You do not have access to this assessment' },
+        { status: 403 }
       );
     }
 
