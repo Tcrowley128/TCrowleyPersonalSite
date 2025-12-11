@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, isAdmin } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 
 // GET /api/assessment/[id]/results - Fetch assessment results
@@ -36,7 +36,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if (assessment.user_id !== user.id) {
+    if (assessment.user_id !== user.id && !isAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden - You do not have access to this assessment' },
         { status: 403 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, isAdmin } from '@/lib/supabase/admin';
 import { createClient } from '@/lib/supabase/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { buildAssessmentPrompt } from '@/lib/assessment/ai-prompt';
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (assessmentOwnership.user_id !== user.id) {
+    if (assessmentOwnership.user_id !== user.id && !isAdmin(user)) {
       return NextResponse.json(
         { error: 'Forbidden - You do not have access to this assessment' },
         { status: 403 }
