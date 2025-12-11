@@ -2,7 +2,7 @@
 
 import { use, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Eye, Lock, Calendar, AlertCircle } from 'lucide-react';
+import { Loader2, Eye, Lock, Calendar, AlertCircle, Rocket } from 'lucide-react';
 import {
   OverviewTab,
   QuickWinsTab,
@@ -107,6 +107,10 @@ export default function SharedAssessmentResults({ params }: { params: Promise<{ 
     { id: 'change', label: 'Change Management', icon: AlertCircle }
   ];
 
+  const handleViewJourney = () => {
+    window.location.href = `/assessment/journey/shared/${token}`;
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 py-8 sm:py-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -117,17 +121,26 @@ export default function SharedAssessmentResults({ params }: { params: Promise<{ 
           className="mb-8"
         >
           <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-400 dark:border-blue-500 rounded-lg p-4 mb-6">
-            <div className="flex items-center gap-3 flex-wrap">
-              <Eye className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 dark:text-white">Shared Assessment Results</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  View-only access
-                  {shareInfo?.max_views && ` • ${shareInfo.view_count} / ${shareInfo.max_views} views used`}
-                  {!shareInfo?.max_views && ` • Viewed ${shareInfo?.view_count || 0} times`}
-                  {shareInfo?.expires_at && ` • Expires ${new Date(shareInfo.expires_at).toLocaleDateString()}`}
-                </p>
+            <div className="flex items-center gap-3 flex-wrap justify-between">
+              <div className="flex items-center gap-3">
+                <Eye className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900 dark:text-white">Shared Assessment Results</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    View-only access
+                    {shareInfo?.max_views && ` • ${shareInfo.view_count} / ${shareInfo.max_views} views used`}
+                    {!shareInfo?.max_views && ` • Viewed ${shareInfo?.view_count || 0} times`}
+                    {shareInfo?.expires_at && ` • Expires ${new Date(shareInfo.expires_at).toLocaleDateString()}`}
+                  </p>
+                </div>
               </div>
+              <button
+                onClick={handleViewJourney}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm font-medium whitespace-nowrap"
+              >
+                <Rocket size={16} />
+                View Transformation Journey
+              </button>
             </div>
           </div>
 
