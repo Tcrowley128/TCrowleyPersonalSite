@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Authentication check
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json(
@@ -159,8 +159,8 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Authentication check
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json(

@@ -8,8 +8,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
   try {
     // Authentication check
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json(
