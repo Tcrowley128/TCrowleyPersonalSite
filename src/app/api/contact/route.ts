@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, isAdmin } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Submit a contact form
 export async function POST(request: NextRequest) {
@@ -64,8 +68,71 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    // TODO: Send email notification to admin
-    // You can integrate with services like SendGrid, Resend, or Nodemailer here
+    // Send email notification to admin
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const emailFrom = process.env.EMAIL_FROM || 'noreply@tylercrowley.com';
+
+    if (adminEmail) {
+      try {
+        await resend.emails.send({
+          from: `Portfolio Contact Form <${emailFrom}>`,
+          to: [adminEmail],
+          subject: `New Contact Form Submission${subject ? ': ' + subject : ''}`,
+          text: `
+You have received a new contact form submission:
+
+Name: ${name}
+Email: ${email}
+Subject: ${subject || 'No subject'}
+
+Message:
+${message}
+
+---
+Submitted at: ${new Date(now).toLocaleString()}
+Submission ID: ${submission.id}
+          `,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #333; border-bottom: 2px solid #0066cc; padding-bottom: 10px;">
+                New Contact Form Submission
+              </h2>
+
+              <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p style="margin: 10px 0;"><strong>Name:</strong> ${name}</p>
+                <p style="margin: 10px 0;"><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+                <p style="margin: 10px 0;"><strong>Subject:</strong> ${subject || 'No subject'}</p>
+              </div>
+
+              <div style="margin: 20px 0;">
+                <strong>Message:</strong>
+                <div style="background: white; padding: 15px; border-left: 4px solid #0066cc; margin-top: 10px; white-space: pre-wrap;">
+${message}
+                </div>
+              </div>
+
+              <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+              <p style="color: #666; font-size: 12px;">
+                Submitted at: ${new Date(now).toLocaleString()}<br>
+                Submission ID: ${submission.id}<br>
+                IP Address: ${ipAddress || 'Unknown'}
+              </p>
+
+              <div style="margin-top: 20px;">
+                <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/contact"
+                   style="background: #0066cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                  View in Admin Dashboard
+                </a>
+              </div>
+            </div>
+          `,
+        });
+      } catch (emailError: any) {
+        // Log the error but don't fail the submission
+        console.error('Failed to send admin notification email:', emailError);
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -84,7 +151,24 @@ export async function POST(request: NextRequest) {
 // Get contact submissions (admin only)
 export async function GET(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -154,7 +238,24 @@ export async function GET(request: NextRequest) {
 // Update submission status (admin only)
 export async function PATCH(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { id, status, notes, responded } = body;
 

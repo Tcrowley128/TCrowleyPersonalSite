@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, isAdmin } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 // Get metadata for a specific page
 export async function GET(request: NextRequest) {
@@ -47,7 +48,24 @@ export async function GET(request: NextRequest) {
 // Create or update metadata for a page
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const {
       path,
@@ -140,7 +158,24 @@ export async function POST(request: NextRequest) {
 // Delete metadata
 export async function DELETE(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const path = searchParams.get('path');
 

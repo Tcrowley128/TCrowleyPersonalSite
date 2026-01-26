@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient, isAdmin } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 
 // Get all redirects or a specific redirect
 export async function GET(request: NextRequest) {
@@ -42,7 +43,24 @@ export async function GET(request: NextRequest) {
 // Create a new redirect
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { fromPath, toPath, permanent, enabled } = body;
 
@@ -99,7 +117,24 @@ export async function POST(request: NextRequest) {
 // Update a redirect
 export async function PATCH(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { id, fromPath, toPath, permanent, enabled } = body;
 
@@ -140,7 +175,24 @@ export async function PATCH(request: NextRequest) {
 // Delete a redirect
 export async function DELETE(request: NextRequest) {
   try {
-    // TODO: Add authentication check here
+    // Authentication check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please sign in' },
+        { status: 401 }
+      );
+    }
+
+    if (!isAdmin(user)) {
+      return NextResponse.json(
+        { error: 'Forbidden - Admin access required' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
