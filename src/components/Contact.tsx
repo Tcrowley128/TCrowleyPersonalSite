@@ -71,7 +71,7 @@ export default function Contact() {
       const data = await response.json();
 
       if (response.ok) {
-        success('Thank you! Your message has been sent successfully.');
+        success('🎉 Message sent successfully! I\'ll get back to you soon.');
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
         showError(data.error || 'Failed to send message. Please try again.');
