@@ -1,0 +1,36 @@
+name: Banking Regulatory Monitor
+
+on:
+  # Run every weekday at 7:00 AM ET (12:00 UTC)
+  schedule:
+    - cron: '0 12 * * 1-5'
+  # Allow manual runs from the GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  run-monitor:
+    name: Check Regulatory Sources & Send Update
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger Banking Monitor
+        run: |
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.NEXT_PUBLIC_APP_URL }}/api/banking-monitor" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.BANKING_MONITOR_API_KEY }}" \
+            --max-time 120)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+
+          echo "HTTP Status: $HTTP_CODE"
+          echo "Response: $BODY"
+
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "Monitor run failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+
+          echo "Monitor run complete"
