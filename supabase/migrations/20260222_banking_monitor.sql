@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS banking_monitor_items (
   impact_analysis TEXT,
   action_required BOOLEAN DEFAULT false,
   action_details TEXT,
+  -- Full PDF content from Claude (renders Intelligence Brief + Governance Readiness PDFs)
+  pdf_content JSONB,
   -- Tracking fields
   email_sent BOOLEAN DEFAULT false,
   first_seen_at TIMESTAMPTZ DEFAULT NOW(),

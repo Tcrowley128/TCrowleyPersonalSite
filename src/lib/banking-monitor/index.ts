@@ -9,6 +9,7 @@ import {
   getUnsentRelevantItems,
 } from './stateTracker';
 import { buildBankingMonitorEmail } from './emailTemplate';
+import { generateIntelligenceBriefPDF, generateGovernanceReadinessPDF } from './pdfGenerator';
 import type { AnalyzedRelease, MonitorRunResult } from './types';
 
 export async function runBankingMonitor(): Promise<MonitorRunResult> {
@@ -31,7 +32,7 @@ export async function runBankingMonitor(): Promise<MonitorRunResult> {
   console.log(`[BankingMonitor] ${newItems.length} new items to analyze`);
 
   if (newItems.length > 0) {
-    // 3. Analyze with Claude
+    // 3. Analyze with Claude (generates both summary fields and full PDF content)
     console.log('[BankingMonitor] Analyzing with Claude...');
     const analyzed = await analyzeMultipleReleases(newItems);
 
@@ -45,15 +46,48 @@ export async function runBankingMonitor(): Promise<MonitorRunResult> {
   console.log(`[BankingMonitor] ${toSend.length} relevant unsent items`);
 
   if (toSend.length === 0) {
-    return {
-      newItemsFound: newItems.length,
-      relevantItems: [],
-      emailSent: false,
-      errors,
-    };
+    return { newItemsFound: newItems.length, relevantItems: [], emailSent: false, errors };
   }
 
   return sendEmailUpdate(toSend, errors, newItems.length);
+}
+
+async function buildAttachments(
+  items: AnalyzedRelease[],
+  runDate: Date
+): Promise<{ filename: string; content: Buffer }[]> {
+  const attachments: { filename: string; content: Buffer }[] = [];
+
+  // Intelligence Brief PDF — one per high/medium item that has pdfContent (max 3)
+  const pdfItems = items.filter((r) => r.pdfContent && r.priority !== 'low');
+  const briefItems = pdfItems.slice(0, 3);
+
+  for (const item of briefItems) {
+    try {
+      const buf = await generateIntelligenceBriefPDF(item, runDate);
+      const slug = item.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .slice(0, 40);
+      attachments.push({ filename: `intelligence-brief-${slug}.pdf`, content: buf });
+    } catch (err) {
+      console.error('[BankingMonitor] Intelligence Brief PDF failed:', err);
+    }
+  }
+
+  // Governance Readiness PDF — one combined document covering all relevant items
+  const govItems = items.filter((r) => r.pdfContent);
+  if (govItems.length > 0) {
+    try {
+      const buf = await generateGovernanceReadinessPDF(govItems, runDate);
+      const dateStr = runDate.toISOString().slice(0, 10);
+      attachments.push({ filename: `governance-readiness-summary-${dateStr}.pdf`, content: buf });
+    } catch (err) {
+      console.error('[BankingMonitor] Governance Readiness PDF failed:', err);
+    }
+  }
+
+  return attachments;
 }
 
 async function sendEmailUpdate(
@@ -73,11 +107,17 @@ async function sendEmailUpdate(
     return { newItemsFound, relevantItems: items, emailSent: false, errors };
   }
 
-  const { subject, html } = buildBankingMonitorEmail(items);
+  const runDate = new Date();
+  const { subject, html } = buildBankingMonitorEmail(items, runDate);
   const fromEmail =
     process.env.BANKING_MONITOR_FROM_EMAIL ||
     process.env.EMAIL_FROM ||
     '1st Source Monitor <noreply@tylercrowley.com>';
+
+  // Generate PDF attachments
+  console.log('[BankingMonitor] Generating PDF attachments...');
+  const attachments = await buildAttachments(items, runDate);
+  console.log(`[BankingMonitor] ${attachments.length} PDF(s) generated`);
 
   const resend = new Resend(resendKey);
   const { error: emailError } = await resend.emails.send({
@@ -85,6 +125,10 @@ async function sendEmailUpdate(
     to: recipientEmail,
     subject,
     html,
+    attachments: attachments.map((a) => ({
+      filename: a.filename,
+      content: a.content,
+    })),
   });
 
   if (emailError) {
@@ -93,7 +137,9 @@ async function sendEmailUpdate(
   }
 
   await markEmailSent(items.map((i) => i.url));
-  console.log(`[BankingMonitor] Email sent to ${recipientEmail} — subject: ${subject}`);
+  console.log(
+    `[BankingMonitor] Email sent to ${recipientEmail} with ${attachments.length} PDF attachment(s)`
+  );
 
   return { newItemsFound, relevantItems: items, emailSent: true, errors };
 }

@@ -34,6 +34,7 @@ export async function saveAnalyzedItems(items: AnalyzedRelease[]): Promise<void>
     impact_analysis: item.impactAnalysis,
     action_required: item.actionRequired,
     action_details: item.actionDetails,
+    pdf_content: item.pdfContent ?? null,
     analyzed_at: new Date().toISOString(),
     email_sent: false,
   }));
@@ -69,6 +70,7 @@ export async function getUnsentRelevantItems(): Promise<AnalyzedRelease[]> {
       impact_analysis: string;
       action_required: boolean;
       action_details: string;
+      pdf_content: AnalyzedRelease['pdfContent'] | null;
     }) => ({
       title: row.title,
       url: row.url,
@@ -82,6 +84,7 @@ export async function getUnsentRelevantItems(): Promise<AnalyzedRelease[]> {
       impactAnalysis: row.impact_analysis,
       actionRequired: row.action_required,
       actionDetails: row.action_details,
+      pdfContent: row.pdf_content ?? undefined,
     })
   );
 }
